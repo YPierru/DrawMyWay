@@ -209,15 +209,20 @@ containing a value of this type.
         public static final int icon_green=0x7f02001d;
     }
     public static final class id {
-        public static final int action_settings=0x7f05000c;
-        public static final int btn_arrivee=0x7f050009;
-        public static final int btn_depart=0x7f050008;
-        public static final int btn_lock=0x7f05000a;
-        public static final int btn_mapStyle=0x7f05000b;
-        public static final int btn_show=0x7f050007;
-        public static final int et_place=0x7f050006;
+        public static final int action_settings=0x7f050011;
+        public static final int btn_LaunchGPS=0x7f050010;
+        public static final int btn_Save=0x7f05000f;
+        public static final int btn_arrivee=0x7f05000b;
+        public static final int btn_depart=0x7f05000a;
+        public static final int btn_eraseLine=0x7f05000e;
+        public static final int btn_launchMap=0x7f050005;
+        public static final int btn_lock=0x7f05000c;
+        public static final int btn_mapStyle=0x7f05000d;
+        public static final int btn_show=0x7f050009;
+        public static final int btn_voirTrajetSave=0x7f050006;
+        public static final int et_place=0x7f050008;
         public static final int hybrid=0x7f050004;
-        public static final int map=0x7f050005;
+        public static final int map=0x7f050007;
         public static final int none=0x7f050000;
         public static final int normal=0x7f050001;
         public static final int satellite=0x7f050002;
@@ -227,10 +232,13 @@ containing a value of this type.
         public static final int google_play_services_version=0x7f070000;
     }
     public static final class layout {
-        public static final int activity_main=0x7f030000;
+        public static final int layout_main=0x7f030000;
+        public static final int layout_map=0x7f030001;
+        public static final int layout_trajetsave=0x7f030002;
     }
     public static final class menu {
         public static final int main=0x7f0a0000;
+        public static final int trajet_save=0x7f0a0001;
     }
     public static final class string {
         public static final int action_settings=0x7f06001b;
@@ -330,6 +338,7 @@ containing a value of this type.
          */
         public static final int common_signin_button_text_long=0x7f060013;
         public static final int hello_world=0x7f06001c;
+        public static final int title_activity_trajet_save=0x7f06001d;
     }
     public static final class style {
         /** 

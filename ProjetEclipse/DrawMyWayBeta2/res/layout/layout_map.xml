@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/map"
+    android:name="com.google.android.gms.maps.MapFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="330dp"
+        android:layout_height="match_parent"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/et_place"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:hint="Rechercher"
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/btn_show"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Go!" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="5dp"
+        android:paddingRight="8dp"
+        android:paddingTop="50dp" >
+
+        <Button
+            android:id="@+id/btn_depart"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:text="D" />
+
+        <Button
+            android:id="@+id/btn_arrivee"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/btn_depart"
+            android:text="A" />
+
+        <Button
+            android:id="@+id/btn_lock"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/btn_arrivee"
+            android:text="L" />
+
+        <Button
+            android:id="@+id/btn_mapStyle"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/btn_lock"
+            android:text="T" />
+
+        <Button
+            android:id="@+id/btn_eraseLine"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/btn_mapStyle"
+            android:text="R" />
+
+        <Button
+            android:id="@+id/btn_Save"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/btn_eraseLine"
+            android:text="S" />
+
+        <Button
+            android:id="@+id/btn_LaunchGPS"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/btn_Save"
+            android:text="G" />
+    </RelativeLayout>
+
+</fragment>
