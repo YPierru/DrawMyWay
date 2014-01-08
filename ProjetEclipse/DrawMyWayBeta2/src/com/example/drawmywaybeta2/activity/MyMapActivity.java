@@ -12,10 +12,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.json.JSONObject;
+import org.xml.sax.SAXException;
 
 import android.app.Activity;
-import android.content.res.ColorStateList;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,12 +33,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
-import com.db4o.query.Predicate;
+import com.example.drawmywaybeta2.CallDirectionsAPI;
 import com.example.drawmywaybeta2.GeocodeJSONParser;
 import com.example.drawmywaybeta2.Trajet;
 import com.example.gmapstests.R;
@@ -48,38 +53,45 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 
 public class MyMapActivity extends Activity {
 
-	GoogleMap map;
-	EditText etPlace;
-	Button mBtnFind, btnD, btnA, btnL, btnT, btnR,btnS;
-	ArrayList<LatLng> listPoint;
-	ArrayList<Polyline> listPolyline;
-	ArrayList<Trajet> listTrajet;
-	Trajet currentTrajet;
-	ObjectContainer db;
+	private GoogleMap map;
+	private EditText etPlace;
+	private Button mBtnFind, btnA, btnL, btnT, btnR,btnS;
+	private ArrayList<LatLng> listPoint;
+	private ArrayList<Polyline> listPolyline;
+	private ArrayList<Trajet> listTrajet;
+	private Trajet currentTrajet;
+	private final static String URL_CALLAPI="https://maps.googleapis.com/maps/api/directions/xml?sensore=true&mode=walking&";
+	//private ObjectContainer db;
+	private static final String DB_NAME="DrawMyWay.db4o";
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		fullscreenActivity();
 		setContentView(R.layout.layout_map);
-
 		listPoint = new ArrayList<LatLng>();
 		listPolyline = new ArrayList<Polyline>();
 		listTrajet = new ArrayList<Trajet>();
 
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
+		
+		//map.setMyLocationEnabled(true);
 		//Toast.makeText(getApplicationContext(), Environment.getExternalStorageDirectory().getAbsolutePath(), Toast.LENGTH_LONG).show();
-		db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(),Environment.getExternalStorageDirectory().getAbsolutePath()+"/dbooo.db4fo");
-		ObjectSet list=db.query(new Predicate<Trajet>() {
+		//db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(),Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DB_NAME);
+		
+		//removeAllInDb4o();
+		
+		/*ObjectSet list=db.query(new Predicate<Trajet>() {
 				public boolean match(Trajet tj) {
 					return tj.getName().equals("Trajet1");
 					}
 				});
+		
 		
 		if(list.hasNext()){
 			Trajet tj=(Trajet)list.next();
@@ -113,7 +125,7 @@ public class MyMapActivity extends Activity {
 			.position(tj.getEndPoint())
 			.title("Arrivée"))
 			.showInfoWindow();
-		}
+		}*/
 
 		settingMapClickListener();
 
@@ -123,7 +135,7 @@ public class MyMapActivity extends Activity {
 
 		settingBtnLockMovListener();
 
-		settingBtnDepartAddrListener();
+		//settingBtnDepartAddrListener();
 		
 		settingBtnArriveAddrListener();
 		
@@ -133,6 +145,15 @@ public class MyMapActivity extends Activity {
 		
 		
 
+	}
+	
+	private void removeAllInDb4o(){
+		ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(),Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DB_NAME);
+		ObjectSet listToRemove=db.queryByExample(Trajet.class);
+		while(listToRemove.hasNext()){
+			db.delete((Trajet)listToRemove.next());
+		}
+		db.close();
 	}
 
 	private void fullscreenActivity() {
@@ -150,27 +171,96 @@ public class MyMapActivity extends Activity {
 					listPoint.add(point);
 				}
 				if (listPoint.size() != 0) {
-					Polyline p=map.addPolyline(new PolylineOptions().geodesic(false)
+					
+					LatLng lastPoint = listPoint.get(listPoint.size()-1);
+					CallDirectionsAPI cdAPI = new CallDirectionsAPI(lastPoint, point);
+					
+					try {
+						cdAPI.extractXmlFromApi();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (ParserConfigurationException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (SAXException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					
+					/*Polyline p=map.addPolyline(new PolylineOptions().geodesic(false)
 							.add(listPoint.get(listPoint.size() - 1))
 							.add(point).width(15)
 							.color(Color.argb(120, 0, 0, 221)));
 					listPolyline.add(p);
-					listPoint.add(point);
+					listPoint.add(point);*/
 				}
+			}
+		});
+		
+		map.setOnMapLongClickListener(new OnMapLongClickListener() {
+
+			@Override
+			public void onMapLongClick(LatLng point) {
+				btnS=(Button)findViewById(R.id.btn_Save);
+				btnS.setEnabled(true);
+				listPoint.clear();
+				map.clear();
+				listPoint.add(point);
+				listTrajet.add(new Trajet("TemporaryName", (ArrayList<LatLng>)listPoint.clone(), false));
+				Toast.makeText(getApplicationContext(),"Trajet créé",Toast.LENGTH_SHORT).show();
+				CameraUpdate cu = CameraUpdateFactory
+						.newLatLngZoom(point, 14);
+				// map.moveCamera(cu);
+				map.animateCamera(cu, 600, null);
+
+				map.addMarker(
+						new MarkerOptions()
+								.icon(BitmapDescriptorFactory
+										.fromResource(R.drawable.icon_green))
+								.anchor(0.0f, 1.0f) // Anchors the
+													// marker on the
+													// bottom left
+								.position(point).title("Départ"))
+						.showInfoWindow();
 			}
 		});
 	}
 	
+	
+	//private void 
+	
 	private void settingBtnSaveTrajetListener(){
 		btnS = (Button)findViewById(R.id.btn_Save);
-		
+
+		btnS.setEnabled(false);
 		btnS.setOnClickListener(new OnClickListener() {
-			
+				
 			@Override
 			public void onClick(View v) {
+				final AlertDialog.Builder alert = new AlertDialog.Builder(MyMapActivity.this).setTitle("Saisir le nom du trajet");
+			    final EditText input = new EditText(getApplicationContext());
+			    input.setHint("Nom du trajet");
+			    input.setTextColor(Color.BLACK);
+			    alert.setView(input);
+			    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+			        public void onClick(DialogInterface dialog, int whichButton) {
+			            String value = input.getText().toString().trim();
+			            Trajet tj=listTrajet.get(listTrajet.size()-1);
+			            tj.setName(value);
+						tj.setListPoint((ArrayList<LatLng>)listPoint.clone());
+						ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(),Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DB_NAME);
+						db.store(tj);
+						db.commit();
+						db.close();
+						Toast.makeText(getApplicationContext(), "Trajet "+tj.getName()+" save", Toast.LENGTH_SHORT).show();
+			        }
+			    });
+			    alert.show();
 				
 			}
-		});
+		});	
 	}
 
 	private void settingBtnMapStyleListener() {
@@ -213,15 +303,18 @@ public class MyMapActivity extends Activity {
 		btnLongClickToast(btnL, "Active/Désactive les mouvements de la carte");
 	}
 
-	private void settingBtnDepartAddrListener() {
+	/*private void settingBtnDepartAddrListener() {
 		btnD = (Button) findViewById(R.id.btn_depart);
 
 		btnD.setTextColor(Color.RED);
+		btnD.setEnabled(false);
 
 		btnD.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
+				btnS = (Button) findViewById(R.id.btn_Save);
+				btnS.setEnabled(true);
 				if (btnD.getTextColors() == ColorStateList.valueOf(Color.RED)) {
 					btnD.setTextColor(Color.GREEN);
 
@@ -230,12 +323,10 @@ public class MyMapActivity extends Activity {
 						@Override
 						public void onMapLongClick(LatLng point) {
 							listPoint.clear();
-							listPoint.add(point);
 							map.clear();
-							// Toast tst=Toast.makeText(getApplicationContext(),
-							// "Lat="+point.latitude+" Lng="+point.longitude,
-							// Toast.LENGTH_SHORT);
-							// tst.show();
+							listPoint.add(point);
+							listTrajet.add(new Trajet("TemporaryName", (ArrayList<LatLng>)listPoint.clone(), false));
+							Toast.makeText(getApplicationContext(),"Trajet créé",Toast.LENGTH_SHORT).show();
 							CameraUpdate cu = CameraUpdateFactory
 									.newLatLngZoom(point, 14);
 							// map.moveCamera(cu);
@@ -262,7 +353,7 @@ public class MyMapActivity extends Activity {
 		});
 		
 		btnLongClickToast(btnD, "(Clic long) ajoute un marqueur \"Départ\""); 
-	}
+	}*/
 	
 	private void settingBtnArriveAddrListener() {
 		btnA = (Button) findViewById(R.id.btn_arrivee);
@@ -271,6 +362,8 @@ public class MyMapActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
+				btnS=(Button)findViewById(R.id.btn_Save);
+				btnS.setEnabled(false);
 				if(listPolyline.size()>0){
 					map.addMarker(new MarkerOptions()
 									.icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_green))
@@ -280,17 +373,33 @@ public class MyMapActivity extends Activity {
 					/*
 					 * Fonction pour redéssiner le trajet en mode plou joulie ?
 					 */
-					Trajet tj = new Trajet("Trajet1", (ArrayList<LatLng>)listPoint.clone());
-					//Toast.makeText(getApplicationContext(), "LP size="+tj.getListPoint().size(), Toast.LENGTH_SHORT).show();
-					listTrajet.add(tj);
-					listPoint.clear();
-					listPolyline.clear();
-					//Toast.makeText(getApplicationContext(), "LP size="+tj.getListPoint().size(), Toast.LENGTH_SHORT).show();
-					db.store(tj);
-					db.commit();
-					Toast.makeText(getApplicationContext(), "Trajet save", Toast.LENGTH_SHORT).show();
+					Trajet tj=listTrajet.get(listTrajet.size()-1);
+					tj.setFinish(true);
+					tj.setListPoint((ArrayList<LatLng>)listPoint.clone());
+					
+					final AlertDialog.Builder alert = new AlertDialog.Builder(MyMapActivity.this).setTitle("Saisir le nom du trajet");
+				    final EditText input = new EditText(getApplicationContext());
+				    input.setHint("Nom du trajet");
+				    input.setTextColor(Color.BLACK);
+				    alert.setView(input);
+				    alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+				        public void onClick(DialogInterface dialog, int whichButton) {
+				            String value = input.getText().toString().trim();
+				            Trajet tj=listTrajet.get(listTrajet.size()-1);
+				            tj.setName(value);
+							tj.setListPoint((ArrayList<LatLng>)listPoint.clone());
+				            ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(),Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DB_NAME);
+				            db.store(tj);
+							db.commit();
+							db.close();
+				            Toast.makeText(getApplicationContext(), "Trajet (fini) "+tj.getName()+" sauvegardé", Toast.LENGTH_SHORT).show();
+				            listPoint.clear();
+				            listPolyline.clear();
+				        }
+				    });
+				    alert.show();
 				}else{
-					Toast.makeText(getApplicationContext(), "Il vous avoir tracé un parcours !", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "Il faut avoir tracé un parcours !", Toast.LENGTH_SHORT).show();
 				}
 
 			}
@@ -537,17 +646,17 @@ public class MyMapActivity extends Activity {
 		Toast.makeText(getApplicationContext(), "pause", Toast.LENGTH_SHORT).show();
 		super.onPause();
 	}*/
-	
+	/*
 	public void onStop(){
 		//Toast.makeText(getApplicationContext(), "stop", Toast.LENGTH_SHORT).show();
-		db.close();
+		//db.close();
 		super.onStop();
 	}
 	
 	public void onDestroy(){
 		//Toast.makeText(getApplicationContext(), "destroy", Toast.LENGTH_SHORT).show();
-		db.close();
+		//db.close();
 		super.onDestroy();
-	}
+	}*/
 
 }

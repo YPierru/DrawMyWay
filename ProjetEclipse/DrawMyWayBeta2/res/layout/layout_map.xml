@@ -32,19 +32,18 @@
         android:paddingRight="8dp"
         android:paddingTop="50dp" >
 
-        <Button
+        <!-- <Button
             android:id="@+id/btn_depart"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_alignParentRight="true"
-            android:text="D" />
+            android:text="D" />-->
 
         <Button
             android:id="@+id/btn_arrivee"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_alignParentRight="true"
-            android:layout_below="@id/btn_depart"
             android:text="A" />
 
         <Button

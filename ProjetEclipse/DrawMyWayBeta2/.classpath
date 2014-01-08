@@ -10,5 +10,10 @@
 			<attribute name="javadoc_location" value="file:/home/yanpierru/Téléchargements/db4o-8.0/doc/api/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/home/yanpierru/Téléchargements/commons-io-2.4/commons-io-2.4.jar" sourcepath="/home/yanpierru/Téléchargements/commons-io-2.4/commons-io-2.4-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/home/yanpierru/Téléchargements/commons-io-2.4/commons-io-2.4-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
