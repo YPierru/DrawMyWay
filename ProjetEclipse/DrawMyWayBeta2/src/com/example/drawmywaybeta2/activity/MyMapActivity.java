@@ -33,7 +33,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.db4o.Db4oEmbedded;
@@ -53,6 +52,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.maps.GeoPoint;
 
 public class MyMapActivity extends Activity {
 
@@ -174,21 +175,22 @@ public class MyMapActivity extends Activity {
 					
 					LatLng lastPoint = listPoint.get(listPoint.size()-1);
 					CallDirectionsAPI cdAPI = new CallDirectionsAPI(lastPoint, point);
-					
+					//Thread current=Thread.currentThread();
 					try {
-						cdAPI.extractXmlFromApi();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (ParserConfigurationException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (SAXException e) {
+						Thread.sleep(8000);
+					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
-					
+					ArrayList<LatLng> tmpListLatLng = cdAPI.getListLatLng();
+					//Toast.makeText(getApplicationContext(),"size list ="+tmpListLatLng.size(),Toast.LENGTH_SHORT).show();
+					for(int i=0;i<tmpListLatLng.size()-1;i++){
+						map.addPolyline(new PolylineOptions().geodesic(false)
+								.add(tmpListLatLng.get(i))
+								.add(tmpListLatLng.get(i+1)).width(15)
+								.color(Color.argb(120, 0, 0, 221)));
+					}
+										
 					/*Polyline p=map.addPolyline(new PolylineOptions().geodesic(false)
 							.add(listPoint.get(listPoint.size() - 1))
 							.add(point).width(15)
@@ -228,8 +230,14 @@ public class MyMapActivity extends Activity {
 		});
 	}
 	
-	
-	//private void 
+	/*public static void drawPolylineFromDirectionAPI(ArrayList<LatLng> listP){
+		for(int i=0;i<listP.size()-1;i++){
+			map.addPolyline(new PolylineOptions().geodesic(false)
+					.add(listP.get(i))
+					.add(listP.get(i+1)).width(15)
+					.color(Color.argb(120, 0, 0, 221)));
+		}
+	}*/
 	
 	private void settingBtnSaveTrajetListener(){
 		btnS = (Button)findViewById(R.id.btn_Save);
