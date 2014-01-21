@@ -39,6 +39,7 @@ import com.example.drawmywaybeta2.GeocodeJSONParser;
 import com.example.drawmywaybeta2.AsyncTasks.GettingRoute;
 import com.example.drawmywaybeta2.AsyncTasks.NearestStreet;
 import com.example.drawmywaybeta2.Parcours.Trajet;
+import com.example.drawmywaybeta2.Parcours.Downloaded.DirectionsResponse;
 import com.example.gmapstests.R;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -60,7 +61,7 @@ public class MyMapActivity extends Activity {
 	private ArrayList<LatLng> listPoint;
 	private ArrayList<Polyline> listPolyline;
 	private ArrayList<Trajet> listTrajet;
-	private Trajet currentTrajet;
+	private DirectionsResponse currentTrajet;
 	// private ObjectContainer db;
 	private static final String DB_NAME = "DrawMyWay.db4o";
 
@@ -130,9 +131,9 @@ public class MyMapActivity extends Activity {
 		ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded
 				.newConfiguration(), Environment.getExternalStorageDirectory()
 				.getAbsolutePath() + "/" + DB_NAME);
-		ObjectSet listToRemove = db.queryByExample(Trajet.class);
+		ObjectSet listToRemove = db.queryByExample(DirectionsResponse.class);
 		while (listToRemove.hasNext()) {
-			db.delete((Trajet) listToRemove.next());
+			db.delete((DirectionsResponse) listToRemove.next());
 		}
 		db.close();
 	}
@@ -191,15 +192,14 @@ public class MyMapActivity extends Activity {
 				map.clear();
 				new NearestStreet().execute(point);
 				try {
-					Thread.sleep(500);
+					Thread.sleep(3000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				point = NearestStreet.getPoint();
 				listPoint.add(point);
-				listTrajet.add(new Trajet("TemporaryName",
-						(ArrayList<LatLng>) listPoint.clone(), false));
+				listTrajet.add(new Trajet("TemporaryName",(ArrayList<LatLng>) listPoint.clone(), false));
 				Toast.makeText(getApplicationContext(), "Trajet créé",
 						Toast.LENGTH_SHORT).show();
 				CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(point, 17);
@@ -618,17 +618,5 @@ public class MyMapActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-
-	/*
-	 * public void OnPause(){ Toast.makeText(getApplicationContext(), "pause",
-	 * Toast.LENGTH_SHORT).show(); super.onPause(); }
-	 */
-	/*
-	 * public void onStop(){ //Toast.makeText(getApplicationContext(), "stop",
-	 * Toast.LENGTH_SHORT).show(); //db.close(); super.onStop(); }
-	 * 
-	 * public void onDestroy(){ //Toast.makeText(getApplicationContext(),
-	 * "destroy", Toast.LENGTH_SHORT).show(); //db.close(); super.onDestroy(); }
-	 */
 
 }
