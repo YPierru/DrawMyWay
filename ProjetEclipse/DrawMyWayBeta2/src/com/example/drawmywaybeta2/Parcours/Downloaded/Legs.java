@@ -1,19 +1,34 @@
 package com.example.drawmywaybeta2.Parcours.Downloaded;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.google.android.gms.maps.model.LatLng;
 
-public class Legs {
+public class Legs  implements Parcelable{
 
 	private DistDur distance;
 	private DistDur duration;
 	private String end_address;
-	private LatLng end_location;
+	private MyPoint end_location;
 	private String start_address;
-	private LatLng start_location;
+	private MyPoint start_location;
 	private List<Step> steps;
 
+	public Legs(Parcel in){
+		this.distance=in.readParcelable(getClass().getClassLoader());
+		this.duration=in.readParcelable(getClass().getClassLoader());
+		this.end_address=in.readString();
+		this.end_location=in.readParcelable(getClass().getClassLoader());
+		this.start_address=in.readString();
+		this.start_location=in.readParcelable(getClass().getClassLoader());
+		this.steps = new ArrayList<Step>();
+		in.readList(this.steps, getClass().getClassLoader());
+	}
+	
 	public DistDur getDistance() {
 		return distance;
 	}
@@ -38,11 +53,11 @@ public class Legs {
 		this.end_address = end_address;
 	}
 
-	public LatLng getEnd_location() {
+	public MyPoint getEnd_location() {
 		return end_location;
 	}
 
-	public void setEnd_location(LatLng end_location) {
+	public void setEnd_location(MyPoint end_location) {
 		this.end_location = end_location;
 	}
 
@@ -54,11 +69,11 @@ public class Legs {
 		this.start_address = start_address;
 	}
 
-	public LatLng getStart_location() {
+	public MyPoint getStart_location() {
 		return start_location;
 	}
 
-	public void setStart_location(LatLng start_location) {
+	public void setStart_location(MyPoint start_location) {
 		this.start_location = start_location;
 	}
 
@@ -77,6 +92,36 @@ public class Legs {
 				+ end_location + ", start_address=" + start_address
 				+ ", start_location=" + start_location + ", steps=" + steps
 				+ "]";
+	}
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public static final Parcelable.Creator<Legs> CREATOR = new Parcelable.Creator<Legs>() {
+
+		@Override
+		public Legs createFromParcel(Parcel source) {
+			return new Legs(source);
+		}
+
+		@Override
+		public Legs[] newArray(int size) {
+			return new Legs[size];
+		}
+	};
+	
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeParcelable(this.distance, 0);
+		dest.writeParcelable(this.duration, 0);
+		dest.writeString(this.end_address);
+		dest.writeParcelable(this.end_location, 0);
+		dest.writeString(this.start_address);
+		dest.writeParcelable(this.start_location, 0);
+		dest.writeList(this.steps);
 	}
 
 }

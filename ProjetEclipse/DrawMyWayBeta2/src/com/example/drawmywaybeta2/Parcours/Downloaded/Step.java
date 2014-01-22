@@ -1,16 +1,28 @@
 package com.example.drawmywaybeta2.Parcours.Downloaded;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.android.gms.maps.model.LatLng;
 
-public class Step {
+public class Step implements Parcelable{
 
 	private DistDur distance;
 	private DistDur duration;
-	private LatLng end_location;
+	private MyPoint end_location;
 	private String html_instructions;
 	private Poly polyline;
-	private LatLng start_location;
+	private MyPoint start_location;
 
+	public Step(Parcel in){
+		this.distance=in.readParcelable(getClass().getClassLoader());
+		this.duration=in.readParcelable(getClass().getClassLoader());
+		this.end_location=in.readParcelable(getClass().getClassLoader());
+		this.html_instructions = in.readString();
+		this.polyline=in.readParcelable(getClass().getClassLoader());
+		this.start_location=in.readParcelable(getClass().getClassLoader());
+	}
+	
 	public DistDur getDistance() {
 		return distance;
 	}
@@ -27,11 +39,11 @@ public class Step {
 		this.duration = duration;
 	}
 
-	public LatLng getEnd_location() {
+	public MyPoint getEnd_location() {
 		return end_location;
 	}
 
-	public void setEnd_location(LatLng end_location) {
+	public void setEnd_location(MyPoint end_location) {
 		this.end_location = end_location;
 	}
 
@@ -51,11 +63,11 @@ public class Step {
 		this.polyline = polyline;
 	}
 
-	public LatLng getStart_location() {
+	public MyPoint getStart_location() {
 		return start_location;
 	}
 
-	public void setStart_location(LatLng start_location) {
+	public void setStart_location(MyPoint start_location) {
 		this.start_location = start_location;
 	}
 
@@ -65,6 +77,35 @@ public class Step {
 				+ ", end_location=" + end_location + ", html_instructions="
 				+ html_instructions + ", polyline=" + polyline
 				+ ", start_location=" + start_location + "]";
+	}
+	
+	public static final Parcelable.Creator<Step> CREATOR = new Parcelable.Creator<Step>() {
+
+		@Override
+		public Step createFromParcel(Parcel source) {
+			return new Step(source);
+		}
+
+		@Override
+		public Step[] newArray(int size) {
+			return new Step[size];
+		}
+	};
+
+	@Override
+	public int describeContents() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeParcelable(this.distance, 0);
+		dest.writeParcelable(this.duration, 0);
+		dest.writeParcelable(this.end_location, 0);
+		dest.writeString(this.html_instructions);
+		dest.writeParcelable(this.polyline, 0);
+		dest.writeParcelable(this.start_location, 0);
 	}
 
 }

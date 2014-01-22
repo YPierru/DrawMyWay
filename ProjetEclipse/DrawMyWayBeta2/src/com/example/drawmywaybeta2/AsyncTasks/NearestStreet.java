@@ -12,17 +12,18 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.drawmywaybeta2.Parcours.Downloaded.DirectionsResponse;
+import com.example.drawmywaybeta2.Parcours.Downloaded.MyPoint;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public class NearestStreet extends AsyncTask<LatLng, Void, Void> {
 
-	private LatLng orig,dest;
+	private LatLng orig, dest;
 	private static LatLng result;
-	private final String URL_PATTERN="https://maps.googleapis.com/maps/api/directions/json?sensor=true&mode=walking&";
+	private final String URL_PATTERN = "https://maps.googleapis.com/maps/api/directions/json?sensor=true&mode=walking&";
 	private Document myXmlDoc;
-	
+
 	@Override
 	protected Void doInBackground(LatLng... params) {
 		
@@ -30,15 +31,17 @@ public class NearestStreet extends AsyncTask<LatLng, Void, Void> {
 		this.dest=params[0];
 		
 		try {
-			//Long currentMsBefore = System.currentTimeMillis();
+			Long currentMsBefore = System.currentTimeMillis();
 			URL url = new URL(this.URL_PATTERN+"origin="+this.orig.latitude+","+this.orig.longitude+"&destination="+this.dest.latitude+","+this.dest.longitude);
 			InputStream is=url.openStream();
 			String str=IOUtils.toString(is);
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			DirectionsResponse myRoad = gson.fromJson(str, DirectionsResponse.class);
-			result=myRoad.getRoutes().get(0).getLegs().get(0).getStart_location();
-			//Long currentMsAfter = System.currentTimeMillis();
-			//Log.d("DMWB2 DEBUG", ""+(currentMsAfter-currentMsBefore));
+			MyPoint mp = myRoad.getRoutes().get(0).getLegs().get(0).getStart_location();
+			result = new LatLng(mp.getLat(),mp.getLng());
+			//Log.d("DBW2 DEBUG", result.toString());
+			Long currentMsAfter = System.currentTimeMillis();
+			Log.d("DMWB2 DEBUG", ""+(currentMsAfter-currentMsBefore));
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -49,8 +52,8 @@ public class NearestStreet extends AsyncTask<LatLng, Void, Void> {
 		
 		return null;
 	}
-	
-	public static LatLng getPoint(){
+
+	public static LatLng getPoint() {
 		return result;
 	}
 

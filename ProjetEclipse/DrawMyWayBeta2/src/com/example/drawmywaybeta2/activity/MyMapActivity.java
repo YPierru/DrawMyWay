@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -57,11 +58,9 @@ public class MyMapActivity extends Activity {
 
 	private GoogleMap map;
 	private EditText etPlace;
-	private Button mBtnFind, btnA, btnL, btnT, btnR, btnS;
-	private ArrayList<LatLng> listPoint;
+	private Button mBtnFind, btnA, btnL, btnT, btnR, btnS, btnG;
 	private ArrayList<Polyline> listPolyline;
-	private ArrayList<Trajet> listTrajet;
-	private DirectionsResponse currentTrajet;
+	private Trajet currentTrajet;
 	// private ObjectContainer db;
 	private static final String DB_NAME = "DrawMyWay.db4o";
 
@@ -70,9 +69,7 @@ public class MyMapActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		fullscreenActivity();
 		setContentView(R.layout.layout_map);
-		listPoint = new ArrayList<LatLng>();
 		listPolyline = new ArrayList<Polyline>();
-		listTrajet = new ArrayList<Trajet>();
 
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
@@ -124,6 +121,8 @@ public class MyMapActivity extends Activity {
 		settingBtnEraseLineListener();
 
 		settingSearchBarListener();
+		
+		settingBtnGPS();
 
 	}
 
@@ -149,19 +148,19 @@ public class MyMapActivity extends Activity {
 
 			@Override
 			public void onMapClick(LatLng point) {
-
-				LatLng lastPoint = listPoint.get(listPoint.size() - 1);
+				LatLng lastPoint = currentTrajet.getLastPoint();
 				new GettingRoute().execute(lastPoint, point);
-				// Thread current=Thread.currentThread();
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(2500);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
+				DirectionsResponse segmentRoad = GettingRoute.getDR();
+				currentTrajet.getListSegment().add(segmentRoad);
 				ArrayList<LatLng> tmpListLatLng = GettingRoute.getRoute();
-				listPoint.addAll(tmpListLatLng);
+				Log.d("DEBUUUUUG", ""+tmpListLatLng.size());
+				currentTrajet.getListPoint().addAll(tmpListLatLng);
 				// Toast.makeText(getApplicationContext(),"size list ="+tmpListLatLng.size(),Toast.LENGTH_SHORT).show();
 				for (int i = 0; i < tmpListLatLng.size() - 1; i++) {
 					Polyline p=map.addPolyline(new PolylineOptions().geodesic(false)
@@ -170,15 +169,6 @@ public class MyMapActivity extends Activity {
 							.color(Color.argb(120, 0, 0, 221)));
 					listPolyline.add(p);
 				}
-
-				/*
-				 * Polyline p=map.addPolyline(new
-				 * PolylineOptions().geodesic(false)
-				 * .add(listPoint.get(listPoint.size() - 1))
-				 * .add(point).width(15) .color(Color.argb(120, 0, 0, 221)));
-				 * listPolyline.add(p); listPoint.add(point);
-				 */
-
 			}
 		});
 
@@ -186,24 +176,22 @@ public class MyMapActivity extends Activity {
 
 			@Override
 			public void onMapLongClick(LatLng point) {
+				currentTrajet=new Trajet("TemporaryName", false);
 				btnS = (Button) findViewById(R.id.btn_Save);
 				btnS.setEnabled(true);
-				listPoint.clear();
 				map.clear();
 				new NearestStreet().execute(point);
 				try {
-					Thread.sleep(3000);
+					Thread.sleep(2000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				point = NearestStreet.getPoint();
-				listPoint.add(point);
-				listTrajet.add(new Trajet("TemporaryName",(ArrayList<LatLng>) listPoint.clone(), false));
+				currentTrajet.getListPoint().add(point);
 				Toast.makeText(getApplicationContext(), "Trajet créé",
 						Toast.LENGTH_SHORT).show();
 				CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(point, 17);
-				// map.moveCamera(cu);
 				map.animateCamera(cu, 600, null);
 
 				map.addMarker(
@@ -218,13 +206,6 @@ public class MyMapActivity extends Activity {
 			}
 		});
 	}
-
-	/*
-	 * public static void drawPolylineFromDirectionAPI(ArrayList<LatLng> listP){
-	 * for(int i=0;i<listP.size()-1;i++){ map.addPolyline(new
-	 * PolylineOptions().geodesic(false) .add(listP.get(i))
-	 * .add(listP.get(i+1)).width(15) .color(Color.argb(120, 0, 0, 221))); } }
-	 */
 
 	private void settingBtnSaveTrajetListener() {
 		btnS = (Button) findViewById(R.id.btn_Save);
@@ -246,21 +227,18 @@ public class MyMapActivity extends Activity {
 									int whichButton) {
 								String value = input.getText().toString()
 										.trim();
-								Trajet tj = listTrajet.get(listTrajet.size() - 1);
-								tj.setName(value);
-								tj.setListPoint((ArrayList<LatLng>) listPoint
-										.clone());
+								currentTrajet.setName(value);
 								ObjectContainer db = Db4oEmbedded.openFile(
 										Db4oEmbedded.newConfiguration(),
 										Environment
 												.getExternalStorageDirectory()
 												.getAbsolutePath()
 												+ "/" + DB_NAME);
-								db.store(tj);
+								db.store(currentTrajet);
 								db.commit();
 								db.close();
 								Toast.makeText(getApplicationContext(),
-										"Trajet " + tj.getName() + " save",
+										"Trajet " + currentTrajet.getName() + " save",
 										Toast.LENGTH_SHORT).show();
 							}
 						});
@@ -326,14 +304,10 @@ public class MyMapActivity extends Activity {
 											.fromResource(R.drawable.icon_green))
 									.anchor(0.0f, 1.0f)
 									.position(
-											listPoint.get(listPoint.size() - 1))
+											currentTrajet.getLastPoint())
 									.title("Arrivée")).showInfoWindow();
-					/*
-					 * Fonction pour redéssiner le trajet en mode plou joulie ?
-					 */
-					Trajet tj = listTrajet.get(listTrajet.size() - 1);
-					tj.setFinish(true);
-					tj.setListPoint((ArrayList<LatLng>) listPoint.clone());
+
+					currentTrajet.setFinish(true);
 
 					final AlertDialog.Builder alert = new AlertDialog.Builder(
 							MyMapActivity.this)
@@ -348,26 +322,21 @@ public class MyMapActivity extends Activity {
 										int whichButton) {
 									String value = input.getText().toString()
 											.trim();
-									Trajet tj = listTrajet.get(listTrajet
-											.size() - 1);
-									tj.setName(value);
-									tj.setListPoint((ArrayList<LatLng>) listPoint
-											.clone());
+									currentTrajet.setName(value);
 									ObjectContainer db = Db4oEmbedded.openFile(
 											Db4oEmbedded.newConfiguration(),
 											Environment
 													.getExternalStorageDirectory()
 													.getAbsolutePath()
 													+ "/" + DB_NAME);
-									db.store(tj);
+									db.store(currentTrajet);
 									db.commit();
 									db.close();
 									Toast.makeText(
 											getApplicationContext(),
-											"Trajet (fini) " + tj.getName()
+											"Trajet (fini) " + currentTrajet.getName()
 													+ " sauvegardé",
 											Toast.LENGTH_SHORT).show();
-									listPoint.clear();
 									listPolyline.clear();
 								}
 							});
@@ -443,7 +412,7 @@ public class MyMapActivity extends Activity {
 				if (listPolyline.size() > 0) {
 					listPolyline.get(listPolyline.size() - 1).remove();
 					listPolyline.remove(listPolyline.size() - 1);
-					listPoint.remove(listPoint.size() - 1);
+					currentTrajet.getListPoint().remove(currentTrajet.getLastPoint());
 				} else {
 					Toast.makeText(getApplicationContext(),
 							"Plus rien à effacer !", Toast.LENGTH_SHORT).show();
@@ -452,6 +421,20 @@ public class MyMapActivity extends Activity {
 		});
 
 		btnLongClickToast(btnR, "Efface la dernière ligne tracée");
+	}
+	
+	public void settingBtnGPS(){
+		btnG=(Button)findViewById(R.id.btn_LaunchGPS);
+		
+		btnG.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent toGPS = new Intent(MyMapActivity.this,GPSRunner.class);
+				toGPS.putExtra("TRAJET", currentTrajet);
+				startActivity(toGPS);
+			}
+		});
+		
 	}
 
 	public void btnLongClickToast(Button btn, CharSequence cs) {

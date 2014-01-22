@@ -2,6 +2,7 @@ package com.example.drawmywaybeta2.AsyncTasks;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -19,14 +20,18 @@ import org.xml.sax.SAXException;
 
 import android.os.AsyncTask;
 
+import com.example.drawmywaybeta2.Parcours.Downloaded.DirectionsResponse;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.maps.GeoPoint;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class GettingRoute extends AsyncTask<LatLng, Void, Void> {
 
 	private LatLng origin, destination;
-	private final String URL_PATTERN = "https://maps.googleapis.com/maps/api/directions/xml?sensor=true&mode=walking&";
-	private Document myXmlDoc;
+	private final String URL_PATTERN = "https://maps.googleapis.com/maps/api/directions/json?sensor=true&mode=walking&";
+	//private Document myXmlDoc;
+	private static DirectionsResponse myRoad;
 	private String overviewPL;
 	private static ArrayList<LatLng> route;
 
@@ -40,54 +45,19 @@ public class GettingRoute extends AsyncTask<LatLng, Void, Void> {
 					+ "," + this.origin.longitude + "&destination="
 					+ this.destination.latitude + ","
 					+ this.destination.longitude);
+			InputStream is = url.openStream();
+			String strRoad = IOUtils.toString(is);
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
+			myRoad = gson.fromJson(strRoad, DirectionsResponse.class);
+			this.overviewPL = myRoad.getRoutes().get(0).getOverview_polyline().getPoints();
+			route = decodePoly(this.overviewPL);
 		} catch (MalformedURLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
-		Long currentMsBefore = System.currentTimeMillis();
-		BufferedReader bfApi = null;
-		try {
-			bfApi = new BufferedReader(new InputStreamReader(url.openStream()));
-		} catch (IOException e) {
+		}catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Long currentMsAfter = System.currentTimeMillis();
-
-		// System.out.println("EXECUTION TIME="+(currentMsAfter-currentMsBefore));
-
-		String str = null;
-		try {
-			str = IOUtils.toString(bfApi);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		DocumentBuilder parser = null;
-		try {
-			parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// System.out.println(str);
-		try {
-			this.myXmlDoc = parser
-					.parse(new InputSource(new StringReader(str)));
-		} catch (SAXException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		this.overviewPL = this.myXmlDoc
-				.getElementsByTagName("overview_polyline").item(0)
-				.getTextContent().trim();
-		// System.out.println(this.overviewPL);
-		route = decodePoly(this.overviewPL);
 		return null;
 	}
 
@@ -130,5 +100,9 @@ public class GettingRoute extends AsyncTask<LatLng, Void, Void> {
 	
 	public static ArrayList<LatLng> getRoute(){
 		return route;
+	}
+	
+	public static DirectionsResponse getDR(){
+		return myRoad;
 	}
 }
