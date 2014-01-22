@@ -75,9 +75,6 @@ public class MyMapActivity extends Activity {
 				.getMap();
 
 		// map.setMyLocationEnabled(true);
-		// Toast.makeText(getApplicationContext(),
-		// Environment.getExternalStorageDirectory().getAbsolutePath(),
-		// Toast.LENGTH_LONG).show();
 		// db =
 		// Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(),Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DB_NAME);
 
@@ -121,7 +118,7 @@ public class MyMapActivity extends Activity {
 		settingBtnEraseLineListener();
 
 		settingSearchBarListener();
-		
+
 		settingBtnGPS();
 
 	}
@@ -159,12 +156,12 @@ public class MyMapActivity extends Activity {
 				DirectionsResponse segmentRoad = GettingRoute.getDR();
 				currentTrajet.getListSegment().add(segmentRoad);
 				ArrayList<LatLng> tmpListLatLng = GettingRoute.getRoute();
-				Log.d("DEBUUUUUG", ""+tmpListLatLng.size());
+				Log.d("DEBUUUUUG", "" + tmpListLatLng.size());
 				currentTrajet.getListPoint().addAll(tmpListLatLng);
 				// Toast.makeText(getApplicationContext(),"size list ="+tmpListLatLng.size(),Toast.LENGTH_SHORT).show();
 				for (int i = 0; i < tmpListLatLng.size() - 1; i++) {
-					Polyline p=map.addPolyline(new PolylineOptions().geodesic(false)
-							.add(tmpListLatLng.get(i))
+					Polyline p = map.addPolyline(new PolylineOptions()
+							.geodesic(false).add(tmpListLatLng.get(i))
 							.add(tmpListLatLng.get(i + 1)).width(15)
 							.color(Color.argb(120, 0, 0, 221)));
 					listPolyline.add(p);
@@ -176,7 +173,7 @@ public class MyMapActivity extends Activity {
 
 			@Override
 			public void onMapLongClick(LatLng point) {
-				currentTrajet=new Trajet("TemporaryName", false);
+				currentTrajet = new Trajet("TemporaryName", false);
 				btnS = (Button) findViewById(R.id.btn_Save);
 				btnS.setEnabled(true);
 				map.clear();
@@ -237,9 +234,11 @@ public class MyMapActivity extends Activity {
 								db.store(currentTrajet);
 								db.commit();
 								db.close();
-								Toast.makeText(getApplicationContext(),
-										"Trajet " + currentTrajet.getName() + " save",
-										Toast.LENGTH_SHORT).show();
+								Toast.makeText(
+										getApplicationContext(),
+										"Trajet " + currentTrajet.getName()
+												+ " save", Toast.LENGTH_SHORT)
+										.show();
 							}
 						});
 				alert.show();
@@ -303,8 +302,7 @@ public class MyMapActivity extends Activity {
 									.icon(BitmapDescriptorFactory
 											.fromResource(R.drawable.icon_green))
 									.anchor(0.0f, 1.0f)
-									.position(
-											currentTrajet.getLastPoint())
+									.position(currentTrajet.getLastPoint())
 									.title("Arrivée")).showInfoWindow();
 
 					currentTrajet.setFinish(true);
@@ -334,7 +332,8 @@ public class MyMapActivity extends Activity {
 									db.close();
 									Toast.makeText(
 											getApplicationContext(),
-											"Trajet (fini) " + currentTrajet.getName()
+											"Trajet (fini) "
+													+ currentTrajet.getName()
 													+ " sauvegardé",
 											Toast.LENGTH_SHORT).show();
 									listPolyline.clear();
@@ -412,7 +411,8 @@ public class MyMapActivity extends Activity {
 				if (listPolyline.size() > 0) {
 					listPolyline.get(listPolyline.size() - 1).remove();
 					listPolyline.remove(listPolyline.size() - 1);
-					currentTrajet.getListPoint().remove(currentTrajet.getLastPoint());
+					currentTrajet.getListPoint().remove(
+							currentTrajet.getLastPoint());
 				} else {
 					Toast.makeText(getApplicationContext(),
 							"Plus rien à effacer !", Toast.LENGTH_SHORT).show();
@@ -422,19 +422,19 @@ public class MyMapActivity extends Activity {
 
 		btnLongClickToast(btnR, "Efface la dernière ligne tracée");
 	}
-	
-	public void settingBtnGPS(){
-		btnG=(Button)findViewById(R.id.btn_LaunchGPS);
-		//btnG.setEnabled(false);
+
+	public void settingBtnGPS() {
+		btnG = (Button) findViewById(R.id.btn_LaunchGPS);
+		// btnG.setEnabled(false);
 		btnG.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Intent toGPS = new Intent(MyMapActivity.this,GPSRunner.class);
+				Intent toGPS = new Intent(MyMapActivity.this, GPSRunner.class);
 				toGPS.putExtra("TRAJET", currentTrajet);
 				startActivity(toGPS);
 			}
 		});
-		
+
 	}
 
 	public void btnLongClickToast(Button btn, CharSequence cs) {
