@@ -425,7 +425,7 @@ public class MyMapActivity extends Activity {
 	
 	public void settingBtnGPS(){
 		btnG=(Button)findViewById(R.id.btn_LaunchGPS);
-		
+		//btnG.setEnabled(false);
 		btnG.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {

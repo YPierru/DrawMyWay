@@ -32,13 +32,6 @@
         android:paddingRight="8dp"
         android:paddingTop="50dp" >
 
-        <!-- <Button
-            android:id="@+id/btn_depart"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_alignParentRight="true"
-            android:text="D" />-->
-
         <Button
             android:id="@+id/btn_arrivee"
             android:layout_width="45dp"
@@ -80,11 +73,11 @@
 
         <Button
             android:id="@+id/btn_LaunchGPS"
-            android:layout_width="45dp"
+            android:layout_width="65dp"
             android:layout_height="45dp"
             android:layout_alignParentRight="true"
             android:layout_below="@id/btn_Save"
-            android:text="G" />
+            android:text="GPS" />
     </RelativeLayout>
 
 </fragment>

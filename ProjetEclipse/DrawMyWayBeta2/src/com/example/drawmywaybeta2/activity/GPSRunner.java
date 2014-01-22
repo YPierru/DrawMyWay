@@ -6,6 +6,8 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.example.drawmywaybeta2.Parcours.Trajet;
 import com.example.gmapstests.R;
@@ -25,6 +27,9 @@ public class GPSRunner extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.layout_gps);
 		
 		myTrajet = getIntent().getExtras().getParcelable("TRAJET");
