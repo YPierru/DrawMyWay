@@ -75,9 +75,6 @@ public class MyMapActivity extends Activity {
 				.getMap();
 
 		// map.setMyLocationEnabled(true);
-		// db =
-		// Db4oEmbedded.openFile(Db4oEmbedded.newConfiguration(),Environment.getExternalStorageDirectory().getAbsolutePath()+"/"+DB_NAME);
-
 		// removeAllInDb4o();
 
 		/*
