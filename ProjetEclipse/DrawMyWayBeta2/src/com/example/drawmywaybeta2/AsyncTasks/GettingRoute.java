@@ -29,7 +29,7 @@ import com.google.gson.GsonBuilder;
 public class GettingRoute extends AsyncTask<LatLng, Void, Void> {
 
 	private LatLng origin, destination;
-	private final String URL_PATTERN = "https://maps.googleapis.com/maps/api/directions/json?sensor=true&mode=walking&";
+	private final String URL_PATTERN = "https://maps.googleapis.com/maps/api/directions/json?sensor=true&language=fr&mode=walking&";
 	//private Document myXmlDoc;
 	private static DirectionsResponse myRoad;
 	private String overviewPL;

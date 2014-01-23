@@ -6,6 +6,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.example.drawmywaybeta2.Parcours.Downloaded.DirectionsResponse;
+import com.example.drawmywaybeta2.Parcours.Downloaded.Step;
 import com.google.android.gms.maps.model.LatLng;
 
 public class Trajet implements Parcelable {
@@ -101,5 +102,32 @@ public class Trajet implements Parcelable {
 		dest.writeString(this.name);
 		boolean[] arrayBool = { this.isFinish };
 		dest.writeBooleanArray(arrayBool);
+	}
+	
+	public ArrayList<Step> getListSteps(){
+		ArrayList<Step> listSteps = new ArrayList<Step>();
+		for(int i=0;i<this.listSegment.size();i++){
+			listSteps.addAll(this.listSegment.get(i).getRoutes().get(0).getLegs().get(0).getSteps());
+		}
+		
+		return listSteps;
+	}
+	
+	public int getDistTotal(){
+		int distTotal=0;
+		for(int i=0;i<this.listSegment.size();i++){
+			distTotal+=this.listSegment.get(i).getRoutes().get(0).getLegs().get(0).getDistance().getValue();
+		}
+		
+		return distTotal;
+	}
+	
+	public int getDureeTotal(){
+		int dureeTotal=0;
+		for(int i=0;i<this.listSegment.size();i++){
+			dureeTotal+=this.listSegment.get(i).getRoutes().get(0).getLegs().get(0).getDuration().getValue();
+		}
+		
+		return dureeTotal;
 	}
 }

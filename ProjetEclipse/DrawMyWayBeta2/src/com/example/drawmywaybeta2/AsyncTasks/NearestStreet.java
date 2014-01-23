@@ -21,7 +21,7 @@ public class NearestStreet extends AsyncTask<LatLng, Void, Void> {
 
 	private LatLng orig, dest;
 	private static LatLng result;
-	private final String URL_PATTERN = "https://maps.googleapis.com/maps/api/directions/json?sensor=true&mode=walking&";
+	private final String URL_PATTERN = "https://maps.googleapis.com/maps/api/directions/json?sensor=true&mode=walking&language=fr&";
 	private Document myXmlDoc;
 
 	@Override

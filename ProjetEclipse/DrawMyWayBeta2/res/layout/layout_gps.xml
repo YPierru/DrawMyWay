@@ -29,17 +29,13 @@
                 android:id="@+id/html_instructions"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:layout_weight="0.5"
-                android:background="#ead585"
-                android:text="HTML INSTRUCTIONS" />
+                android:layout_weight="0.5" />
 
             <TextView
-                android:id="@+id/distanceParcourue"
+                android:id="@+id/distanceAvantChangement"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:layout_weight="0.1"
-                android:background="#465e67"
-                android:text="200m" />
+                android:layout_weight="0.1" />
 
             <LinearLayout
                 android:id="@+id/centralLinLaySub"
@@ -49,20 +45,16 @@
                 android:orientation="horizontal" >
 
                 <TextView
-                    android:id="@+id/distanceTotal"
+                    android:id="@+id/kilometrageEffectue"
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight="1"
-                    android:background="#00bdb3"
-                    android:text="3500m" />
+                    android:layout_weight="1" />
 
-                <TextView
+                <Chronometer
                     android:id="@+id/dureeTotal"
                     android:layout_width="0dp"
                     android:layout_height="fill_parent"
-                    android:layout_weight="1"
-                    android:background="#a386eb"
-                    android:text="2h25min32s" />
+                    android:layout_weight="1" />
             </LinearLayout>
         </LinearLayout>
 
@@ -71,11 +63,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@id/centralLinLay"
-            android:background="#32cd32"
-            android:text="32km/h" />
+            android:layout_toRightOf="@id/centralLinLay" />
 
         <LinearLayout
+            android:id="@+id/leftLinearLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
@@ -86,17 +77,13 @@
                 android:id="@+id/kilometrageTrajet"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="#564f52"
-                android:text="8km" />
+                android:layout_weight="1" />
 
             <TextView
-                android:id="@+id/finA"
+                android:id="@+id/heureFin"
                 android:layout_width="fill_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                android:background="#e3a115"
-                android:text="12h20" />
+                android:layout_weight="1" />
         </LinearLayout>
     </RelativeLayout>
 
