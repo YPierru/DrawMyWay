@@ -130,4 +130,8 @@ public class Trajet implements Parcelable {
 		
 		return dureeTotal;
 	}
+	
+	public void removeLastDR(){
+		this.listSegment.remove(this.listSegment.size()-1);
+	}
 }

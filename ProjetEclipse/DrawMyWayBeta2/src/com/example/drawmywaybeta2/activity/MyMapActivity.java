@@ -36,6 +36,7 @@ import android.widget.Toast;
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
+import com.example.drawmywaybeta2.Decoder;
 import com.example.drawmywaybeta2.GeocodeJSONParser;
 import com.example.drawmywaybeta2.AsyncTasks.GettingRoute;
 import com.example.drawmywaybeta2.AsyncTasks.NearestStreet;
@@ -102,7 +103,7 @@ public class MyMapActivity extends Activity {
 		 * .position(tj.getEndPoint()) .title("Arrivée")) .showInfoWindow(); }
 		 */
 
-		settingMapClickListener();
+		settingMapLongClickListener();
 
 		settingBtnSaveTrajetListener();
 
@@ -137,35 +138,7 @@ public class MyMapActivity extends Activity {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 	}
 
-	private void settingMapClickListener() {
-		map.setOnMapClickListener(new OnMapClickListener() {
-
-			@Override
-			public void onMapClick(LatLng point) {
-				LatLng lastPoint = currentTrajet.getLastPoint();
-				new GettingRoute().execute(lastPoint, point);
-				try {
-					Thread.sleep(2500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				DirectionsResponse segmentRoad = GettingRoute.getDR();
-				currentTrajet.getListSegment().add(segmentRoad);
-				ArrayList<LatLng> tmpListLatLng = GettingRoute.getRoute();
-				Log.d("DEBUUUUUG", "" + tmpListLatLng.size());
-				currentTrajet.getListPoint().addAll(tmpListLatLng);
-				// Toast.makeText(getApplicationContext(),"size list ="+tmpListLatLng.size(),Toast.LENGTH_SHORT).show();
-				for (int i = 0; i < tmpListLatLng.size() - 1; i++) {
-					Polyline p = map.addPolyline(new PolylineOptions()
-							.geodesic(false).add(tmpListLatLng.get(i))
-							.add(tmpListLatLng.get(i + 1)).width(15)
-							.color(Color.argb(120, 0, 0, 221)));
-					listPolyline.add(p);
-				}
-			}
-		});
-
+	private void settingMapLongClickListener() {
 		map.setOnMapLongClickListener(new OnMapLongClickListener() {
 
 			@Override
@@ -197,8 +170,53 @@ public class MyMapActivity extends Activity {
 													// bottom left
 								.position(point).title("Départ"))
 						.showInfoWindow();
+				settingMapClickListener();
 			}
 		});
+	}
+
+	private void settingMapClickListener() {
+		map.setOnMapClickListener(new OnMapClickListener() {
+
+			@Override
+			public void onMapClick(LatLng point) {
+				LatLng lastPoint = currentTrajet.getLastPoint();
+				new GettingRoute().execute(lastPoint, point);
+				try {
+					Thread.sleep(2500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				DirectionsResponse segmentRoad = GettingRoute.getDR();
+				currentTrajet.getListSegment().add(segmentRoad);
+				//tmpListLatLng = overview_polyline de la DR dessus
+				ArrayList<LatLng> tmpListLatLng = GettingRoute.getRoute();
+				currentTrajet.getListPoint().addAll(tmpListLatLng);
+				// Toast.makeText(getApplicationContext(),"size list ="+tmpListLatLng.size(),Toast.LENGTH_SHORT).show();
+				PolylineOptions options = new PolylineOptions().geodesic(false)
+						.width(15).color(Color.argb(120, 0, 0, 221));
+				//setMarker(tmpListLatLng.get(0),"DEBUT");
+				//setMarker(lastPoint, "DEBUTCT");
+				//setMarker(tmpListLatLng.get(tmpListLatLng.size()-1),"FIN");
+				for (int i = 0; i < tmpListLatLng.size(); i++) {
+					options.add(tmpListLatLng.get(i));
+				}
+				listPolyline.add(map.addPolyline(options));
+			}
+		});
+	}
+	
+	private void setMarker(LatLng p, String str){
+		map.addMarker(
+				new MarkerOptions()
+						.icon(BitmapDescriptorFactory
+								.fromResource(R.drawable.icon_green))
+						.anchor(0.0f, 1.0f) // Anchors the
+											// marker on the
+											// bottom left
+						.position(p).title(str))
+				.showInfoWindow();
 	}
 
 	private void settingBtnSaveTrajetListener() {
@@ -406,10 +424,12 @@ public class MyMapActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if (listPolyline.size() > 0) {
-					listPolyline.get(listPolyline.size() - 1).remove();
-					listPolyline.remove(listPolyline.size() - 1);
-					currentTrajet.getListPoint().remove(
-							currentTrajet.getLastPoint());
+					Polyline lastPoly = listPolyline.get(listPolyline.size()-1);
+					lastPoly.remove();
+					currentTrajet.getListPoint().removeAll(lastPoly.getPoints());
+					listPolyline.remove(lastPoly);
+					//On supprime la dernière DR
+					currentTrajet.getListSegment().remove(currentTrajet.getListSegment().size()-1);
 				} else {
 					Toast.makeText(getApplicationContext(),
 							"Plus rien à effacer !", Toast.LENGTH_SHORT).show();
