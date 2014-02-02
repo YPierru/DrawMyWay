@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="app_name">DrawMyWayB3</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_trajet_save">TrajetSave</string>
+    <string name="title_activity_gpsrunner">GPSRunner</string>
+</resources>
