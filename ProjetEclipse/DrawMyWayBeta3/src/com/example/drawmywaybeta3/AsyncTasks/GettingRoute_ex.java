@@ -1,29 +1,18 @@
 package com.example.drawmywaybeta3.AsyncTasks;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.commons.io.IOUtils;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import android.os.AsyncTask;
 
 import com.example.drawmywaybeta3.Decoder;
 import com.example.drawmywaybeta3.Parcours.Downloaded.DirectionsResponse;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.maps.GeoPoint;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 

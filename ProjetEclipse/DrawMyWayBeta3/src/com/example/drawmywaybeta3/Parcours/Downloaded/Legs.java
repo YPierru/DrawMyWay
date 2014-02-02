@@ -6,8 +6,6 @@ import java.util.List;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.android.gms.maps.model.LatLng;
-
 public class Legs  implements Parcelable{
 
 	private DistDur distance;

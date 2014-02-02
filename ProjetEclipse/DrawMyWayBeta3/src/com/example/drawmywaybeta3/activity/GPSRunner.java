@@ -1,7 +1,6 @@
 package com.example.drawmywaybeta3.activity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.joda.time.DateTime;
 import org.jsoup.Jsoup;
@@ -27,6 +26,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -34,26 +34,28 @@ import com.google.android.gms.maps.model.PolylineOptions;
 public class GPSRunner extends Activity {
 
 	private GoogleMap map;
-	private Trajet myTrajet;
+	private Trajet myRoad;
+	private Polyline myPolyline;
+	private Marker meMarker;
 	private ArrayList<Step> listSteps;
-	private ArrayList<Polyline> listPoly;
 	private int currentStepIndex;
-	private HashMap<Integer, ArrayList<PolylineOptions>> hmapIndexStepPolyline;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.layout_gps);
-
-		listPoly = new ArrayList<Polyline>();
-		hmapIndexStepPolyline = new HashMap<Integer, ArrayList<PolylineOptions>>();
-		myTrajet = getIntent().getExtras().getParcelable("TRAJET");
+		
+		myRoad = getIntent().getExtras().getParcelable("TRAJET");
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
-		listSteps = myTrajet.getListSteps();
+		
+		listSteps = myRoad.getListSteps();
+		
+		
 		drawParkour();
 		currentStepIndex = 0;
 		setClickListeners();
@@ -61,28 +63,32 @@ public class GPSRunner extends Activity {
 	}
 
 	public void drawParkour() {
-		ArrayList<LatLng> allPoints= myTrajet.getListPoint();
-		map.addMarker(
-				new MarkerOptions()
-						.icon(BitmapDescriptorFactory
-								.fromResource(R.drawable.icon_green))
-						.anchor(0.0f, 1.0f) // Anchors the
-											// marker on the
-											// bottom left
-						.position(allPoints.get(0)).title("Départ")).showInfoWindow();
+		ArrayList<LatLng> pts = myRoad.getPointsWhoDrawsPolyline();
+		
+		setMarker(pts.get(0), "Départ");
 
-		CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(allPoints.get(0), 16);
+		CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(pts.get(0), 16);
 		map.animateCamera(cu, 600, null);
 		
 		PolylineOptions options = new PolylineOptions()
 										.geodesic(false)
 										.width(15)
 										.color(Color.argb(120, 0, 0, 221));
-		for(int i=0;i<allPoints.size();i++){
-			options.add(allPoints.get(i));
+		for(int i=0;i<pts.size();i++){
+			options.add(pts.get(i));
 		}
-		map.addPolyline(options);
+		myPolyline=map.addPolyline(options);
 		
+		meMarker=map.addMarker(
+				new MarkerOptions()
+						.icon(BitmapDescriptorFactory.fromResource(R.drawable.android))
+						.position(pts.get(0))
+						.flat(true));
+		
+		setMarker(pts.get(pts.size()-1),"Arrivée");
+	}
+	
+	public void setMarker(LatLng point, String str){
 		map.addMarker(
 				new MarkerOptions()
 						.icon(BitmapDescriptorFactory
@@ -90,8 +96,9 @@ public class GPSRunner extends Activity {
 						.anchor(0.0f, 1.0f) // Anchors the
 											// marker on the
 											// bottom left
-						.position(myTrajet.getLastPoint()).title("Arrivée")).showInfoWindow();
+						.position(point).title(str)).showInfoWindow();
 	}
+	
 
 	public void setClickListeners() {
 		TextView viewRight = (TextView) findViewById(R.id.vitesseMoy);
@@ -127,6 +134,7 @@ public class GPSRunner extends Activity {
 	public void putStepOnScreen() {
 		Step myStep = listSteps.get(currentStepIndex);
 		LatLng point = new LatLng(myStep.getStart_location().getLat(), myStep.getStart_location().getLng());
+		meMarker.setPosition(point);
 		CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(point, 16);
 		map.animateCamera(cu, 600, null);
 		
@@ -147,10 +155,10 @@ public class GPSRunner extends Activity {
 		// chrono_view.setText("00' 00''");
 
 		TextView kilometrageTrajet_view = (TextView) findViewById(R.id.kilometrageTrajet);
-		kilometrageTrajet_view.setText(myTrajet.getDistTotal() + "m");
+		kilometrageTrajet_view.setText(myRoad.getDistTotal() + "m");
 
 		DateTime dt = new DateTime();
-		int dureeSecond = myTrajet.getDureeTotal();
+		int dureeSecond = myRoad.getDureeTotal();
 		int heures = dt.getHourOfDay() + (dureeSecond / 3600);
 		int minutes = dt.getMinuteOfHour() + ((dureeSecond % 3600) / 60);
 

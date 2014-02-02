@@ -3,8 +3,6 @@ package com.example.drawmywaybeta3.Parcours.Downloaded;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.drawmywaybeta3.Parcours.Trajet;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 

@@ -3,8 +3,6 @@ package com.example.drawmywaybeta3.Parcours.Downloaded;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.google.android.gms.maps.model.LatLng;
-
 public class Step implements Parcelable{
 
 	private DistDur distance;

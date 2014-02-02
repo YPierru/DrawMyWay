@@ -14,14 +14,12 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -31,6 +29,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
@@ -55,14 +56,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-public class MyMapActivity extends Activity {
+public class MyMapActivity extends SherlockActivity {
 
 	private GoogleMap map;
 	private EditText etPlace;
 	private Button mBtnFind, btnA, btnL, btnT, btnR, btnS, btnG, btnV;
 	private ArrayList<Polyline> listPolyline;
 	private Polyline myPolyline;
-	//private ArrayList<LatLng> listJalons;
+	// private ArrayList<LatLng> listJalons;
 	private ArrayList<Marker> listMarkers;
 	private ArrayList<LatLng> listRealPoints;
 	private Trajet currentTrajet;
@@ -73,11 +74,11 @@ public class MyMapActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		fullscreenActivity();
+		//fullscreenActivity();
 		setContentView(R.layout.layout_map);
-		myPolyline=null;
+		myPolyline = null;
 		listPolyline = new ArrayList<Polyline>();
-		//listJalons = new ArrayList<LatLng>();
+		// listJalons = new ArrayList<LatLng>();
 		listMarkers = new ArrayList<Marker>();
 
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
@@ -163,7 +164,7 @@ public class MyMapActivity extends Activity {
 					// On efface tout sur la map ainsi que dans les listes
 					// concernées (longClick=nouveau trajet)
 					map.clear();
-					//listJalons.clear();
+					// listJalons.clear();
 					listMarkers.clear();
 
 					// On positionne la caméra sur le point clické
@@ -176,7 +177,7 @@ public class MyMapActivity extends Activity {
 					 * être posé wanegain
 					 */
 					listMarkers.add(setMarker(point, "Départ", true));
-					//listJalons.add(point);
+					// listJalons.add(point);
 
 					// On active l'ajout de marker pour les jalons
 				}
@@ -197,7 +198,7 @@ public class MyMapActivity extends Activity {
 				public void onMapClick(LatLng point) {
 					btnV.setEnabled(true);
 					findViewById(R.id.btn_correctionMode).setEnabled(true);
-					//listJalons.add(point);
+					// listJalons.add(point);
 					listMarkers.add(setMarker(point, "Jalon posé", true));
 				}
 			});
@@ -214,15 +215,15 @@ public class MyMapActivity extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				btnR = (Button)findViewById(R.id.btn_correctionMode);
-				if(btnR.getTextColors().getDefaultColor()==Color.GREEN){
+				btnR = (Button) findViewById(R.id.btn_correctionMode);
+				if (btnR.getTextColors().getDefaultColor() == Color.GREEN) {
 					btnR.performClick();
 				}
 
 				// On DL le trajet, depuis la DirectionsAPI, en passant une
 				// liste de WayPoints
 				ArrayList<LatLng> listJalons = new ArrayList<LatLng>();
-				for(int i=0;i<listMarkers.size();i++){
+				for (int i = 0; i < listMarkers.size(); i++) {
 					listJalons.add(listMarkers.get(i).getPosition());
 				}
 				new GettingRoute().execute(listJalons);
@@ -236,7 +237,7 @@ public class MyMapActivity extends Activity {
 				// On récupère tout notre trajet
 				myRoad = GettingRoute.getDR();
 				currentTrajet.getListSegment().add(myRoad);
-				
+
 				// Liste de tout les points du trajet (overview_polyline)
 				listRealPoints = Decoder.decodePoly(myRoad.getRoutes().get(0)
 						.getOverview_polyline().getPoints());
@@ -260,6 +261,7 @@ public class MyMapActivity extends Activity {
 				for (int i = 0; i < listMarkers.size(); i++) {
 					listMarkers.get(i).setPosition(tmpPoints.get(i));
 				}
+				// currentTrajet.setListMarker(listMarkers);
 
 				// Log.d("DEBUUUUUUG","LT = "+tmpPoints.size()+" LMB = "+listMarkersBad.size());
 				PolylineOptions options = new PolylineOptions().geodesic(false)
@@ -268,7 +270,8 @@ public class MyMapActivity extends Activity {
 					options.add(listRealPoints.get(i));
 				}
 				myPolyline = map.addPolyline(options);
-				
+				currentTrajet.setPointsWhoDrawsPolyline(listRealPoints);
+				findViewById(R.id.btn_LaunchGPS).setEnabled(true);
 			}
 		});
 	}
@@ -282,7 +285,7 @@ public class MyMapActivity extends Activity {
 									// bottom left
 				.position(p).title(str));
 		tmp.setDraggable(isDrag);
-		//tmp.showInfoWindow();
+		// tmp.showInfoWindow();
 		return tmp;
 	}
 
@@ -415,7 +418,7 @@ public class MyMapActivity extends Activity {
 			public void onClick(View v) {
 				if (btnR.getTextColors().getDefaultColor() == Color.RED) {
 					btnR.setTextColor(Color.GREEN);
-					if(myPolyline!=null){
+					if (myPolyline != null) {
 						myPolyline.remove();
 					}
 					settingMapClickListener(true);
@@ -426,7 +429,8 @@ public class MyMapActivity extends Activity {
 						public boolean onMarkerClick(Marker marker) {
 							marker.hideInfoWindow();
 							for (int i = 0; i < listMarkers.size(); i++) {
-								if (listMarkers.get(i).getId().equals(marker.getId())) {
+								if (listMarkers.get(i).getId()
+										.equals(marker.getId())) {
 									listMarkers.remove(i);
 									break;
 								}
@@ -624,10 +628,19 @@ public class MyMapActivity extends Activity {
 		}
 	}
 
-	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		
+		menu.add("Save")
+		    .setIcon(R.drawable.android)
+		    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		
+		menu.add("Search")
+		    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		
+		menu.add("Refresh")
+		    .setIcon(R.drawable.android)
+		    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		
 		return true;
 	}
 

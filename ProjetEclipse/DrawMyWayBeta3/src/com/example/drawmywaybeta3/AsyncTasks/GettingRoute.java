@@ -11,7 +11,6 @@ import org.apache.commons.io.IOUtils;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.drawmywaybeta3.Decoder;
 import com.example.drawmywaybeta3.Parcours.Downloaded.DirectionsResponse;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;

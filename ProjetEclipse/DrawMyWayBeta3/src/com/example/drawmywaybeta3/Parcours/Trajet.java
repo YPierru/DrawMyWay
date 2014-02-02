@@ -10,23 +10,21 @@ import com.example.drawmywaybeta3.Parcours.Downloaded.DirectionsResponse;
 import com.example.drawmywaybeta3.Parcours.Downloaded.Legs;
 import com.example.drawmywaybeta3.Parcours.Downloaded.Step;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.Polyline;
 
 public class Trajet implements Parcelable {
 	private ArrayList<LatLng> listPoint;
 	private ArrayList<DirectionsResponse> listSegment;
-	private Polyline myPolyline;
-	private ArrayList<Marker> listMarker;
+	//private ArrayList<Marker> listMarker;
 	private String name;
 	private boolean isFinish;
+	private ArrayList<LatLng> pointsWhoDrawsPolyline;
 
 	public Trajet(String n, boolean isF) {
 		this.name = n;
 		this.isFinish = isF;
 		this.listPoint = new ArrayList<LatLng>();
 		this.listSegment = new ArrayList<DirectionsResponse>();
-		this.listMarker = new ArrayList<Marker>();
+		//this.listMarker = new ArrayList<Marker>();
 	}
 	
 	public Trajet(Parcel in){
@@ -38,6 +36,10 @@ public class Trajet implements Parcelable {
 		boolean[] bool = new boolean[1];
 		in.readBooleanArray(bool);
 		this.isFinish = bool[0];
+		this.pointsWhoDrawsPolyline = new ArrayList<LatLng>();
+		in.readList(this.pointsWhoDrawsPolyline, getClass().getClassLoader());
+		//this.listMarker = new ArrayList<Marker>();
+		//in.readList(this.listMarker, getClass().getClassLoader());
 	}
 
 	public String getName() {
@@ -48,13 +50,21 @@ public class Trajet implements Parcelable {
 		this.name = n;
 	}
 	
-	public void setPolyline(Polyline p){
-		this.myPolyline=p;
+	public void setPointsWhoDrawsPolyline(ArrayList<LatLng> p){
+		this.pointsWhoDrawsPolyline=p;
 	}
 	
-	public void setListMarker(ArrayList<Marker> lm){
+	public ArrayList<LatLng> getPointsWhoDrawsPolyline(){
+		return this.pointsWhoDrawsPolyline;
+	}
+	
+	/*public void setListMarker(ArrayList<Marker> lm){
 		this.listMarker=lm;
 	}
+	
+	public ArrayList<Marker> getListMarker(){
+		return this.listMarker;
+	}*/
 
 	public ArrayList<LatLng> getListPoint() {
 		return this.listPoint;
@@ -117,6 +127,8 @@ public class Trajet implements Parcelable {
 		dest.writeString(this.name);
 		boolean[] arrayBool = { this.isFinish };
 		dest.writeBooleanArray(arrayBool);
+		dest.writeList(this.pointsWhoDrawsPolyline);
+		//dest.writeList(this.listMarker);
 	}
 	
 	public ArrayList<Step> getListSteps(){
@@ -130,8 +142,9 @@ public class Trajet implements Parcelable {
 	
 	public int getDistTotal(){
 		int distTotal=0;
-		for(int i=0;i<this.listSegment.size();i++){
-			distTotal+=this.listSegment.get(i).getRoutes().get(0).getLegs().get(0).getDistance().getValue();
+		List<Legs> listLegs = this.listSegment.get(0).getRoutes().get(0).getLegs();
+		for(int i=0;i<listLegs.size();i++){
+			distTotal+=listLegs.get(i).getDistance().getValue();
 		}
 		
 		return distTotal;
@@ -139,8 +152,9 @@ public class Trajet implements Parcelable {
 	
 	public int getDureeTotal(){
 		int dureeTotal=0;
-		for(int i=0;i<this.listSegment.size();i++){
-			dureeTotal+=this.listSegment.get(i).getRoutes().get(0).getLegs().get(0).getDuration().getValue();
+		List<Legs> listLegs = this.listSegment.get(0).getRoutes().get(0).getLegs();
+		for(int i=0;i<listLegs.size();i++){
+			dureeTotal+=listLegs.get(i).getDuration().getValue();
 		}
 		
 		return dureeTotal;
