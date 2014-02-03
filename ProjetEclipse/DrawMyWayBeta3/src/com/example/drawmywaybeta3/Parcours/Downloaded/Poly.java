@@ -6,6 +6,8 @@ import android.os.Parcelable;
 public class Poly  implements Parcelable{
 
 	private String points;
+	
+	public Poly(){}
 
 	public Poly (Parcel in){
 		this.points=in.readString();

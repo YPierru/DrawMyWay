@@ -1,5 +1,6 @@
 package com.example.drawmywaybeta3.Parcours;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,17 +12,35 @@ import com.example.drawmywaybeta3.Parcours.Downloaded.Legs;
 import com.example.drawmywaybeta3.Parcours.Downloaded.Step;
 import com.google.android.gms.maps.model.LatLng;
 
-public class Trajet implements Parcelable {
+public class Trajet implements Parcelable,Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ArrayList<LatLng> listPoint;
 	private ArrayList<DirectionsResponse> listSegment;
 	//private ArrayList<Marker> listMarker;
 	private String name;
-	private boolean isFinish;
+	private boolean hasBeenSave;
 	private ArrayList<LatLng> pointsWhoDrawsPolyline;
 
+	public Trajet(	ArrayList<LatLng> lp,
+					ArrayList<DirectionsResponse> ls,
+					String n,
+					boolean hbs,
+					ArrayList<LatLng> pwho){
+		this.listPoint=lp;
+		this.listSegment=ls;
+		this.name=n;
+		this.hasBeenSave=hbs;
+		this.pointsWhoDrawsPolyline=pwho;
+	}
+	
+	//public Trajet(){}
+	
 	public Trajet(String n, boolean isF) {
 		this.name = n;
-		this.isFinish = isF;
+		this.hasBeenSave = isF;
 		this.listPoint = new ArrayList<LatLng>();
 		this.listSegment = new ArrayList<DirectionsResponse>();
 		//this.listMarker = new ArrayList<Marker>();
@@ -35,51 +54,53 @@ public class Trajet implements Parcelable {
 		this.name = in.readString();
 		boolean[] bool = new boolean[1];
 		in.readBooleanArray(bool);
-		this.isFinish = bool[0];
+		this.hasBeenSave = bool[0];
 		this.pointsWhoDrawsPolyline = new ArrayList<LatLng>();
 		in.readList(this.pointsWhoDrawsPolyline, getClass().getClassLoader());
 		//this.listMarker = new ArrayList<Marker>();
 		//in.readList(this.listMarker, getClass().getClassLoader());
 	}
 
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String n) {
-		this.name = n;
-	}
 	
-	public void setPointsWhoDrawsPolyline(ArrayList<LatLng> p){
-		this.pointsWhoDrawsPolyline=p;
-	}
-	
-	public ArrayList<LatLng> getPointsWhoDrawsPolyline(){
-		return this.pointsWhoDrawsPolyline;
-	}
-	
-	/*public void setListMarker(ArrayList<Marker> lm){
-		this.listMarker=lm;
-	}
-	
-	public ArrayList<Marker> getListMarker(){
-		return this.listMarker;
-	}*/
 
 	public ArrayList<LatLng> getListPoint() {
-		return this.listPoint;
+		return listPoint;
+	}
+
+	public void setListPoint(ArrayList<LatLng> listPoint) {
+		this.listPoint = listPoint;
 	}
 
 	public ArrayList<DirectionsResponse> getListSegment() {
-		return this.listSegment;
+		return listSegment;
 	}
 
-	public LatLng getLastPoint() {
-		return this.listPoint.get(this.listPoint.size() - 1);
+	public void setListSegment(ArrayList<DirectionsResponse> listSegment) {
+		this.listSegment = listSegment;
 	}
 
-	public void setListPoint(ArrayList<LatLng> lp) {
-		this.listPoint = lp;
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public boolean isHasBeenSave() {
+		return hasBeenSave;
+	}
+
+	public void setHasBeenSave(boolean hasBeenSave) {
+		this.hasBeenSave = hasBeenSave;
+	}
+
+	public ArrayList<LatLng> getPointsWhoDrawsPolyline() {
+		return pointsWhoDrawsPolyline;
+	}
+
+	public void setPointsWhoDrawsPolyline(ArrayList<LatLng> pointsWhoDrawsPolyline) {
+		this.pointsWhoDrawsPolyline = pointsWhoDrawsPolyline;
 	}
 
 	public LatLng getStartPoint() {
@@ -87,18 +108,10 @@ public class Trajet implements Parcelable {
 	}
 
 	public LatLng getEndPoint() {
-		if (this.isFinish)
+		if (this.hasBeenSave)
 			return this.listPoint.get(this.listPoint.size() - 1);
 		else
 			return null;
-	}
-
-	public boolean isFinish() {
-		return this.isFinish;
-	}
-
-	public void setFinish(boolean isF) {
-		this.isFinish = isF;
 	}
 
 	public static final Parcelable.Creator<Trajet> CREATOR = new Parcelable.Creator<Trajet>() {
@@ -125,7 +138,7 @@ public class Trajet implements Parcelable {
 		dest.writeList(this.listPoint);
 		dest.writeList(this.listSegment);
 		dest.writeString(this.name);
-		boolean[] arrayBool = { this.isFinish };
+		boolean[] arrayBool = { this.hasBeenSave };
 		dest.writeBooleanArray(arrayBool);
 		dest.writeList(this.pointsWhoDrawsPolyline);
 		//dest.writeList(this.listMarker);

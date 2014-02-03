@@ -12,6 +12,8 @@ public class Step implements Parcelable{
 	private Poly polyline;
 	private MyPoint start_location;
 
+	public Step(){}
+	
 	public Step(Parcel in){
 		this.distance=in.readParcelable(getClass().getClassLoader());
 		this.duration=in.readParcelable(getClass().getClassLoader());

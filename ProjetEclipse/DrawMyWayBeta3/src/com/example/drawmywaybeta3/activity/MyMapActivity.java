@@ -1,9 +1,13 @@
 package com.example.drawmywaybeta3.activity;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -14,11 +18,14 @@ import java.util.List;
 
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -31,10 +38,10 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
+import com.example.drawmywaybeta3.AllTrajets;
 import com.example.drawmywaybeta3.Decoder;
 import com.example.drawmywaybeta3.GeocodeJSONParser;
 import com.example.drawmywaybeta3.AsyncTasks.GettingRoute;
@@ -60,26 +67,30 @@ public class MyMapActivity extends SherlockActivity {
 
 	private GoogleMap map;
 	private EditText etPlace;
-	private Button mBtnFind, btnA, btnL, btnT, btnR, btnS, btnG, btnV;
+	private Button mBtnFind, btnL, btnT, btnR, btnS, btnG, btnV;
 	private ArrayList<Polyline> listPolyline;
 	private Polyline myPolyline;
 	// private ArrayList<LatLng> listJalons;
 	private ArrayList<Marker> listMarkers;
 	private ArrayList<LatLng> listRealPoints;
 	private Trajet currentTrajet;
+	private AllTrajets allTraj;
 	private DirectionsResponse myRoad;
+	// private HashMap<String, MenuItem> hmMenuItem;
 	// private ObjectContainer db;
-	private static final String DB_NAME = "DrawMyWay.db4o";
+	private static final String FILE_NAME = "AllTrajet.dmw";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//fullscreenActivity();
+		fullscreenActivity();
 		setContentView(R.layout.layout_map);
 		myPolyline = null;
 		listPolyline = new ArrayList<Polyline>();
 		// listJalons = new ArrayList<LatLng>();
 		listMarkers = new ArrayList<Marker>();
+		allTraj = new AllTrajets();
+		// hmMenuItem = new HashMap<String, MenuItem>();
 
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
@@ -88,34 +99,66 @@ public class MyMapActivity extends SherlockActivity {
 		// removeAllInDb4o();
 
 		/*
-		 * ObjectSet list=db.query(new Predicate<Trajet>() { public boolean
-		 * match(Trajet tj) { return tj.getName().equals("Trajet1"); } });
+		 * ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded
+		 * .newConfiguration(), Environment.getExternalStorageDirectory()
+		 * .getAbsolutePath() + "/" + DB_NAME);
 		 * 
+		 * //Trajet tmp = new Trajet(); List<Trajet> listTrajet =
+		 * db.queryByExample(Trajet.class);
 		 * 
-		 * if(list.hasNext()){ Trajet tj=(Trajet)list.next();
+		 * Toast.makeText(getApplicationContext(), "k=" + listTrajet.size(),
+		 * Toast.LENGTH_SHORT) .show(); Trajet tj; for(int
+		 * i=0;i<listTrajet.size();i++){ tj=listTrajet.get(i);
+		 * Toast.makeText(getApplicationContext(),
+		 * ""+tj.getPointsWhoDrawsPolyline().size(), Toast.LENGTH_SHORT)
+		 * .show(); /*ArrayList<LatLng> lp = tj.getPointsWhoDrawsPolyline(); //
+		 * tst.show(); CameraUpdate cu
+		 * =CameraUpdateFactory.newLatLngZoom(lp.get(0), 15); //
+		 * map.moveCamera(cu); map.animateCamera(cu, 600, null);
 		 * 
-		 * // tst.show(); CameraUpdate cu = CameraUpdateFactory
-		 * .newLatLngZoom(tj.getStartPoint(), 14); // map.moveCamera(cu);
-		 * map.animateCamera(cu, 600, null);
+		 * setMarker(lp.get(0), "Départ", true);
 		 * 
-		 * map.addMarker(new MarkerOptions() .icon(BitmapDescriptorFactory
-		 * .fromResource(R.drawable.icon_green)) .anchor(0.0f, 1.0f)
-		 * .position(tj.getStartPoint()) .title("Départ")) .showInfoWindow();
+		 * PolylineOptions options = new PolylineOptions().geodesic(false)
+		 * .width(15).color(Color.argb(120, 0, 0, 221)); for (int j = 0; j <
+		 * lp.size(); j++) { options.add(lp.get(j)); }
 		 * 
-		 * ArrayList<LatLng> lp = tj.getListPoint(); for(int
-		 * i=0;i<lp.size()-1;i++){ map.addPolyline(new
-		 * PolylineOptions().geodesic(false) .add(lp.get(i))
-		 * .add(lp.get(i+1)).width(15) .color(Color.argb(120, 0, 0, 221))); }
+		 * map.addPolyline(options);
 		 * 
-		 * map.addMarker(new MarkerOptions() .icon(BitmapDescriptorFactory
-		 * .fromResource(R.drawable.icon_green)) .anchor(0.0f, 1.0f)
-		 * .position(tj.getEndPoint()) .title("Arrivée")) .showInfoWindow(); }
+		 * setMarker(lp.get(lp.size()-1), "Arrivée", true); }
+		 * 
+		 * db.close();
 		 */
+		try {
+			FileInputStream fichier = new FileInputStream(
+					MyMapActivity.FILE_NAME);
+			ObjectInputStream ois = new ObjectInputStream(fichier);
+			allTraj = (AllTrajets) ois.readObject();
+		} catch (java.io.IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		for (int i = 0; i < allTraj.size(); i++) {
+			Trajet tj = allTraj.get(i);
+			ArrayList<LatLng> list = tj.getPointsWhoDrawsPolyline();
+			setMarker(list.get(0), "Départ", false);
+			setMarker(list.get(list.size()-1), "Arrivée", false);
+			PolylineOptions options = new PolylineOptions().geodesic(false)
+					.width(15).color(Color.argb(120, 0, 0, 221));
+			for(int j=0;j<list.size();j++){
+				options.add(list.get(j));
+			}
+			map.addPolyline(options);
+		}
+
+		// Toast.makeText(getApplicationContext(), "k=" + k,
+		// Toast.LENGTH_SHORT).show();
 
 		settingMapLongClickListener(false);
 		settingMapClickListener(false);
 
-		// settingBtnSaveTrajetListener();
+		settingBtnSaveTrajetListener();
 
 		settingBtnMapStyleListener();
 
@@ -131,16 +174,16 @@ public class MyMapActivity extends SherlockActivity {
 
 	}
 
-	private void removeAllInDb4o() {
+	/*private void removeAllInDb4o() {
 		ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded
 				.newConfiguration(), Environment.getExternalStorageDirectory()
 				.getAbsolutePath() + "/" + DB_NAME);
-		ObjectSet listToRemove = db.queryByExample(DirectionsResponse.class);
+		ObjectSet listToRemove = db.queryByExample(Trajet.class);
 		while (listToRemove.hasNext()) {
-			db.delete((DirectionsResponse) listToRemove.next());
+			db.delete((Trajet) listToRemove.next());
 		}
 		db.close();
-	}
+	}*/
 
 	private void fullscreenActivity() {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -220,6 +263,9 @@ public class MyMapActivity extends SherlockActivity {
 					btnR.performClick();
 				}
 
+				if (myPolyline != null) {
+					myPolyline.remove();
+				}
 				// On DL le trajet, depuis la DirectionsAPI, en passant une
 				// liste de WayPoints
 				ArrayList<LatLng> listJalons = new ArrayList<LatLng>();
@@ -236,8 +282,10 @@ public class MyMapActivity extends SherlockActivity {
 
 				// On récupère tout notre trajet
 				myRoad = GettingRoute.getDR();
+				currentTrajet.getListSegment().clear();
 				currentTrajet.getListSegment().add(myRoad);
 
+				// listRealPoints.clear();
 				// Liste de tout les points du trajet (overview_polyline)
 				listRealPoints = Decoder.decodePoly(myRoad.getRoutes().get(0)
 						.getOverview_polyline().getPoints());
@@ -290,30 +338,90 @@ public class MyMapActivity extends SherlockActivity {
 	}
 
 	private void settingBtnSaveTrajetListener() {
-		/*
-		 * btnS = (Button) findViewById(R.id.btn_Save);
-		 * 
-		 * btnS.setEnabled(false); btnS.setOnClickListener(new OnClickListener()
-		 * {
-		 * 
-		 * @Override public void onClick(View v) { final AlertDialog.Builder
-		 * alert = new AlertDialog.Builder(
-		 * MyMapActivity.this).setTitle("Saisir le nom du trajet"); final
-		 * EditText input = new EditText(getApplicationContext());
-		 * input.setHint("Nom du trajet"); input.setTextColor(Color.BLACK);
-		 * alert.setView(input); alert.setPositiveButton("Ok", new
-		 * DialogInterface.OnClickListener() { public void
-		 * onClick(DialogInterface dialog, int whichButton) { String value =
-		 * input.getText().toString() .trim(); currentTrajet.setName(value);
-		 * ObjectContainer db = Db4oEmbedded.openFile(
-		 * Db4oEmbedded.newConfiguration(), Environment
-		 * .getExternalStorageDirectory() .getAbsolutePath() + "/" + DB_NAME);
-		 * db.store(currentTrajet); db.commit(); db.close(); Toast.makeText(
-		 * getApplicationContext(), "Trajet " + currentTrajet.getName() +
-		 * " save", Toast.LENGTH_SHORT) .show(); } }); alert.show();
-		 * 
-		 * } });
-		 */
+
+		btnS = (Button) findViewById(R.id.btn_Save);
+
+		btnS.setEnabled(false);
+		btnS.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+
+				if (!currentTrajet.isHasBeenSave()) {
+					final AlertDialog.Builder alert = new AlertDialog.Builder(
+							MyMapActivity.this)
+							.setTitle("Saisir le nom du trajet");
+					final EditText input = new EditText(getApplicationContext());
+					input.setHint("Nom du trajet");
+					input.setTextColor(Color.BLACK);
+					alert.setView(input);
+					alert.setPositiveButton("Ok",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+									String value = input.getText().toString()
+											.trim();
+									currentTrajet.setName(value);
+									currentTrajet.setHasBeenSave(true);
+									/*
+									 * ObjectContainer db =
+									 * Db4oEmbedded.openFile(
+									 * Db4oEmbedded.newConfiguration(),
+									 * Environment
+									 * .getExternalStorageDirectory()
+									 * .getAbsolutePath() + "/" + DB_NAME);
+									 * db.store(currentTrajet); db.commit();
+									 * db.close();
+									 */
+									allTraj.remove(currentTrajet);
+									allTraj.add(currentTrajet);
+									try {
+										FileOutputStream fichier = new FileOutputStream(
+												MyMapActivity.FILE_NAME);
+										ObjectOutputStream oos = new ObjectOutputStream(
+												fichier);
+										oos.writeObject(allTraj);
+										oos.flush();
+										oos.close();
+									} catch (java.io.IOException e) {
+										e.printStackTrace();
+									}
+									Toast.makeText(
+											getApplicationContext(),
+											"Trajet " + currentTrajet.getName()
+													+ " save",
+											Toast.LENGTH_SHORT).show();
+								}
+							});
+					alert.show();
+				} else {
+					/*
+					 * ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded
+					 * .newConfiguration(), Environment
+					 * .getExternalStorageDirectory().getAbsolutePath() + "/" +
+					 * DB_NAME); db.store(currentTrajet); db.commit();
+					 * db.close();
+					 */
+					allTraj.remove(currentTrajet);
+					allTraj.add(currentTrajet);
+					try {
+						FileOutputStream fichier = new FileOutputStream(
+								MyMapActivity.FILE_NAME);
+						ObjectOutputStream oos = new ObjectOutputStream(fichier);
+						oos.writeObject(allTraj);
+						oos.flush();
+						oos.close();
+					} catch (java.io.IOException e) {
+						e.printStackTrace();
+					}
+					Toast.makeText(getApplicationContext(),
+							"Trajet " + currentTrajet.getName() + " save",
+							Toast.LENGTH_SHORT).show();
+				}
+
+			}
+		});
+
 	}
 
 	private void settingBtnMapStyleListener() {
@@ -463,7 +571,7 @@ public class MyMapActivity extends SherlockActivity {
 			@Override
 			public void onClick(View v) {
 				Intent toGPS = new Intent(MyMapActivity.this, GPSRunner.class);
-				toGPS.putExtra("TRAJET", currentTrajet);
+				toGPS.putExtra("TRAJET", (Parcelable) currentTrajet);
 				startActivity(toGPS);
 			}
 		});
@@ -629,18 +737,28 @@ public class MyMapActivity extends SherlockActivity {
 	}
 
 	public boolean onCreateOptionsMenu(Menu menu) {
-		
-		menu.add("Save")
-		    .setIcon(R.drawable.android)
-		    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-		
-		menu.add("Search")
-		    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-		
-		menu.add("Refresh")
-		    .setIcon(R.drawable.android)
-		    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-		
+
+		/*
+		 * MenuItem fullscreen_item =menu.add("FullScreen")
+		 * .setIcon(R.drawable.fullscreen);
+		 * 
+		 * fullscreen_item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		 * 
+		 * fullscreen_item.setOnMenuItemClickListener(new
+		 * OnMenuItemClickListener() {
+		 * 
+		 * @Override public boolean onMenuItemClick(MenuItem item) {
+		 * if(getSupportActionBar().isShowing()){ getSupportActionBar().hide();
+		 * } else{ getSupportActionBar().show(); } return false; } });
+		 * 
+		 * SubMenu subMenu = menu.addSubMenu("MapType"); subMenu.add("Type1");
+		 * subMenu.add("Type2"); subMenu.add("Type3"); subMenu.add("Type4");
+		 * 
+		 * MenuItem subMenuItem = subMenu.getItem();
+		 * subMenuItem.setIcon(R.drawable.fullscreen);
+		 * subMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		 */
+
 		return true;
 	}
 

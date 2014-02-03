@@ -9,6 +9,8 @@ import android.os.Parcelable;
 public class DirectionsResponse implements Parcelable{
 
 	private List<Route> routes;
+	
+	public DirectionsResponse(){}
 
 	public List<Route> getRoutes() {
 		return routes;

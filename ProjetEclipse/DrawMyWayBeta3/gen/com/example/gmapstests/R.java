@@ -1200,12 +1200,13 @@ containing a value of this type.
         public static final int common_signin_btn_text_normal_light=0x7f020086;
         public static final int common_signin_btn_text_pressed_dark=0x7f020087;
         public static final int common_signin_btn_text_pressed_light=0x7f020088;
-        public static final int ic_launcher=0x7f020089;
-        public static final int ic_plusone_medium_off_client=0x7f02008a;
-        public static final int ic_plusone_small_off_client=0x7f02008b;
-        public static final int ic_plusone_standard_off_client=0x7f02008c;
-        public static final int ic_plusone_tall_off_client=0x7f02008d;
-        public static final int icon_green=0x7f02008e;
+        public static final int fullscreen=0x7f020089;
+        public static final int ic_launcher=0x7f02008a;
+        public static final int ic_plusone_medium_off_client=0x7f02008b;
+        public static final int ic_plusone_small_off_client=0x7f02008c;
+        public static final int ic_plusone_standard_off_client=0x7f02008d;
+        public static final int ic_plusone_tall_off_client=0x7f02008e;
+        public static final int icon_green=0x7f02008f;
     }
     public static final class id {
         public static final int abs__action_bar=0x7f040029;
@@ -1315,11 +1316,12 @@ containing a value of this type.
         public static final int abs__search_dropdown_item_icons_2line=0x7f030012;
         public static final int abs__search_view=0x7f030013;
         public static final int abs__simple_dropdown_hint=0x7f030014;
-        public static final int layout_gps=0x7f030015;
-        public static final int layout_map=0x7f030016;
-        public static final int sherlock_spinner_dropdown_item=0x7f030017;
-        public static final int sherlock_spinner_item=0x7f030018;
-        public static final int slidingmenumain=0x7f030019;
+        public static final int custom_view=0x7f030015;
+        public static final int layout_gps=0x7f030016;
+        public static final int layout_map=0x7f030017;
+        public static final int sherlock_spinner_dropdown_item=0x7f030018;
+        public static final int sherlock_spinner_item=0x7f030019;
+        public static final int slidingmenumain=0x7f03001a;
     }
     public static final class menu {
         public static final int gpsrunner=0x7f0b0000;

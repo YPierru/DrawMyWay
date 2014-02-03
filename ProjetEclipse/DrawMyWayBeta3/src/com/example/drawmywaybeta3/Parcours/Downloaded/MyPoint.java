@@ -8,6 +8,8 @@ public class MyPoint implements Parcelable{
 	private double lat;
 	private double lng;
 
+	public MyPoint(){}
+	
 	public MyPoint(Parcel in){
 		this.lat=in.readDouble();
 		this.lng=in.readDouble();

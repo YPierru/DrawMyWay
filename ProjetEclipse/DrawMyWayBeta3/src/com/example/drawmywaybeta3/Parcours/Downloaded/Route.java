@@ -11,6 +11,8 @@ public class Route implements Parcelable{
 	private List<Legs> legs;
 	private Poly overview_polyline;
 	
+	public Route(){}
+	
 	public Route (Parcel in){
 		this.legs = new ArrayList<Legs>();
 		in.readList(this.legs, getClass().getClassLoader());

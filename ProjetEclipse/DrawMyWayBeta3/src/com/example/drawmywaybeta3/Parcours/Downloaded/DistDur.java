@@ -7,6 +7,8 @@ public class DistDur implements Parcelable {
 
 	private String text;
 	private int value;
+	
+	public DistDur(){}
 
 	public DistDur(Parcel in){
 		this.text=in.readString();

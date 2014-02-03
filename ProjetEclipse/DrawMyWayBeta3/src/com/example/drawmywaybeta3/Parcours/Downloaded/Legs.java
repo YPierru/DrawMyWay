@@ -15,6 +15,8 @@ public class Legs  implements Parcelable{
 	private String start_address;
 	private MyPoint start_location;
 	private List<Step> steps;
+	
+	public Legs(){}
 
 	public Legs(Parcel in){
 		this.distance=in.readParcelable(getClass().getClassLoader());
