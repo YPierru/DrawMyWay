@@ -57,6 +57,10 @@
             android:name="com.example.drawmywaybeta3.activity.GPSRunner"
             android:label="@string/title_activity_gpsrunner" >
         </activity>
+        <activity
+            android:name="com.example.drawmywaybeta3.activity.TrajetDisplay"
+            android:label="@string/title_activity_trajet_display" >
+        </activity>
     </application>
 
 </manifest>

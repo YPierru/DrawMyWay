@@ -11,8 +11,8 @@ import org.w3c.dom.Document;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.drawmywaybeta3.Parcours.Downloaded.DirectionsResponse;
-import com.example.drawmywaybeta3.Parcours.Downloaded.MyPoint;
+import com.example.drawmywaybeta3.Trajet.Downloaded.DirectionsResponse;
+import com.example.drawmywaybeta3.Trajet.Downloaded.MyPoint;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

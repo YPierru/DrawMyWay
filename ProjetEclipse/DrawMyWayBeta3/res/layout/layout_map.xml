@@ -78,6 +78,22 @@
             android:layout_alignParentRight="true"
             android:layout_below="@id/btn_LaunchGPS"
             android:text="Validate" />
+
+        <Button
+            android:id="@+id/btn_load"
+            android:layout_width="90dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/btn_validate"
+            android:text="Charger" />
+
+        <Button
+            android:id="@+id/btn_delete"
+            android:layout_width="90dp"
+            android:layout_height="45dp"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/btn_load"
+            android:text="Delete" />
     </RelativeLayout>
 
 </fragment>

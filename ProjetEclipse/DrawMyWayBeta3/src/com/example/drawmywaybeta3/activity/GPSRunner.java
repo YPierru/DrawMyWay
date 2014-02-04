@@ -17,8 +17,8 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.drawmywaybeta3.Parcours.Trajet;
-import com.example.drawmywaybeta3.Parcours.Downloaded.Step;
+import com.example.drawmywaybeta3.Trajet.Trajet;
+import com.example.drawmywaybeta3.Trajet.Downloaded.Step;
 import com.example.gmapstests.R;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -63,7 +63,7 @@ public class GPSRunner extends Activity {
 	}
 
 	public void drawParkour() {
-		ArrayList<LatLng> pts = myRoad.getPointsWhoDrawsPolyline();
+		ArrayList<LatLng> pts = myRoad.getPointsWhoDrawsPolylineLatLng();
 		
 		setMarker(pts.get(0), "Départ");
 
