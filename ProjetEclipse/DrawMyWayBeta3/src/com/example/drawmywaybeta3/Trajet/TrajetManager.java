@@ -15,41 +15,47 @@ public class TrajetManager {
 	private static final String FILE_NAME = ".allTrajets.dmw";
 	private static final String FILE_PATH = Environment
 			.getExternalStorageDirectory().getAbsolutePath() + "/";
-	private File myDataFile;
 
-	public TrajetManager() {
-		this.myDataFile = new File(FILE_PATH + FILE_NAME);
-	}
-
-	public void saveAllTrajet(AllTrajets at) {
+	public static void saveAllTrajet(AllTrajets at) {
+		
+		File f= new File(FILE_PATH+FILE_NAME);
+		
 		try {
 			ObjectOutputStream ooStream = new ObjectOutputStream(
-					new FileOutputStream(this.myDataFile));
+					new FileOutputStream(f));
 			ooStream.writeObject(at);
 			ooStream.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 	}
 
-	public AllTrajets loadAllTrajet() {
+	public static AllTrajets loadAllTrajet() {
+
+		File f= new File(FILE_PATH+FILE_NAME);
 		AllTrajets at=null;
 		try {
 			ObjectInputStream oiStream = new ObjectInputStream(
-											new FileInputStream(
-											this.myDataFile));
+											new FileInputStream(f));
 			 at = (AllTrajets)oiStream.readObject();
 			 oiStream.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+		if(at==null){
+			at = new AllTrajets();
+		}
+		
 		return at;
 	}
 	
-	public void delete(){
-		this.myDataFile.delete();
-		this.myDataFile = new File(FILE_PATH + FILE_NAME);
+	public static void deleteFile(){
+		File f= new File(FILE_PATH+FILE_NAME);
+		if(f.exists()){
+			f.delete();
+		}
 	}
 
 }

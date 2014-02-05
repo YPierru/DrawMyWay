@@ -73,7 +73,6 @@ public class MyMapActivity extends SherlockActivity {
 	private ArrayList<LatLng> listRealPoints;
 	private AllTrajets allTraj;
 	private int idCurrentTrajet;
-	private TrajetManager trajetManager;
 	private DirectionsResponse myRoad;
 	private static final String FILE_NAME = "AllTrajet.dmw";
 
@@ -85,8 +84,7 @@ public class MyMapActivity extends SherlockActivity {
 		myPolyline = null;
 		listPolyline = new ArrayList<Polyline>();
 		listMarkers = new ArrayList<Marker>();
-		allTraj = new AllTrajets();
-		trajetManager = new TrajetManager();
+		allTraj = TrajetManager.loadAllTrajet();
 
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
@@ -139,7 +137,7 @@ public class MyMapActivity extends SherlockActivity {
 
 			@Override
 			public void onClick(View v) {
-				allTraj = trajetManager.loadAllTrajet();
+				//allTraj = TrajetManager.loadAllTrajet();
 
 				for (int i = 0; i < allTraj.size(); i++) {
 					Trajet tj = allTraj.get(i);
@@ -182,7 +180,7 @@ public class MyMapActivity extends SherlockActivity {
 
 			@Override
 			public void onClick(View v) {
-				trajetManager.delete();
+				TrajetManager.deleteFile();
 			}
 		});
 	}
@@ -354,7 +352,6 @@ public class MyMapActivity extends SherlockActivity {
 		btnS.setEnabled(false);
 		btnS.setOnClickListener(new OnClickListener() {
 
-			@Override
 			public void onClick(View v) {
 				Trajet tj = allTraj.getByHashId(idCurrentTrajet);
 				if (!tj.isHasBeenSave()) {
@@ -376,7 +373,7 @@ public class MyMapActivity extends SherlockActivity {
 									tj.setName(value);
 									tj.setHasBeenSave(true);
 									allTraj.replace(tj);
-									trajetManager.saveAllTrajet(allTraj);
+									TrajetManager.saveAllTrajet(allTraj);
 									Toast.makeText(getApplicationContext(),
 											"Trajet " + tj.getName() + " save",
 											Toast.LENGTH_SHORT).show();
@@ -387,7 +384,7 @@ public class MyMapActivity extends SherlockActivity {
 					imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 				} else {
 					// allTraj.replace(tj);
-					trajetManager.saveAllTrajet(allTraj);
+					TrajetManager.saveAllTrajet(allTraj);
 					Toast.makeText(getApplicationContext(),
 							"Trajet " + tj.getName() + " save",
 							Toast.LENGTH_SHORT).show();
@@ -723,7 +720,7 @@ public class MyMapActivity extends SherlockActivity {
 
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
-						Intent toTrajetDisplay = new Intent(MyMapActivity.this, TrajetDisplay.class);
+						Intent toTrajetDisplay = new Intent(MyMapActivity.this, TrajetDisplayList.class);
 						startActivity(toTrajetDisplay);
 						return false;
 					}

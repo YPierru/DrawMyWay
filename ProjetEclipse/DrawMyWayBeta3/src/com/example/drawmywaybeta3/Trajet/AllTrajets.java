@@ -53,4 +53,10 @@ public class AllTrajets extends ArrayList<Trajet> implements Serializable{
 		return false;
 	}
 
+	public void merge(AllTrajets at){
+		
+		for(int i=0;i<at.size();i++){
+			this.add(at.get(i));
+		}
+	}
 }

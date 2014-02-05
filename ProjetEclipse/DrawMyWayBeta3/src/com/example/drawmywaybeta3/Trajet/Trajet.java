@@ -247,6 +247,15 @@ public class Trajet implements Parcelable,Serializable {
 		return dureeTotal;
 	}
 	
+	public String getStartAddress(){
+		return this.listSegment.get(0).getRoutes().get(0).getLegs().get(0).getStart_address();
+	}
+	
+	public String getEndAddress(){
+		List<Legs> listLegs = this.listSegment.get(0).getRoutes().get(0).getLegs();
+		return listLegs.get(listLegs.size()-1).getEnd_address();
+	}
+	
 	public void removeLastDR(){
 		this.listSegment.remove(this.listSegment.size()-1);
 	}

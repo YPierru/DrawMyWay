@@ -6,17 +6,14 @@ import org.joda.time.DateTime;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 
-import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.SherlockActivity;
 import com.example.drawmywaybeta3.Trajet.Trajet;
 import com.example.drawmywaybeta3.Trajet.Downloaded.Step;
 import com.example.gmapstests.R;
@@ -31,10 +28,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-public class GPSRunner extends Activity {
+public class GPSRunner extends SherlockActivity {
 
 	private GoogleMap map;
-	private Trajet myRoad;
+	private Trajet myTrajet;
 	private Polyline myPolyline;
 	private Marker meMarker;
 	private ArrayList<Step> listSteps;
@@ -44,16 +41,13 @@ public class GPSRunner extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		setContentView(R.layout.layout_gps);
+		getSupportActionBar().hide();
 		
-		myRoad = getIntent().getExtras().getParcelable("TRAJET");
+		myTrajet = getIntent().getExtras().getParcelable("TRAJET");
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
 		
-		listSteps = myRoad.getListSteps();
+		listSteps = myTrajet.getListSteps();
 		
 		
 		drawParkour();
@@ -63,7 +57,7 @@ public class GPSRunner extends Activity {
 	}
 
 	public void drawParkour() {
-		ArrayList<LatLng> pts = myRoad.getPointsWhoDrawsPolylineLatLng();
+		ArrayList<LatLng> pts = myTrajet.getPointsWhoDrawsPolylineLatLng();
 		
 		setMarker(pts.get(0), "Départ");
 
@@ -155,22 +149,15 @@ public class GPSRunner extends Activity {
 		// chrono_view.setText("00' 00''");
 
 		TextView kilometrageTrajet_view = (TextView) findViewById(R.id.kilometrageTrajet);
-		kilometrageTrajet_view.setText(myRoad.getDistTotal() + "m");
+		kilometrageTrajet_view.setText(myTrajet.getDistTotal() + "m");
 
 		DateTime dt = new DateTime();
-		int dureeSecond = myRoad.getDureeTotal();
+		int dureeSecond = myTrajet.getDureeTotal();
 		int heures = dt.getHourOfDay() + (dureeSecond / 3600);
 		int minutes = dt.getMinuteOfHour() + ((dureeSecond % 3600) / 60);
 
 		TextView heureFin_view = (TextView) findViewById(R.id.heureFin);
 		heureFin_view.setText(heures + "h" + minutes);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.gpsrunner, menu);
-		return true;
 	}
 
 }

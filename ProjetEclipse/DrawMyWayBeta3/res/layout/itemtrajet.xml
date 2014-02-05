@@ -3,53 +3,23 @@
     android:id="@+id/rl_TrajetItem"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:baselineAligned="false"
     android:orientation="horizontal" >
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/tv_nomTrajet"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:layout_weight="3"
-        android:orientation="vertical" >
+        android:layout_weight="0.7"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tv_dateCrea"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="12sp" />
-
-        <TextView
-            android:id="@+id/tv_lastModif"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-    <LinearLayout
+    <TextView
+        android:id="@+id/tv_kmTrajet"
         android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="7" >
-
-        <TextView
-            android:id="@+id/tv_nomTrajet"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="0.7"
-            android:gravity="center"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tv_kmTrajet"
-            android:layout_width="0dp"
-            android:layout_height="fill_parent"
-            android:layout_weight="0.3"
-            android:gravity="center"
-            android:textSize="18sp" />
-    </LinearLayout>
+        android:layout_height="50dp"
+        android:layout_weight="0.3"
+        android:gravity="center"
+        android:textSize="18sp" />
 
 </LinearLayout>

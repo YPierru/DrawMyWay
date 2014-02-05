@@ -7,5 +7,6 @@
     <string name="title_activity_gpsrunner">GPSRunner</string>
     <string name="title_activity_trajet_display">TrajetDisplay</string>
     <string name="hello_world">Hello world!</string>
+    <string name="title_activity_trajet_details">TrajetDetails</string>
 
 </resources>
