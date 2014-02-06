@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.gmapstests"
+    package="com.ironrabbit.drawmyway"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -36,7 +36,7 @@
         <uses-library android:name="com.google.android.maps" />
 
         <activity
-            android:name="com.example.drawmywaybeta3.activity.MyMapActivity"
+            android:name="com.ironrabbit.drawmywaybeta3.activity.MyMapActivity"
             android:label="@string/app_name"
             android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
@@ -54,15 +54,15 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name="com.example.drawmywaybeta3.activity.GPSRunner"
+            android:name="com.ironrabbit.drawmywaybeta3.activity.GPSRunner"
             android:label="@string/title_activity_gpsrunner" >
         </activity>
         <activity
-            android:name="com.example.drawmywaybeta3.activity.TrajetDisplayList"
+            android:name="com.ironrabbit.drawmywaybeta3.activity.TrajetDisplayList"
             android:label="@string/title_activity_trajet_display" >
         </activity>
         <activity
-            android:name="com.example.drawmywaybeta3.activity.TrajetDetails"
+            android:name="com.ironrabbit.drawmywaybeta3.activity.TrajetDetails"
             android:label="@string/title_activity_trajet_details" >
         </activity>
     </application>
