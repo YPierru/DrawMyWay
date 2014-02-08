@@ -17,7 +17,6 @@ import java.util.List;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -30,7 +29,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -53,6 +51,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.ironrabbit.drawmyway.R;
+import com.ironrabbit.drawmyway.TestMaps;
 import com.ironrabbit.drawmywaybeta3.Decoder;
 import com.ironrabbit.drawmywaybeta3.GeocodeJSONParser;
 import com.ironrabbit.drawmywaybeta3.AsyncTasks.GettingRoute;
@@ -78,7 +77,7 @@ public class MyMapActivity extends SherlockActivity {
 		setContentView(R.layout.layout_map);
 		myPolyline = null;
 		listMarkers = new ArrayList<Marker>();
-		allTraj = TrajetManager.loadAllTrajet();
+		allTraj = AllTrajets.getInstance();
 		idCurrentTrajet=0;
 
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
@@ -175,6 +174,7 @@ public class MyMapActivity extends SherlockActivity {
 
 			@Override
 			public void onClick(View v) {
+				allTraj.clear();
 				TrajetManager.deleteFile();
 			}
 		});
@@ -382,8 +382,6 @@ public class MyMapActivity extends SherlockActivity {
 								}
 							});
 					alert.show();
-					InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-					imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
 				} else {
 					// allTraj.replace(tj);
 					TrajetManager.saveAllTrajet(allTraj);

@@ -2,13 +2,16 @@ package com.ironrabbit.drawmywaybeta3.activity;
 
 import java.util.ArrayList;
 
+import org.joda.time.DateTime;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.util.Log;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -25,19 +28,25 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.ironrabbit.drawmyway.R;
+import com.ironrabbit.drawmywaybeta3.Trajet.AllTrajets;
 import com.ironrabbit.drawmywaybeta3.Trajet.Trajet;
+import com.ironrabbit.drawmywaybeta3.Trajet.TrajetAdapter;
 
 public class TrajetDetails extends SherlockActivity {
 
 	private GoogleMap map;
-	private Trajet myTrajet;
+	private AllTrajets myAllTrajets;
+	private int position;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_trajet_details);
 
-		myTrajet = getIntent().getExtras().getParcelable("trajet_for_details");
+		myAllTrajets = AllTrajets.getInstance();
+		position = getIntent().getExtras().getInt("position_Trajet_List");
+		Log.d("DEBUUUUG", ""+myAllTrajets.size());
+		Log.d("DEBUUUUG", ""+position);
 		map = ((MapFragment) getFragmentManager().findFragmentById(
 				R.id.mapTrajetDetails)).getMap();
 
@@ -47,6 +56,7 @@ public class TrajetDetails extends SherlockActivity {
 	}
 
 	public void drawOnMap() {
+		Trajet myTrajet = myAllTrajets.get(position);
 		ArrayList<LatLng> listPoints = myTrajet
 				.getPointsWhoDrawsPolylineLatLng();
 		setMarker(listPoints.get(0), "Départ", false);
@@ -63,6 +73,7 @@ public class TrajetDetails extends SherlockActivity {
 	}
 
 	public void setDataOnScreen() {
+		Trajet myTrajet = myAllTrajets.get(position);
 		initTV(R.id.tv_crea, "Créé le " + myTrajet.getDateCreation());
 		initTV(R.id.tv_nom, myTrajet.getName());
 		initTV(R.id.tv_mod, "Modifié le " + myTrajet.getDateDerModif());
@@ -72,7 +83,11 @@ public class TrajetDetails extends SherlockActivity {
 		} else {
 			initTV(R.id.tv_dist, (dist / 1000) + "Km");
 		}
-		initTV(R.id.tv_dur, "" + myTrajet.getDureeTotal());
+		DateTime dt = new DateTime();
+		int dureeSecond = myTrajet.getDureeTotal();
+		int heures = dt.getHourOfDay() + (dureeSecond / 3600);
+		int minutes = dt.getMinuteOfHour() + ((dureeSecond % 3600) / 60);
+		initTV(R.id.tv_dur, heures+"h"+minutes);
 		initTV(R.id.tv_addrDeb, myTrajet.getStartAddress());
 		initTV(R.id.tv_addrFin, myTrajet.getEndAddress());
 	}
@@ -127,12 +142,13 @@ public class TrajetDetails extends SherlockActivity {
 			}
 		});*/
 
-		/*MenuItem item_Rename = menu.add("Rename").setIcon(R.drawable.android);
+		MenuItem item_Rename = menu.add("Rename").setIcon(R.drawable.android);
 		item_Rename.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		item_Rename.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
+				Trajet myTrajet = myAllTrajets.get(position);
 				final AlertDialog.Builder alert = new AlertDialog.Builder(
 						TrajetDetails.this).setTitle("Nouveau nom");
 				final EditText input = new EditText(getApplicationContext());
@@ -145,7 +161,7 @@ public class TrajetDetails extends SherlockActivity {
 									int whichButton) {
 								String value = input.getText().toString()
 										.trim();
-								myTrajet.setName(value);
+								myAllTrajets.get(position).setName(value);
 								TextView tv=(TextView)findViewById(R.id.tv_nom);
 								tv.setText(value);
 							}
@@ -153,7 +169,7 @@ public class TrajetDetails extends SherlockActivity {
 				alert.show();
 				return false;
 			}
-		});*/
+		});
 
 		return true;
 	}

@@ -43,10 +43,6 @@ public class TrajetManager {
 			e.printStackTrace();
 		}
 		
-		if(at==null){
-			at = new AllTrajets();
-		}
-		
 		return at;
 	}
 	

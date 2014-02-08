@@ -28,6 +28,8 @@ import com.ironrabbit.drawmyway.R;
 import com.ironrabbit.drawmywaybeta3.Trajet.Trajet;
 import com.ironrabbit.drawmywaybeta3.Trajet.Downloaded.Step;
 
+
+
 public class GPSRunner extends SherlockActivity {
 
 	private GoogleMap map;
@@ -40,12 +42,14 @@ public class GPSRunner extends SherlockActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		setContentView(R.layout.layout_gps);
 		getSupportActionBar().hide();
 		
 		myTrajet = getIntent().getExtras().getParcelable("TRAJET");
-		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
-				.getMap();
+		
+		
+		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.mapGPS)).getMap();
+		
 		
 		listSteps = myTrajet.getListSteps();
 		

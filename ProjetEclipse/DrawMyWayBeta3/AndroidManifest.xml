@@ -65,6 +65,10 @@
             android:name="com.ironrabbit.drawmywaybeta3.activity.TrajetDetails"
             android:label="@string/title_activity_trajet_details" >
         </activity>
+        <activity
+            android:name="com.ironrabbit.drawmyway.TestMaps"
+            android:label="@string/title_activity_test_maps" >
+        </activity>
     </application>
 
 </manifest>

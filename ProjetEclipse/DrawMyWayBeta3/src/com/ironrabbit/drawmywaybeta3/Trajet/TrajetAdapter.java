@@ -6,10 +6,12 @@ import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ironrabbit.drawmyway.R;
 import com.ironrabbit.drawmywaybeta3.activity.TrajetDetails;
@@ -52,9 +54,9 @@ public class TrajetAdapter extends BaseAdapter {
 
 			holder.tvNameTrajet = (TextView)convertView.findViewById(R.id.tv_nomTrajet);
 			holder.tvKmtrage = (TextView)convertView.findViewById(R.id.tv_kmTrajet);
-			holder.llTrajet=(LinearLayout)convertView.findViewById(R.id.rl_TrajetItem);
+			holder.llTrajet=(LinearLayout)convertView.findViewById(R.id.ll_TrajetItem);
 			//holder.llTrajet.setOnClickListener(new LinearLayoutClickListener(this.myAllTrajets.get(position),ct));
-			
+
 			convertView.setTag(holder);
 			
 		} else {

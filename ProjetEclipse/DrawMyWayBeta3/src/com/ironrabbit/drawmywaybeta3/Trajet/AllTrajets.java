@@ -3,6 +3,11 @@ package com.ironrabbit.drawmywaybeta3.Trajet;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.ironrabbit.drawmywaybeta3.Trajet.Downloaded.DirectionsResponse;
+
 
 public class AllTrajets extends ArrayList<Trajet> implements Serializable{
 
@@ -11,7 +16,17 @@ public class AllTrajets extends ArrayList<Trajet> implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public AllTrajets(){
+	private static AllTrajets INSTANCE;
+	
+	public static AllTrajets getInstance(){
+		INSTANCE=TrajetManager.loadAllTrajet();
+		if(INSTANCE==null){
+			INSTANCE=new AllTrajets();
+		}
+		return INSTANCE;
+	}
+	
+	private AllTrajets(){
 		super();
 	}
 	
@@ -54,7 +69,6 @@ public class AllTrajets extends ArrayList<Trajet> implements Serializable{
 	}
 
 	public void merge(AllTrajets at){
-		
 		for(int i=0;i<at.size();i++){
 			this.add(at.get(i));
 		}
