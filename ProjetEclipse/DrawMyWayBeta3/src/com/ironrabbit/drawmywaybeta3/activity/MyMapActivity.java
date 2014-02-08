@@ -51,16 +51,17 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.ironrabbit.drawmyway.R;
-import com.ironrabbit.drawmyway.TestMaps;
 import com.ironrabbit.drawmywaybeta3.Decoder;
 import com.ironrabbit.drawmywaybeta3.GeocodeJSONParser;
 import com.ironrabbit.drawmywaybeta3.AsyncTasks.GettingRoute;
 import com.ironrabbit.drawmywaybeta3.Trajet.AllTrajets;
 import com.ironrabbit.drawmywaybeta3.Trajet.Trajet;
-import com.ironrabbit.drawmywaybeta3.Trajet.TrajetManager;
 import com.ironrabbit.drawmywaybeta3.Trajet.Downloaded.DirectionsResponse;
 import com.ironrabbit.drawmywaybeta3.Trajet.Downloaded.Legs;
 
+/*
+ * Activity principale
+ */
 public class MyMapActivity extends SherlockActivity {
 
 	private GoogleMap map;
@@ -75,55 +76,45 @@ public class MyMapActivity extends SherlockActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_map);
+		//Initialisation des objets
 		myPolyline = null;
 		listMarkers = new ArrayList<Marker>();
-		allTraj = AllTrajets.getInstance();
-		idCurrentTrajet=0;
+		allTraj = AllTrajets.getInstance();//On récupère le singleton
+		idCurrentTrajet = 0;
 
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
 
 		// map.setMyLocationEnabled(true);
 
+		//Méthodes initialisant les comportements de l'écran
 		settingMapLongClickListener(false);
 		settingMapClickListener(false);
-
 		settingBtnSaveTrajetListener();
-
 		settingBtnLoad();
-
 		settingBtnDelete();
-
 		settingBtnMapStyleListener();
-
 		settingBtnLockMovListener();
-
 		settingBtnValidate();
-
 		settingBtnEnableCorrectionModeListener();
-
 		settingSearchBarListener();
-
 		settingBtnGPS();
 
 	}
 
-	private void fullscreenActivity() {
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
-	}
-	
-	private String getCurrentDayTime(){
+	private String getCurrentDayTime() {
 		Date aujourdhui = new Date();
 
-	    DateFormat shortDateFormat = DateFormat.getDateTimeInstance(
-	        DateFormat.SHORT,
-	        DateFormat.SHORT);
+		DateFormat shortDateFormat = DateFormat.getDateTimeInstance(
+				DateFormat.SHORT, DateFormat.SHORT);
 
-	   return shortDateFormat.format(aujourdhui);
+		return shortDateFormat.format(aujourdhui);
 	}
 
+	/*
+	 * Permet de dessiner sur la map tout les trajets sauvegardés.
+	 * N'est peut-être pas intéressant.
+	 */
 	private void settingBtnLoad() {
 		Button btn = (Button) findViewById(R.id.btn_load);
 
@@ -131,7 +122,7 @@ public class MyMapActivity extends SherlockActivity {
 
 			@Override
 			public void onClick(View v) {
-				//allTraj = TrajetManager.loadAllTrajet();
+				// allTraj = TrajetManager.loadAllTrajet();
 
 				for (int i = 0; i < allTraj.size(); i++) {
 					Trajet tj = allTraj.get(i);
@@ -167,6 +158,9 @@ public class MyMapActivity extends SherlockActivity {
 
 	}
 
+	/*
+	 * Supprime tout les trajets sauvegardés, ainsi que le fichier de sauvegarde
+	 */
 	private void settingBtnDelete() {
 		Button btnD = (Button) findViewById(R.id.btn_delete);
 
@@ -175,25 +169,32 @@ public class MyMapActivity extends SherlockActivity {
 			@Override
 			public void onClick(View v) {
 				allTraj.clear();
-				TrajetManager.deleteFile();
+				allTraj.deleteFile();
 			}
 		});
 	}
 
+	/*
+	 * Comportement lors d'un long click sur la map,
+	 * selon le mode courant (CorrectionMode ou pas)
+	 */
 	private void settingMapLongClickListener(boolean isCorrectionMode) {
 		if (!isCorrectionMode) {
 			map.setOnMapLongClickListener(new OnMapLongClickListener() {
 
 				@Override
 				public void onMapLongClick(LatLng point) {
-					
-					if(idCurrentTrajet!=0){
+
+					if (idCurrentTrajet != 0) {
 						Trajet tj = allTraj.getByHashId(idCurrentTrajet);
-						allTraj.remove(tj);
+						if (!tj.isHasBeenSave()) {
+							allTraj.remove(tj);
+						}
 					}
-					
+
 					// On créer notre trajet
-					Trajet tj = new Trajet("TemporaryName", false, false, getCurrentDayTime());
+					Trajet tj = new Trajet("TemporaryName", false, false,
+							getCurrentDayTime());
 					idCurrentTrajet = tj.getIdHash();
 
 					// On rend le bouton de sauvegarde utilisable
@@ -229,6 +230,10 @@ public class MyMapActivity extends SherlockActivity {
 		}
 	}
 
+	/*
+	 * Comportement lors d'un click court (click simple),
+	 * selon le mode courant (CorrectionMode ou pas)
+	 */
 	private void settingMapClickListener(boolean isCorrectionMode) {
 
 		if (!isCorrectionMode) {
@@ -238,7 +243,7 @@ public class MyMapActivity extends SherlockActivity {
 
 				@Override
 				public void onMapClick(LatLng point) {
-					Button btnV=(Button)findViewById(R.id.btn_validate);
+					Button btnV = (Button) findViewById(R.id.btn_validate);
 					btnV.setEnabled(true);
 					findViewById(R.id.btn_correctionMode).setEnabled(true);
 					// listJalons.add(point);
@@ -253,6 +258,10 @@ public class MyMapActivity extends SherlockActivity {
 		}
 	}
 
+	/*
+	 * Valide le trajet => appel à l'API google DirectionsResponse
+	 * pour avoir tout le trajet.
+	 */
 	private void settingBtnValidate() {
 		Button btnV = (Button) findViewById(R.id.btn_validate);
 		btnV.setEnabled(false);
@@ -278,7 +287,7 @@ public class MyMapActivity extends SherlockActivity {
 				 * for (int i = 0; i < listMarkers.size(); i++) {
 				 * listWayPoints.add(listMarkers.get(i).getPosition()); }
 				 */
-				//Log.d("DEBUT", "" + tj.getListMarkersLatLng().size());
+				// Log.d("DEBUT", "" + tj.getListMarkersLatLng().size());
 				new GettingRoute().execute(tj.getListMarkersLatLng());
 
 				try {
@@ -347,6 +356,10 @@ public class MyMapActivity extends SherlockActivity {
 		return tmp;
 	}
 
+	/*
+	 * Ajoute le trajet courant à la liste de tous les trajets sauvegardés
+	 * et sauvegarde cette liste dans un fichier
+	 */
 	private void settingBtnSaveTrajetListener() {
 
 		Button btnS = (Button) findViewById(R.id.btn_Save);
@@ -375,7 +388,7 @@ public class MyMapActivity extends SherlockActivity {
 									tj.setName(value);
 									tj.setHasBeenSave(true);
 									allTraj.replace(tj);
-									TrajetManager.saveAllTrajet(allTraj);
+									allTraj.saveAllTrajet();
 									Toast.makeText(getApplicationContext(),
 											"Trajet " + tj.getName() + " save",
 											Toast.LENGTH_SHORT).show();
@@ -384,7 +397,7 @@ public class MyMapActivity extends SherlockActivity {
 					alert.show();
 				} else {
 					// allTraj.replace(tj);
-					TrajetManager.saveAllTrajet(allTraj);
+					allTraj.saveAllTrajet();
 					Toast.makeText(getApplicationContext(),
 							"Trajet " + tj.getName() + " save",
 							Toast.LENGTH_SHORT).show();
@@ -395,6 +408,9 @@ public class MyMapActivity extends SherlockActivity {
 
 	}
 
+	/*
+	 * Change le type de la carte : satellite ou hybride
+	 */
 	private void settingBtnMapStyleListener() {
 		Button btnT = (Button) findViewById(R.id.btn_mapStyle);
 
@@ -414,6 +430,9 @@ public class MyMapActivity extends SherlockActivity {
 
 	}
 
+	/*
+	 * Désactive tout les mouvements sur la carte
+	 */
 	private void settingBtnLockMovListener() {
 		Button btnL = (Button) findViewById(R.id.btn_lock);
 		btnL.setTextColor(Color.GREEN);
@@ -422,7 +441,7 @@ public class MyMapActivity extends SherlockActivity {
 
 			@Override
 			public void onClick(View v) {
-				Button btnL=(Button)v;
+				Button btnL = (Button) v;
 				if (map.getUiSettings().isScrollGesturesEnabled()) {
 					map.getUiSettings().setAllGesturesEnabled(false);
 					btnL.setTextColor(Color.RED);
@@ -485,6 +504,11 @@ public class MyMapActivity extends SherlockActivity {
 		});
 	}
 
+	/*
+	 * Active le mode correction.
+	 * Dans ce mode, seul les jalons sont visibles.
+	 * Il suffit de toucher un jalon pour le supprimer.
+	 */
 	public void settingBtnEnableCorrectionModeListener() {
 		Button btnR = (Button) findViewById(R.id.btn_correctionMode);
 		btnR.setEnabled(false);
@@ -496,7 +520,7 @@ public class MyMapActivity extends SherlockActivity {
 
 			@Override
 			public void onClick(View v) {
-				Button btnR=(Button)v;
+				Button btnR = (Button) v;
 				if (btnR.getTextColors().getDefaultColor() == Color.RED) {
 					btnR.setTextColor(Color.GREEN);
 					if (myPolyline != null) {
@@ -537,6 +561,9 @@ public class MyMapActivity extends SherlockActivity {
 		btnLongClickToast(btnR, "Efface le dernier jalon tracé");
 	}
 
+	/*
+	 * Démarre le GPS
+	 */
 	public void settingBtnGPS() {
 		Button btnG = (Button) findViewById(R.id.btn_LaunchGPS);
 		// btnG.setEnabled(false);
@@ -710,25 +737,36 @@ public class MyMapActivity extends SherlockActivity {
 		}
 	}
 
+	/*
+	 * Ajoute les items.
+	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		MenuItem trajet_item = menu.add("Trajet").setIcon(
-				R.drawable.android);
+		MenuItem trajet_item = menu.add("Trajet").setIcon(R.drawable.android);
 
 		trajet_item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-		trajet_item
-				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+		trajet_item.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
-					@Override
-					public boolean onMenuItemClick(MenuItem item) {
-						Intent toTrajetDisplay = new Intent(MyMapActivity.this, TrajetDisplayList.class);
-						startActivity(toTrajetDisplay);
-						return false;
-					}
-				});
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				Intent toTrajetDisplay = new Intent(MyMapActivity.this,
+						TrajetDisplayList.class);
+				startActivity(toTrajetDisplay);
+				return false;
+			}
+		});
 
 		return true;
 	}
 
+	/*
+	 * Recharge la liste des trajets.
+	 */
+	public void onResume(){
+		super.onResume();
+		Log.d("DEBUUUUUG","onresume");
+		allTraj=AllTrajets.getInstance();
+		Log.d("DEBUUUUUG",""+allTraj.size());
+	}
 }

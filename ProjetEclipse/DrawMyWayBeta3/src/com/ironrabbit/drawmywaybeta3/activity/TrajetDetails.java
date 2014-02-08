@@ -32,6 +32,10 @@ import com.ironrabbit.drawmywaybeta3.Trajet.AllTrajets;
 import com.ironrabbit.drawmywaybeta3.Trajet.Trajet;
 import com.ironrabbit.drawmywaybeta3.Trajet.TrajetAdapter;
 
+/*
+ * Affiche les détails d'un trajet :
+ * Nom, dates, durée, kmtrage etc
+ */
 public class TrajetDetails extends SherlockActivity {
 
 	private GoogleMap map;
@@ -45,8 +49,6 @@ public class TrajetDetails extends SherlockActivity {
 
 		myAllTrajets = AllTrajets.getInstance();
 		position = getIntent().getExtras().getInt("position_Trajet_List");
-		Log.d("DEBUUUUG", ""+myAllTrajets.size());
-		Log.d("DEBUUUUG", ""+position);
 		map = ((MapFragment) getFragmentManager().findFragmentById(
 				R.id.mapTrajetDetails)).getMap();
 
@@ -142,7 +144,7 @@ public class TrajetDetails extends SherlockActivity {
 			}
 		});*/
 
-		MenuItem item_Rename = menu.add("Rename").setIcon(R.drawable.android);
+		/*MenuItem item_Rename = menu.add("Rename").setIcon(R.drawable.android);
 		item_Rename.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		item_Rename.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
@@ -169,7 +171,7 @@ public class TrajetDetails extends SherlockActivity {
 				alert.show();
 				return false;
 			}
-		});
+		});*/
 
 		return true;
 	}

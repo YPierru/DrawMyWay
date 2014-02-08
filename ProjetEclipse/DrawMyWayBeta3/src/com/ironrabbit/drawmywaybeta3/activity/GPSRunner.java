@@ -29,7 +29,9 @@ import com.ironrabbit.drawmywaybeta3.Trajet.Trajet;
 import com.ironrabbit.drawmywaybeta3.Trajet.Downloaded.Step;
 
 
-
+/*
+ * Le GPS de l'application
+ */
 public class GPSRunner extends SherlockActivity {
 
 	private GoogleMap map;
@@ -54,20 +56,22 @@ public class GPSRunner extends SherlockActivity {
 		listSteps = myTrajet.getListSteps();
 		
 		
-		drawParkour();
+		drawParkour();//Dessine le trajet sur la map
 		currentStepIndex = 0;
-		setClickListeners();
-		putStepOnScreen();
+		setClickListeners();//Permet de passer d'une step à une autre
+		putStepOnScreen();//Affiche les détails de la step courante sur l'écran
 	}
 
 	public void drawParkour() {
 		ArrayList<LatLng> pts = myTrajet.getPointsWhoDrawsPolylineLatLng();
 		
+		//Marker du début
 		setMarker(pts.get(0), "Départ");
 
 		CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(pts.get(0), 16);
 		map.animateCamera(cu, 600, null);
 		
+		//Dessin du trajet
 		PolylineOptions options = new PolylineOptions()
 										.geodesic(false)
 										.width(15)
@@ -77,12 +81,14 @@ public class GPSRunner extends SherlockActivity {
 		}
 		myPolyline=map.addPolyline(options);
 		
+		//Marker censé représenter l'user
 		meMarker=map.addMarker(
 				new MarkerOptions()
 						.icon(BitmapDescriptorFactory.fromResource(R.drawable.android))
 						.position(pts.get(0))
 						.flat(true));
 		
+		//Marker de fin
 		setMarker(pts.get(pts.size()-1),"Arrivée");
 	}
 	
@@ -99,6 +105,7 @@ public class GPSRunner extends SherlockActivity {
 	
 
 	public void setClickListeners() {
+		//On touch sur la droite, on passe à la step suivante
 		TextView viewRight = (TextView) findViewById(R.id.vitesseMoy);
 		viewRight.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -109,6 +116,7 @@ public class GPSRunner extends SherlockActivity {
 			}
 		});
 
+		//On touch sur la gauche, on passe à la step précédente
 		LinearLayout viewLeft = (LinearLayout) findViewById(R.id.leftLinearLayout);
 		viewLeft.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -130,6 +138,7 @@ public class GPSRunner extends SherlockActivity {
 	}
 
 	public void putStepOnScreen() {
+		//Déplace le marker "me" selon la step courante
 		Step myStep = listSteps.get(currentStepIndex);
 		LatLng point = new LatLng(myStep.getStart_location().getLat(), myStep.getStart_location().getLng());
 		meMarker.setPosition(point);

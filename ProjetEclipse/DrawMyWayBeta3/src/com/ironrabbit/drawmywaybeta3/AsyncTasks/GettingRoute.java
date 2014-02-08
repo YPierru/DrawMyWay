@@ -16,18 +16,20 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ironrabbit.drawmywaybeta3.Trajet.Downloaded.DirectionsResponse;
 
+
+/*
+ * Récupère les détails d'un trajet via l'API DirectionsResponse
+ */
 public class GettingRoute extends AsyncTask<ArrayList<LatLng>, Void, Void> {
 
 	private LatLng origin, destination;
 	private final String URL_PATTERN = "https://maps.googleapis.com/maps/api/directions/json?sensor=true&language=fr&mode=walking&";
-	//private Document myXmlDoc;
 	private static DirectionsResponse myRoad;
-	private String overviewPL;
-	private static ArrayList<LatLng> route;
-	private static ArrayList<LatLng> listWayPoints;
+	private static ArrayList<LatLng> listWayPoints;//LIste des jalons
 
 	protected Void doInBackground(ArrayList<LatLng>... param) {
 
+		//Construction de l'URL
 		listWayPoints=param[0];
 		this.origin = listWayPoints.get(0);
 		this.destination = listWayPoints.get(listWayPoints.size()-1);
@@ -48,25 +50,17 @@ public class GettingRoute extends AsyncTask<ArrayList<LatLng>, Void, Void> {
 					+ "," + this.origin.longitude + "&destination="
 					+ this.destination.latitude + ","
 					+ this.destination.longitude+wayPointsStr);
-			Log.d("debuuuuuug",url.toString());
+			//Appel de l'API, parsing du JSON récupéré
 			InputStream is = url.openStream();
 			String strRoad = IOUtils.toString(is);
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			myRoad = gson.fromJson(strRoad, DirectionsResponse.class);
-			//this.overviewPL = myRoad.getRoutes().get(0).getOverview_polyline().getPoints();
-			//route = Decoder.decodePoly((this.overviewPL));
 		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
-	}
-	
-	public static ArrayList<LatLng> getRoute(){
-		return route;
 	}
 	
 	public static DirectionsResponse getDR(){

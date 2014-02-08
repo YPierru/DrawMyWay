@@ -7,6 +7,10 @@ import java.util.List;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+
+/*
+ * Structure Java du JSON renvoyé par Google lors de la construction d'un trajet
+ */
 public class DirectionsResponse implements Parcelable,Serializable{
 
 	/**

@@ -51,11 +51,9 @@ public class TrajetAdapter extends BaseAdapter {
 		if(convertView == null) {
 			holder = new ViewHolder();
 			convertView = inflater.inflate(R.layout.itemtrajet, null);
-
+			
 			holder.tvNameTrajet = (TextView)convertView.findViewById(R.id.tv_nomTrajet);
 			holder.tvKmtrage = (TextView)convertView.findViewById(R.id.tv_kmTrajet);
-			holder.llTrajet=(LinearLayout)convertView.findViewById(R.id.ll_TrajetItem);
-			//holder.llTrajet.setOnClickListener(new LinearLayoutClickListener(this.myAllTrajets.get(position),ct));
 
 			convertView.setTag(holder);
 			
@@ -82,36 +80,7 @@ public class TrajetAdapter extends BaseAdapter {
 	
 	private class ViewHolder {
 		TextView tvNameTrajet;
-		LinearLayout llTrajet;
 		TextView tvKmtrage;
-	}
-	
-	
-	private class LinearLayoutClickListener implements OnClickListener{
-		
-		private Trajet myTrajet;
-		private Context context;
-		
-		public LinearLayoutClickListener(Trajet mt, Context ct){
-			myTrajet=mt;
-			context=ct;
-		}
-
-		@Override
-		public void onClick(View v) {
-			
-			if(myTrajet.isHasBeenSave()){
-				Intent toTrajetDetails = new Intent(context, TrajetDetails.class);
-				toTrajetDetails.putExtra("trajet_for_details", (Parcelable)myTrajet);
-				context.startActivity(toTrajetDetails);
-			}else{
-				Intent toMyMapActivity = new Intent(context, TrajetDetails.class);
-				toMyMapActivity.putExtra("trajet_en_cours", (Parcelable)myTrajet);
-				context.startActivity(toMyMapActivity);
-			}
-			
-		}
-		
 	}
 	
 }

@@ -6,6 +6,10 @@ import java.util.ArrayList;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/*
+ * Objet permettant de manipuler 2 listes d'objets à la fois
+ */
+
 public class DoubleArrayList<A> implements Parcelable,Serializable{
 
 	/**

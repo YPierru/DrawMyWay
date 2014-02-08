@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.maps.GeoPoint;
 
+/*
+ * Cette classe permet de décoder des points transmis par Google en LatLng.
+ */
+
 public class Decoder {
 
 	public static ArrayList<LatLng> decodePoly(String encoded) {
@@ -37,7 +41,6 @@ public class Decoder {
 					(int) (((double) lng / 1E5) * 1E6));
 			LatLng ll = new LatLng(p.getLatitudeE6() / 1E6,
 					p.getLongitudeE6() / 1E6);
-			// System.out.println(ll.latitude+" "+ll.longitude);
 			poly.add(ll);
 		}
 

@@ -5,6 +5,12 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal" >
 
+    <CheckBox
+        android:id="@+id/checkboxTrajet"
+        android:layout_width="50dp"
+        android:layout_height="fill_parent"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/tv_nomTrajet"
         android:layout_width="0dp"
