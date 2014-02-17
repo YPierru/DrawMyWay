@@ -662,7 +662,7 @@ public class MyMapActivity extends SherlockActivity {
 
 	}
 
-	/** A class to parse the Geocoding Places in non-ui thread */
+	/* A class to parse the Geocoding Places in non-ui thread */
 	class ParserTask extends
 			AsyncTask<String, Integer, List<HashMap<String, String>>> {
 
@@ -679,7 +679,7 @@ public class MyMapActivity extends SherlockActivity {
 			try {
 				jObject = new JSONObject(jsonData[0]);
 
-				/** Getting the parsed data as a an ArrayList */
+				/* Getting the parsed data as a an ArrayList */
 				places = parser.parse(jObject);
 
 			} catch (Exception e) {
@@ -763,8 +763,8 @@ public class MyMapActivity extends SherlockActivity {
 	 */
 	public void onResume(){
 		super.onResume();
-		Log.d("DEBUUUUUG","onresume");
+		//Log.d("DEBUUUUUG","onresume");
 		allTraj=AllTrajets.getInstance();
-		Log.d("DEBUUUUUG",""+allTraj.size());
+		//Log.d("DEBUUUUUG",""+allTraj.size());
 	}
 }

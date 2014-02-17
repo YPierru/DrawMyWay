@@ -2,13 +2,14 @@ package com.ironrabbit.drawmywaybeta3.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.ActionMode;
@@ -19,9 +20,8 @@ import com.ironrabbit.drawmywaybeta3.Trajet.AllTrajets;
 import com.ironrabbit.drawmywaybeta3.Trajet.Trajet;
 import com.ironrabbit.drawmywaybeta3.Trajet.TrajetAdapter;
 
-
 /*
- * Affiche la liste des trajets sauvegardés
+ * Affiche la liste des trajets sauvegard�s
  */
 public class TrajetDisplayList extends SherlockActivity {
 
@@ -68,21 +68,20 @@ public class TrajetDisplayList extends SherlockActivity {
 	}
 
 	/*
-	 * Si on reste appuyé sur un trajet, active le ActionMode
+	 * Si on reste appuy� sur un trajet, active le ActionMode
 	 */
 	private class ActionOnLongClickItemTrajet implements
 			OnItemLongClickListener {
 		@Override
 		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 				int arg2, long arg3) {
-			myLV.setOnItemClickListener(null);
+			//myLV.setOnItemClickListener(null);
 			startActionMode(new AnActionModeOfEpicProportions());
 			return false;
 		}
 
 	}
 
-	
 	private final class AnActionModeOfEpicProportions implements
 			ActionMode.Callback {
 
@@ -94,10 +93,14 @@ public class TrajetDisplayList extends SherlockActivity {
 			// Used to put dark icons on light action bar
 			menu.add("Delete").setIcon(R.drawable.deleteicon)
 					.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-			/*menu.add("Select all").setIcon(R.drawable.selectallicon)
-			.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);*/
-
-			//Affiche la checkbox pour les trajets
+			/*
+			 * menu.add("Select all").setIcon(R.drawable.selectallicon)
+			 * .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+			 */
+			
+			
+			
+			// Affiche la checkbox pour les trajets
 			hideOrSeeCheckBox(View.VISIBLE);
 			return true;
 		}
@@ -108,54 +111,55 @@ public class TrajetDisplayList extends SherlockActivity {
 		}
 
 		/*
-		 * Détermine le comporte lorsque l'on clique sur un item (en ActionMode)
+		 * Détermine le comporte lorsque l'on clique sur un item (en
+		 * ActionMode)
 		 */
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			//Récupère le nombre d'items.
+			// Récupère le nombre d'items.
 			int nbItem = myLV.getCount();
 			View itemView;
 			CheckBox cb;
 			Trajet tj;
-			//Pour chaque item, s'il est coché, on le supprime
+			// Pour chaque item, s'il est coché, on le supprime
 			for (int i = 0; i < nbItem; i++) {
-				 itemView = (View) myLV.getChildAt(i);
-				 cb = (CheckBox) itemView
-						.findViewById(R.id.checkboxTrajet);
+				itemView = (View) myLV.getChildAt(i);
+				cb = (CheckBox) itemView.findViewById(R.id.checkboxTrajet);
 				if (cb.isChecked()) {
 					cb.setChecked(false);
-					 tj = (Trajet) myLV.getItemAtPosition(i);
+					tj = (Trajet) myLV.getItemAtPosition(i);
 					myAllTrajets.remove(tj);
 				}
 			}
-			
-			//Recharge la liste des items
-			TrajetAdapter ta=(TrajetAdapter)myLV.getAdapter();
+
+			// Recharge la liste des items
+			TrajetAdapter ta = (TrajetAdapter) myLV.getAdapter();
 			ta.notifyDataSetChanged();
-			
-			//Ferme le ActionMode
+
+			// Ferme le ActionMode
 			mode.finish();
-			
-			//Sauvegarde tout les trajets
+
+			// Sauvegarde tout les trajets
 			myAllTrajets.saveAllTrajet();
-			
-			//Redonne le comportement par défaut lors d'un click item
+
+			// Redonne le comportement par défaut lors d'un click item
 			myLV.setOnItemClickListener(new ActionOnClickItemTrajet());
-			
-			//Cache les checkbox
+
+			// Cache les checkbox
 			hideOrSeeCheckBox(View.GONE);
 			return true;
 		}
 
 		/*
-		 * Ce produit lorsque l'user clique sur la croix de validation en haut à gauche
+		 * Ce produit lorsque l'user clique sur la croix de validation en haut
+		 * à gauche
 		 */
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
-			//Redonne le comportement par défaut lors d'un click item
+			// Redonne le comportement par défaut lors d'un click item
 			myLV.setOnItemClickListener(new ActionOnClickItemTrajet());
-			
-			//Cache les checkbox
+
+			// Cache les checkbox
 			hideOrSeeCheckBox(View.GONE);
 		}
 
