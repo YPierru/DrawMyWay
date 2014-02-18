@@ -17,6 +17,7 @@ import java.util.List;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
@@ -34,6 +35,7 @@ import android.widget.Toast;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.SubMenu;
 import com.actionbarsherlock.view.MenuItem.OnMenuItemClickListener;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -89,10 +91,9 @@ public class MyMapActivity extends SherlockActivity {
 		settingMapLongClickListener(false);
 		settingMapClickListener(false);
 		settingBtnSaveTrajetListener();
-		settingBtnLoad();
-		settingBtnDelete();
-		settingBtnMapStyleListener();
-		settingBtnLockMovListener();
+		//settingBtnLoad();
+		//settingBtnMapStyleListener();
+		//settingBtnLockMovListener();
 		settingBtnValidate();
 		settingBtnEnableCorrectionModeListener();
 		settingSearchBarListener();
@@ -113,7 +114,7 @@ public class MyMapActivity extends SherlockActivity {
 	 * Permet de dessiner sur la map tout les trajets sauvegardés.
 	 * N'est peut-√™tre pas intéressant.
 	 */
-	private void settingBtnLoad() {
+	/*private void settingBtnLoad() {
 		Button btn = (Button) findViewById(R.id.btn_load);
 
 		btn.setOnClickListener(new OnClickListener() {
@@ -154,23 +155,7 @@ public class MyMapActivity extends SherlockActivity {
 			}
 		});
 
-	}
-
-	/*
-	 * Supprime tout les trajets sauvegardés, ainsi que le fichier de sauvegarde
-	 */
-	private void settingBtnDelete() {
-		Button btnD = (Button) findViewById(R.id.btn_delete);
-
-		btnD.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				allTraj.clear();
-				allTraj.deleteFile();
-			}
-		});
-	}
+	}*/
 
 	/*
 	 * Comportement lors d'un long click sur la map,
@@ -268,6 +253,7 @@ public class MyMapActivity extends SherlockActivity {
 
 			@Override
 			public void onClick(View v) {
+				
 				Button btnR = (Button) findViewById(R.id.btn_correctionMode);
 				if (btnR.getTextColors().getDefaultColor() == Color.GREEN) {
 					btnR.performClick();
@@ -285,9 +271,9 @@ public class MyMapActivity extends SherlockActivity {
 				 * for (int i = 0; i < listMarkers.size(); i++) {
 				 * listWayPoints.add(listMarkers.get(i).getPosition()); }
 				 */
-				// Log.d("DEBUT", "" + tj.getListMarkersLatLng().size());
-				new GettingRoute().execute(tj.getListMarkersLatLng());
+				// Log.d("DEBUT", "" + tj.getListMark&ersLatLng().size());
 
+				new GettingRoute().execute(tj.getListMarkersLatLng());
 				try {
 					Thread.sleep(3500);
 				} catch (InterruptedException e) {
@@ -409,7 +395,7 @@ public class MyMapActivity extends SherlockActivity {
 	/*
 	 * Change le type de la carte : satellite ou hybride
 	 */
-	private void settingBtnMapStyleListener() {
+	/*private void settingBtnMapStyleListener() {
 		Button btnT = (Button) findViewById(R.id.btn_mapStyle);
 
 		btnT.setOnClickListener(new OnClickListener() {
@@ -426,12 +412,12 @@ public class MyMapActivity extends SherlockActivity {
 
 		btnLongClickToast(btnT, "Change le type de map : normal/hybride");
 
-	}
+	}*/
 
 	/*
 	 * Désactive tout les mouvements sur la carte
 	 */
-	private void settingBtnLockMovListener() {
+	/*private void settingBtnLockMovListener() {
 		Button btnL = (Button) findViewById(R.id.btn_lock);
 		btnL.setTextColor(Color.GREEN);
 
@@ -451,7 +437,7 @@ public class MyMapActivity extends SherlockActivity {
 		});
 
 		btnLongClickToast(btnL, "Active/Désactive les mouvements de la carte");
-	}
+	}*/
 
 	private void settingSearchBarListener() {
 		Button mBtnFind = (Button) findViewById(R.id.btn_show);
@@ -740,10 +726,8 @@ public class MyMapActivity extends SherlockActivity {
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		MenuItem trajet_item = menu.add("Trajet").setIcon(R.drawable.android);
-
+		MenuItem trajet_item = menu.add("Trajet").setIcon(R.drawable.bulleted_list);
 		trajet_item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-
 		trajet_item.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
 			@Override
@@ -754,6 +738,63 @@ public class MyMapActivity extends SherlockActivity {
 				return false;
 			}
 		});
+
+		
+		MenuItem lockMap_item = menu.add("Vérouiller").setIcon(R.drawable.lock);
+		lockMap_item.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		lockMap_item.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				if (map.getUiSettings().isScrollGesturesEnabled()) {
+					map.getUiSettings().setAllGesturesEnabled(false);
+					item.setIcon(R.drawable.unlock);
+				} else {
+					map.getUiSettings().setAllGesturesEnabled(true);
+					item.setIcon(R.drawable.lock);
+				}
+				return false;
+			}
+		});
+		
+		
+		SubMenu subMenu1 = menu.addSubMenu("Type de carte");
+        subMenu1.add("Hybride").setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+				return false;
+			}
+		});
+        subMenu1.add("Normal").setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+				return false;
+			}
+		});
+        subMenu1.add("Satellite").setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+				return false;
+			}
+		});
+        subMenu1.add("Terrain").setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				map.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+				return false;
+			}
+		});
+        MenuItem mapType_item = subMenu1.getItem();
+        mapType_item.setIcon(R.drawable.maps);
+        mapType_item.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+
 
 		return true;
 	}

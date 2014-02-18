@@ -4,14 +4,10 @@ import java.util.ArrayList;
 
 import org.joda.time.DateTime;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.os.Parcelable;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -30,11 +26,10 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.ironrabbit.drawmyway.R;
 import com.ironrabbit.drawmywaybeta3.Trajet.AllTrajets;
 import com.ironrabbit.drawmywaybeta3.Trajet.Trajet;
-import com.ironrabbit.drawmywaybeta3.Trajet.TrajetAdapter;
 
 /*
- * Affiche les d√©tails d'un trajet :
- * Nom, dates, dur√©e, kmtrage etc
+ * Affiche les détails d'un trajet :
+ * Nom, dates, durée, kmtrage etc
  */
 public class TrajetDetails extends SherlockActivity {
 
@@ -61,8 +56,8 @@ public class TrajetDetails extends SherlockActivity {
 		Trajet myTrajet = myAllTrajets.get(position);
 		ArrayList<LatLng> listPoints = myTrajet
 				.getPointsWhoDrawsPolylineLatLng();
-		setMarker(listPoints.get(0), "D√©part", false);
-		setMarker(listPoints.get(listPoints.size() - 1), "D√©part", false);
+		setMarker(listPoints.get(0), "Départ", false);
+		setMarker(listPoints.get(listPoints.size() - 1), "Départ", false);
 
 		PolylineOptions options = new PolylineOptions().geodesic(false)
 				.width(15).color(Color.argb(120, 0, 0, 221));
@@ -72,13 +67,14 @@ public class TrajetDetails extends SherlockActivity {
 		map.addPolyline(options);
 		CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(listPoints.get(0), 14);
 		map.animateCamera(cu, 600, null);
+		
 	}
 
 	public void setDataOnScreen() {
 		Trajet myTrajet = myAllTrajets.get(position);
-		initTV(R.id.tv_crea, "Cr√©√© le " + myTrajet.getDateCreation());
+		initTV(R.id.tv_crea, "Créé le " + myTrajet.getDateCreation());
 		initTV(R.id.tv_nom, myTrajet.getName());
-		initTV(R.id.tv_mod, "Modifi√© le " + myTrajet.getDateDerModif());
+		initTV(R.id.tv_mod, "Modifié le " + myTrajet.getDateDerModif());
 		double dist = myTrajet.getDistTotal();
 		if (dist < 1000) {
 			initTV(R.id.tv_dist, (int) dist + "m");
@@ -130,7 +126,7 @@ public class TrajetDetails extends SherlockActivity {
 					}
 				});*/
 
-		/*MenuItem item_GPS = menu.add("GPS").setIcon(R.drawable.android);
+		MenuItem item_GPS = menu.add("GPS").setIcon(R.drawable.gps);
 		item_GPS.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		item_GPS.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
@@ -138,40 +134,11 @@ public class TrajetDetails extends SherlockActivity {
 			public boolean onMenuItemClick(MenuItem item) {
 				Intent toGPSRunner = new Intent(TrajetDetails.this,
 						GPSRunner.class);
-				toGPSRunner.putExtra("TRAJET", (Parcelable) myTrajet);
+				toGPSRunner.putExtra("TRAJET", (Parcelable) myAllTrajets.get(position));
 				startActivity(toGPSRunner);
 				return true;
 			}
-		});*/
-
-		/*MenuItem item_Rename = menu.add("Rename").setIcon(R.drawable.android);
-		item_Rename.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-		item_Rename.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				Trajet myTrajet = myAllTrajets.get(position);
-				final AlertDialog.Builder alert = new AlertDialog.Builder(
-						TrajetDetails.this).setTitle("Nouveau nom");
-				final EditText input = new EditText(getApplicationContext());
-				input.setHint(myTrajet.getName());
-				input.setTextColor(Color.BLACK);
-				alert.setView(input);
-				alert.setPositiveButton("Ok",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-								String value = input.getText().toString()
-										.trim();
-								myAllTrajets.get(position).setName(value);
-								TextView tv=(TextView)findViewById(R.id.tv_nom);
-								tv.setText(value);
-							}
-						});
-				alert.show();
-				return false;
-			}
-		});*/
+		});
 
 		return true;
 	}
