@@ -77,7 +77,7 @@ public class MyMapActivity extends SherlockActivity {
 		//Initialisation des objets
 		myPolyline = null;
 		listMarkers = new ArrayList<Marker>();
-		allTraj = AllTrajets.getInstance();//On r√©cup√®re le singleton
+		allTraj = AllTrajets.getInstance();//On récup√®re le singleton
 		idCurrentTrajet = 0;
 
 		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
@@ -85,7 +85,7 @@ public class MyMapActivity extends SherlockActivity {
 
 		// map.setMyLocationEnabled(true);
 
-		//M√©thodes initialisant les comportements de l'√©cran
+		//Méthodes initialisant les comportements de l'écran
 		settingMapLongClickListener(false);
 		settingMapClickListener(false);
 		settingBtnSaveTrajetListener();
@@ -110,8 +110,8 @@ public class MyMapActivity extends SherlockActivity {
 	}
 
 	/*
-	 * Permet de dessiner sur la map tout les trajets sauvegard√©s.
-	 * N'est peut-√™tre pas int√©ressant.
+	 * Permet de dessiner sur la map tout les trajets sauvegardés.
+	 * N'est peut-√™tre pas intéressant.
 	 */
 	private void settingBtnLoad() {
 		Button btn = (Button) findViewById(R.id.btn_load);
@@ -127,8 +127,8 @@ public class MyMapActivity extends SherlockActivity {
 					ArrayList<LatLng> listRP = tj
 							.getPointsWhoDrawsPolylineLatLng();
 					ArrayList<LatLng> listMk = tj.getListMarkersLatLng();
-					setMarker(listMk.get(0), "D√©part", false);
-					setMarker(listMk.get(listMk.size() - 1), "Arriv√©e", false);
+					setMarker(listMk.get(0), "Départ", false);
+					setMarker(listMk.get(listMk.size() - 1), "Arrivée", false);
 
 					for (int j = 0; j < listMk.size(); j++) {
 						setMarker(
@@ -157,7 +157,7 @@ public class MyMapActivity extends SherlockActivity {
 	}
 
 	/*
-	 * Supprime tout les trajets sauvegard√©s, ainsi que le fichier de sauvegarde
+	 * Supprime tout les trajets sauvegardés, ainsi que le fichier de sauvegarde
 	 */
 	private void settingBtnDelete() {
 		Button btnD = (Button) findViewById(R.id.btn_delete);
@@ -190,7 +190,7 @@ public class MyMapActivity extends SherlockActivity {
 						}
 					}
 
-					// On cr√©er notre trajet
+					// On créer notre trajet
 					Trajet tj = new Trajet("TemporaryName", false, false,
 							getCurrentDayTime());
 					idCurrentTrajet = tj.getIdHash();
@@ -200,21 +200,21 @@ public class MyMapActivity extends SherlockActivity {
 					btnS.setEnabled(true);
 
 					// On efface tout sur la map ainsi que dans les listes
-					// concern√©es (longClick=nouveau trajet)
+					// concernées (longClick=nouveau trajet)
 					map.clear();
 					// listJalons.clear();
 					listMarkers.clear();
 
-					// On positionne la cam√©ra sur le point click√©
+					// On positionne la caméra sur le point clické
 					CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(point,
 							16);
 					map.animateCamera(cu, 600, null);
 
 					/*
 					 * On ajoute le jalon en LatLng. Dans lmb car le jalon peut
-					 * √™tre pos√© wanegain
+					 * √™tre posé wanegain
 					 */
-					listMarkers.add(setMarker(point, "D√©part", true));
+					listMarkers.add(setMarker(point, "Départ", true));
 					// listJalons.add(point);
 					tj.getListMarkers().clear();
 					tj.getListMarkers().add(point.latitude, point.longitude);
@@ -245,7 +245,7 @@ public class MyMapActivity extends SherlockActivity {
 					btnV.setEnabled(true);
 					findViewById(R.id.btn_correctionMode).setEnabled(true);
 					// listJalons.add(point);
-					listMarkers.add(setMarker(point, "Jalon pos√©", true));
+					listMarkers.add(setMarker(point, "Jalon posé", true));
 					Trajet tj = allTraj.getByHashId(idCurrentTrajet);
 					tj.getListMarkers().add(point.latitude, point.longitude);
 
@@ -295,7 +295,7 @@ public class MyMapActivity extends SherlockActivity {
 					e.printStackTrace();
 				}
 
-				// On r√©cup√®re tout notre trajet
+				// On récup√®re tout notre trajet
 				DirectionsResponse myRoad = GettingRoute.getDR();
 				tj.getListSegment().clear();
 				tj.getListSegment().add(myRoad);
@@ -306,7 +306,7 @@ public class MyMapActivity extends SherlockActivity {
 				listRealPoints = Decoder.decodePoly(myRoad.getRoutes().get(0)
 						.getOverview_polyline().getPoints());
 
-				// Le bloc ci-dessous permet de r√©cup√©rer les coo LatLng des
+				// Le bloc ci-dessous permet de récupérer les coo LatLng des
 				// Markers apr√®s correction de google
 				List<Legs> listLegs = myRoad.getRoutes().get(0).getLegs();
 				ArrayList<LatLng> tmpPoints = new ArrayList<LatLng>();
@@ -355,7 +355,7 @@ public class MyMapActivity extends SherlockActivity {
 	}
 
 	/*
-	 * Ajoute le trajet courant √† la liste de tous les trajets sauvegard√©s
+	 * Ajoute le trajet courant √† la liste de tous les trajets sauvegardés
 	 * et sauvegarde cette liste dans un fichier
 	 */
 	private void settingBtnSaveTrajetListener() {
@@ -429,7 +429,7 @@ public class MyMapActivity extends SherlockActivity {
 	}
 
 	/*
-	 * D√©sactive tout les mouvements sur la carte
+	 * Désactive tout les mouvements sur la carte
 	 */
 	private void settingBtnLockMovListener() {
 		Button btnL = (Button) findViewById(R.id.btn_lock);
@@ -450,7 +450,7 @@ public class MyMapActivity extends SherlockActivity {
 			}
 		});
 
-		btnLongClickToast(btnL, "Active/D√©sactive les mouvements de la carte");
+		btnLongClickToast(btnL, "Active/Désactive les mouvements de la carte");
 	}
 
 	private void settingSearchBarListener() {
@@ -543,24 +543,24 @@ public class MyMapActivity extends SherlockActivity {
 						}
 					});
 					Toast.makeText(getApplicationContext(),
-							"Mode correction activ√©", Toast.LENGTH_SHORT)
+							"Mode correction activé", Toast.LENGTH_SHORT)
 							.show();
 				} else {
 					btnR.setTextColor(Color.RED);
 					settingMapLongClickListener(false);
 					settingMapClickListener(false);
 					Toast.makeText(getApplicationContext(),
-							"Mode correction d√©sactiv√©", Toast.LENGTH_SHORT)
+							"Mode correction désactivé", Toast.LENGTH_SHORT)
 							.show();
 				}
 			}
 		});
 
-		btnLongClickToast(btnR, "Efface le dernier jalon trac√©");
+		btnLongClickToast(btnR, "Efface le dernier jalon tracé");
 	}
 
 	/*
-	 * D√©marre le GPS
+	 * Démarre le GPS
 	 */
 	public void settingBtnGPS() {
 		Button btnG = (Button) findViewById(R.id.btn_LaunchGPS);
