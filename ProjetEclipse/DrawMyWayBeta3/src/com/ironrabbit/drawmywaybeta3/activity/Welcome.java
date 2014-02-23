@@ -21,7 +21,6 @@ public class Welcome extends SherlockActivity {
 			public void onClick(View v) {
 				Intent toMap = new Intent(Welcome.this,MyMapActivity.class);
 				startActivity(toMap);
-				//kikoo
 			}
 		});
 		
