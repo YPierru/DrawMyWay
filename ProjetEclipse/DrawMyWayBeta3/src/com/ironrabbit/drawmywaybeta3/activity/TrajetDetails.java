@@ -28,8 +28,8 @@ import com.ironrabbit.drawmywaybeta3.Trajet.AllTrajets;
 import com.ironrabbit.drawmywaybeta3.Trajet.Trajet;
 
 /*
- * Affiche les détails d'un trajet :
- * Nom, dates, durée, kmtrage etc
+ * Affiche les d√©tails d'un trajet :
+ * Nom, dates, dur√©e, kmtrage etc
  */
 public class TrajetDetails extends SherlockActivity {
 
@@ -56,8 +56,8 @@ public class TrajetDetails extends SherlockActivity {
 		Trajet myTrajet = myAllTrajets.get(position);
 		ArrayList<LatLng> listPoints = myTrajet
 				.getPointsWhoDrawsPolylineLatLng();
-		setMarker(listPoints.get(0), "Départ", false);
-		setMarker(listPoints.get(listPoints.size() - 1), "Départ", false);
+		setMarker(listPoints.get(0), "D√©part", false);
+		setMarker(listPoints.get(listPoints.size() - 1), "D√©part", false);
 
 		PolylineOptions options = new PolylineOptions().geodesic(false)
 				.width(15).color(Color.argb(120, 0, 0, 221));
@@ -72,9 +72,9 @@ public class TrajetDetails extends SherlockActivity {
 
 	public void setDataOnScreen() {
 		Trajet myTrajet = myAllTrajets.get(position);
-		initTV(R.id.tv_crea, "Créé le " + myTrajet.getDateCreation());
+		initTV(R.id.tv_crea, "Cr√©√© le " + myTrajet.getDateCreation());
 		initTV(R.id.tv_nom, myTrajet.getName());
-		initTV(R.id.tv_mod, "Modifié le " + myTrajet.getDateDerModif());
+		initTV(R.id.tv_mod, "Modifi√© le " + myTrajet.getDateDerModif());
 		double dist = myTrajet.getDistTotal();
 		if (dist < 1000) {
 			initTV(R.id.tv_dist, (int) dist + "m");
@@ -109,7 +109,7 @@ public class TrajetDetails extends SherlockActivity {
 
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		/*MenuItem item_Correction = menu.add("Correct").setIcon(
+		MenuItem item_Correction = menu.add("Correct").setIcon(
 				R.drawable.android);
 		item_Correction.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		item_Correction
@@ -119,12 +119,11 @@ public class TrajetDetails extends SherlockActivity {
 					public boolean onMenuItemClick(MenuItem item) {
 						Intent toMyMapActivity = new Intent(TrajetDetails.this,
 								MyMapActivity.class);
-						toMyMapActivity.putExtra("trajet_for_correction",
-								(Parcelable) myTrajet);
+						toMyMapActivity.putExtra("trajet_for_correction", myAllTrajets.get(position).getIdHash());
 						startActivity(toMyMapActivity);
 						return true;
 					}
-				});*/
+				});
 
 		MenuItem item_GPS = menu.add("GPS").setIcon(R.drawable.gps);
 		item_GPS.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);

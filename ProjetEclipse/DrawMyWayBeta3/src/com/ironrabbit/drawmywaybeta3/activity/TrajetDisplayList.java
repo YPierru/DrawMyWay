@@ -5,16 +5,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.Toast;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -25,7 +25,7 @@ import com.ironrabbit.drawmywaybeta3.Trajet.Trajet;
 import com.ironrabbit.drawmywaybeta3.Trajet.TrajetAdapter;
 
 /*
- * Affiche la liste des trajets sauvegardés
+ * Affiche la liste des trajets sauvegard√©s
  */
 public class TrajetDisplayList extends SherlockActivity {
 
@@ -131,11 +131,16 @@ public class TrajetDisplayList extends SherlockActivity {
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
 
-			if (myAllTrajets.get(arg2).isHasBeenSave()) {
+			MyMapActivity.getInstance().finish();
+			if (myAllTrajets.get(arg2).isValidate()) {
 				Intent toTrajetDetails = new Intent(getApplicationContext(),
 						TrajetDetails.class);
 				toTrajetDetails.putExtra("position_Trajet_List", arg2);
 				startActivity(toTrajetDetails);
+			}else{
+				Intent toMyMapActivity = new Intent(getApplicationContext(),MyMapActivity.class);
+				toMyMapActivity.putExtra("idtrajet_for_modification", myAllTrajets.get(arg2).getIdHash());
+				startActivity(toMyMapActivity);
 			}
 		}
 	}

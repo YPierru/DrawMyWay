@@ -20,47 +20,47 @@ public class Trajet implements Parcelable,Serializable {
 	private static final long serialVersionUID = 1L;
 	private ArrayList<DirectionsResponse> listSegment;
 	private String name;
-	private boolean hasBeenSave;
-	private boolean estDessine;
+	private boolean save;
+	private boolean validate;
 	private DoubleArrayList<Double> pointsWhoDrawsPolyline;
-	private DoubleArrayList<Double> listMarkers;
+	private DoubleArrayList<Double> listLatLngMarkers; //List des points concernant les markers
 	private String dateCreation;
 	private String dateDerModif;
 	private int idHash;
 
 	public Trajet(  ArrayList<DirectionsResponse> ls,
 					String n,
-					boolean hbs,
+					boolean s,
 					ArrayList<LatLng> pwho,
 					ArrayList<LatLng> lm,
-					boolean ed,
+					boolean v,
 					String dc,
 					String ddm,
 					int ih){
 		this.listSegment=ls;
 		this.name=n;
-		this.hasBeenSave=hbs;
+		this.save=s;
 		this.pointsWhoDrawsPolyline=new DoubleArrayList<Double>();
 		for(int i=0;i<pwho.size();i++){
 			this.pointsWhoDrawsPolyline.add(pwho.get(i).latitude,pwho.get(i).longitude);
 		}
-		this.listMarkers=new DoubleArrayList<Double>();
+		this.listLatLngMarkers=new DoubleArrayList<Double>();
 		for(int i=0;i<lm.size();i++){
-			this.listMarkers.add(lm.get(i).latitude,lm.get(i).longitude);
+			this.listLatLngMarkers.add(lm.get(i).latitude,lm.get(i).longitude);
 		}
-		this.estDessine=ed;
+		this.validate=v;
 		this.dateCreation=dc;
 		this.dateDerModif=ddm;
 		this.idHash=ih;
 	}
 	
-	public Trajet(String n, boolean isF, boolean isD,String dc) {
+	public Trajet(String n, boolean isS, boolean isV,String dc) {
 		this.name = n;
-		this.hasBeenSave = isF;
-		this.estDessine=isD;
+		this.save = isS;
+		this.validate=isV;
 		this.listSegment = new ArrayList<DirectionsResponse>();
 		this.pointsWhoDrawsPolyline=new DoubleArrayList<Double>();
-		this.listMarkers=new DoubleArrayList<Double>();
+		this.listLatLngMarkers=new DoubleArrayList<Double>();
 		this.dateCreation=dc;
 		this.dateDerModif=dc;
 		this.idHash=System.identityHashCode(this);
@@ -72,10 +72,10 @@ public class Trajet implements Parcelable,Serializable {
 		this.name = in.readString();
 		boolean[] bool = new boolean[2];
 		in.readBooleanArray(bool);
-		this.hasBeenSave = bool[0];
-		this.estDessine = bool[1];
+		this.save = bool[0];
+		this.validate = bool[1];
 		this.pointsWhoDrawsPolyline=in.readParcelable(getClass().getClassLoader());
-		this.listMarkers=in.readParcelable(getClass().getClassLoader());
+		this.listLatLngMarkers=in.readParcelable(getClass().getClassLoader());
 		this.dateCreation=in.readString();
 		this.dateDerModif=in.readString();
 		this.idHash=in.readInt();
@@ -114,20 +114,20 @@ public class Trajet implements Parcelable,Serializable {
 		this.dateCreation = dateCreation;
 	}
 
-	public boolean isHasBeenSave() {
-		return hasBeenSave;
+	public boolean isSave() {
+		return save;
 	}
 
-	public void setHasBeenSave(boolean hasBeenSave) {
-		this.hasBeenSave = hasBeenSave;
+	public void setSave(boolean s) {
+		this.save = s;
 	}
 
-	public boolean isEstDessine() {
-		return estDessine;
+	public boolean isValidate() {
+		return validate;
 	}
 
-	public void setEstDessine(boolean estDessine) {
-		this.estDessine = estDessine;
+	public void setValidate(boolean v) {
+		this.validate = v;
 	}
 
 	public DoubleArrayList<Double> getPointsWhoDrawsPolyline() {
@@ -161,18 +161,18 @@ public class Trajet implements Parcelable,Serializable {
 	}
 
 	public DoubleArrayList<Double> getListMarkers() {
-		return listMarkers;
+		return listLatLngMarkers;
 	}
 
 	public void setListMarkers(DoubleArrayList<Double> listMarkers) {
-		this.listMarkers = listMarkers;
+		this.listLatLngMarkers = listMarkers;
 	}
 
 	public ArrayList<LatLng> getListMarkersLatLng() {
 		ArrayList<LatLng> lp = new ArrayList<LatLng>();
 		ArrayList<Double> ld = new ArrayList<Double>();
-		for(int i=0;i<this.listMarkers.size();i++){
-			ld=this.listMarkers.get(i);
+		for(int i=0;i<this.listLatLngMarkers.size();i++){
+			ld=this.listLatLngMarkers.get(i);
 			LatLng tmp = new LatLng(ld.get(0), ld.get(1));
 			lp.add(tmp);
 		}
@@ -180,12 +180,12 @@ public class Trajet implements Parcelable,Serializable {
 	}
 
 	public void setListMarkersLatLng(ArrayList<LatLng> lm) {
-		this.listMarkers.clear();
+		this.listLatLngMarkers.clear();
 		Double lat,lng;
 		for(int i=0;i<lm.size();i++){
 			lat = lm.get(i).latitude;
 			lng = lm.get(i).longitude;
-			this.listMarkers.add(lat,lng);
+			this.listLatLngMarkers.add(lat,lng);
 		}
 	}
 
@@ -220,10 +220,10 @@ public class Trajet implements Parcelable,Serializable {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeList(this.listSegment);
 		dest.writeString(this.name);
-		boolean[] arrayBool = { this.hasBeenSave,this.estDessine };
+		boolean[] arrayBool = { this.save,this.validate };
 		dest.writeBooleanArray(arrayBool);
 		dest.writeParcelable(this.pointsWhoDrawsPolyline,0);
-		dest.writeParcelable(this.listMarkers,0);
+		dest.writeParcelable(this.listLatLngMarkers,0);
 		dest.writeString(this.dateCreation);
 		dest.writeString(this.dateDerModif);
 		dest.writeInt(this.idHash);

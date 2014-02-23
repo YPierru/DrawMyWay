@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import android.os.Environment;
 
 /*
- * Singleton Classe fille d'ArrayList<Trajet>, permet de manipuler la liste de tous les trajets sauvegardés
- * Certains méthodes ont été réécrites.
+ * Singleton Classe fille d'ArrayList<Trajet>, permet de manipuler la liste de tous les trajets sauvegardées
+ * Certains méthodes ont éétéé réécrites.
  * Possibilité de sauvegarder dans un fichier cet objet.
  */
 public class AllTrajets extends ArrayList<Trajet> implements Serializable {
@@ -49,6 +49,16 @@ public class AllTrajets extends ArrayList<Trajet> implements Serializable {
 			}
 		}
 
+		return false;
+	}
+	
+	public boolean nameExists(String n){
+		for(int i=0;i<this.size();i++){
+			if(this.get(i).getName().equals(n)){
+				return true;
+			}
+		}
+		
 		return false;
 	}
 

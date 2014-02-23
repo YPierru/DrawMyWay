@@ -6,7 +6,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.maps.GeoPoint;
 
 /*
- * Cette classe permet de décoder des points transmis par Google en LatLng.
+ * Cette classe permet de d��coder des points transmis par Google en LatLng.
  */
 
 public class Decoder {
