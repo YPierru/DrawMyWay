@@ -18,7 +18,7 @@ import com.ironrabbit.drawmywaybeta3.Trajet.Downloaded.DirectionsResponse;
 
 
 /*
- * Récupère les détails d'un trajet via l'API DirectionsResponse
+ * Réécupéére les déétails d'un trajet via l'API DirectionsResponse
  */
 public class GettingRoute extends AsyncTask<ArrayList<LatLng>, Void, Void> {
 
@@ -50,7 +50,7 @@ public class GettingRoute extends AsyncTask<ArrayList<LatLng>, Void, Void> {
 					+ "," + this.origin.longitude + "&destination="
 					+ this.destination.latitude + ","
 					+ this.destination.longitude+wayPointsStr);
-			//Appel de l'API, parsing du JSON récupéré
+			//Appel de l'API, parsing du JSON réécupééréé
 			InputStream is = url.openStream();
 			String strRoad = IOUtils.toString(is);
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
