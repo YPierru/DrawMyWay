@@ -9,5 +9,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_trajet_details">TrajetDetails</string>
     <string name="title_activity_test_maps">TestMaps</string>
+    <string name="title_activity_welcome">Welcome</string>
 
 </resources>

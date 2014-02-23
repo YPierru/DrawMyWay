@@ -90,6 +90,7 @@ public class MyMapActivity extends SherlockActivity {
 		}catch(NullPointerException npe){
 			Log.d("DEBUUUUUG", "nop nop nop");
 			idCurrentTrajet = 0;
+			npe.printStackTrace();
 		}
 
 		// map.setMyLocationEnabled(true);
@@ -115,13 +116,27 @@ public class MyMapActivity extends SherlockActivity {
 	private void initDataFromTrajetList(){
 		//On récupère l'id du trajet sélectionné.
 		idCurrentTrajet=getIntent().getExtras().getInt("idtrajet_for_modification");
-		ArrayList<LatLng> listLLFromTrajet = allTraj.getByHashId(idCurrentTrajet).getListMarkersLatLng();
-		//On reconstruit la listMarker à partir de celle (DoubleArrayList) dans Trajet
-		CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(listLLFromTrajet.get(0),14);
-		map.animateCamera(cu, 600, null);
-		for(int i=0;i<listLLFromTrajet.size();i++){
-			listMarkers.add(setMarker(listLLFromTrajet.get(i), (i+1)+"", true));
+		//ArrayList<LatLng> listLLFromTrajet = allTraj.getByHashId(idCurrentTrajet).getListMarkersLatLng();
+		ArrayList<LatLng> tj=allTraj.getByHashId(idCurrentTrajet).getPointsWhoDrawsPolylineLatLng();
+		Log.d("DEBUUUUUG", "HELLOOOOOOW");
+		PolylineOptions options = new PolylineOptions().geodesic(false)
+				.width(15).color(Color.argb(120, 0, 0, 221));
+		for (int i=0;i<tj.size();i++) {
+			options.add(tj.get(i));
 		}
+		myPolyline = map.addPolyline(options);
+		CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(tj.get(0),14);
+		map.animateCamera(cu, 600, null);
+		/*if(allTraj.getByHashId(idCurrentTrajet).isValidate()){
+			for(int i=0;i<listLLFromTrajet.size();i++){
+				listMarkers.add(setMarker(listLLFromTrajet.get(i), (i+1)+"", true));
+			}
+		}else{*/
+			//On reconstruit la listMarker à partir de celle (DoubleArrayList) dans Trajet
+			//for(int i=0;i<listLLFromTrajet.size();i++){
+				//listMarkers.add(setMarker(listLLFromTrajet.get(i), (i+1)+"", true));
+			//}
+		//}
 		
 	}
 
