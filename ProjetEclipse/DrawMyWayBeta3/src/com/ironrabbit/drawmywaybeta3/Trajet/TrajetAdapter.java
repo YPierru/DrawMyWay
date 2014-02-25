@@ -71,7 +71,6 @@ public class TrajetAdapter extends BaseAdapter {
 
 		return convertView;
 	}
-
 	
 	private class ViewHolder {
 		TextView tvNameTrajet;

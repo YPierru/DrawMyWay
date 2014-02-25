@@ -2,6 +2,7 @@ package com.ironrabbit.drawmywaybeta4.trajet;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -34,6 +35,7 @@ public class AllTrajets extends ArrayList<Trajet> implements Serializable {
 		INSTANCE = loadAllTrajet();
 		if (INSTANCE == null) {
 			INSTANCE = new AllTrajets();
+			INSTANCE.saveAllTrajet();
 		}
 		return INSTANCE;
 	}
@@ -42,6 +44,11 @@ public class AllTrajets extends ArrayList<Trajet> implements Serializable {
 		super();
 	}
 
+	public static void delete(){
+		File f = new File(FILE_PATH+FILE_NAME);
+		f.delete();
+	}
+	
 	public boolean isPresent(Trajet t) {
 		for (int i = 0; i < this.size(); i++) {
 			if (this.get(i).getIdHash() == t.getIdHash()) {
@@ -115,8 +122,9 @@ public class AllTrajets extends ArrayList<Trajet> implements Serializable {
 					new FileInputStream(f));
 			at = (AllTrajets) oiStream.readObject();
 			oiStream.close();
-		} catch (Exception e) {
+		}catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 
 		return at;

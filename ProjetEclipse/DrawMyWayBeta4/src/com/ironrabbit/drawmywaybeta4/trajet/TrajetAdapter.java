@@ -1,15 +1,15 @@
 package com.ironrabbit.drawmywaybeta4.trajet;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.ironrabbit.drawmyway.R;
+
 
 public class TrajetAdapter extends BaseAdapter {
 	
@@ -70,6 +70,14 @@ public class TrajetAdapter extends BaseAdapter {
 		}
 
 		return convertView;
+	}
+
+	
+	public void updateData(AllTrajets newAT){
+		Log.d("DEBUUUUUUG", "lAAAAAA");
+		myAllTrajets.clear();
+		myAllTrajets.addAll(newAT);
+		this.notifyDataSetChanged();
 	}
 
 	

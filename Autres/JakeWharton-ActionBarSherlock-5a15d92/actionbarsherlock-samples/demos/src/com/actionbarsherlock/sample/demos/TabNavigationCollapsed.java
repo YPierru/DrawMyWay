@@ -1,5 +1,6 @@
 package com.actionbarsherlock.sample.demos;
 
+
 import android.os.Bundle;
 
 public class TabNavigationCollapsed extends TabNavigation {

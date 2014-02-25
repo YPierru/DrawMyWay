@@ -4,11 +4,19 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
+    <TextView
+        android:id="@+id/tv_aucunTrajets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aucun trajet existant ! Pour créer un trajet, cliquez sur la croix verte"
+        android:visibility="gone" />
+
     <ListView
         android:id="@+id/listView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:longClickable="true" >
+        android:longClickable="true"
+        android:visibility="gone" >
     </ListView>
 
 </LinearLayout>

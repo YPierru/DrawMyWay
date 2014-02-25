@@ -118,7 +118,7 @@ public class TrajetDetails extends SherlockActivity {
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
 						Intent toMyMapActivity = new Intent(TrajetDetails.this,
-								MyMapActivity.class);
+								CreateTrajet.class);
 						toMyMapActivity.putExtra("trajet_for_correction", myAllTrajets.get(position).getIdHash());
 						startActivity(toMyMapActivity);
 						return true;
