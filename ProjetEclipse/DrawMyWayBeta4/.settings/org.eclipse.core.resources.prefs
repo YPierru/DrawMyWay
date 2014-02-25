@@ -1,0 +1,7 @@
+eclipse.preferences.version=1
+encoding//src/com/ironrabbit/drawmywaybeta4/Decoder.java=UTF-8
+encoding//src/com/ironrabbit/drawmywaybeta4/activity/GPSRunner.java=UTF-8
+encoding//src/com/ironrabbit/drawmywaybeta4/activity/MyMapActivity.java=UTF-8
+encoding//src/com/ironrabbit/drawmywaybeta4/activity/TrajetDetails.java=UTF-8
+encoding//src/com/ironrabbit/drawmywaybeta4/activity/TrajetDisplayList.java=UTF-8
+encoding//src/com/ironrabbit/drawmywaybeta4/asyncTasks/GettingRoute.java=UTF-8
