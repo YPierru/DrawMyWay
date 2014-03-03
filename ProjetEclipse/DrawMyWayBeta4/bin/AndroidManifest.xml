@@ -36,7 +36,7 @@
         <uses-library android:name="com.google.android.maps" />
 
         <activity
-            android:name="com.ironrabbit.drawmywaybeta4.activity.CreateTrajet"
+            android:name="com.ironrabbit.drawmywaybeta4.activity.CMWTrajet"
             android:label="@string/app_name"
             android:noHistory="true" >
         </activity>

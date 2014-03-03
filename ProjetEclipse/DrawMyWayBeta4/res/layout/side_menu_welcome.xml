@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="260dp"
+    android:layout_height="match_parent"
+    android:background="#545454"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tv_datecrea"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/android"
+        android:gravity="center_horizontal"
+        android:text="DateCréation"
+        android:textColor="#ecede8"
+        android:textSize="19sp" />
+
+    <TextView
+        android:id="@+id/tv_kmtrage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/android"
+        android:text="Kilometrage"
+        android:textColor="#ecede8"
+        android:textSize="19sp" />
+
+    <TextView
+        android:id="@+id/tv_duree"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/android"
+        android:text="8 minutes"
+        android:textColor="#ecede8"
+        android:textSize="19sp" />
+
+    <TextView
+        android:id="@+id/tv_adrdepart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/android"
+        android:text="Adresse départ"
+        android:textColor="#ecede8"
+        android:textSize="19sp" />
+
+    <TextView
+        android:id="@+id/tv_adrarriv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/android"
+        android:text="Adresse arrivée"
+        android:textColor="#ecede8"
+        android:textSize="19sp" />
+
+    <Button
+        android:id="@+id/btn_voirmodif"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Voir/Modifier"
+        android:textColor="#ecede8"
+        android:textSize="19sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btn_gps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="GPS"
+        android:textColor="#ecede8"
+        android:textSize="19sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btn_renommer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Renommer"
+        android:textColor="#ecede8"
+        android:textSize="19sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btn_supp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Supprimer"
+        android:textColor="#ecede8"
+        android:textSize="19sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

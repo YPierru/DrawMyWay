@@ -10,17 +10,17 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.text.Html;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ironrabbit.drawmyway.R;
@@ -33,7 +33,7 @@ import com.navdrawer.SimpleSideDrawer;
 public class Welcome extends Activity {
 	
 	private AllTrajets myAllTrajets;
-	private ListView myLV;
+	private static ListView myLV;
 	private SimpleSideDrawer mSlidingMenu;
 
 	@Override
@@ -42,7 +42,7 @@ public class Welcome extends Activity {
 		setContentView(R.layout.layout_trajet_display);
 		
 		mSlidingMenu=new SimpleSideDrawer(this);
-		mSlidingMenu.setRightBehindContentView(R.layout.side_menu);
+		mSlidingMenu.setRightBehindContentView(R.layout.side_menu_welcome);
 		
 		myAllTrajets = AllTrajets.getInstance();
 		getActionBar().setTitle("Vos trajets");
@@ -57,104 +57,9 @@ public class Welcome extends Activity {
 
 			TrajetAdapter adapter = new TrajetAdapter(this, myAllTrajets);
 			myLV.setAdapter(adapter);
-			registerForContextMenu(myLV);
+			//registerForContextMenu(myLV);
 		}
 		
-	}
-
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenu.ContextMenuInfo menuInfo) {
-		ListView lv = (ListView) v;
-		AdapterView.AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) menuInfo;
-		final Trajet tj = (Trajet) lv.getItemAtPosition(acmi.position);
-
-		MenuItem itemVoirModifier = menu.add("Voir/Modifier");
-		itemVoirModifier.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				/*
-				 * Intent vers un écran permettant de voir et/ou modifier le trajet
-				 */
-				return false;
-			}
-		});
-
-		if(tj.isValidate()){
-			MenuItem itemGPS = menu.add("Lancer le GPS");
-			itemGPS.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-				
-				@Override
-				public boolean onMenuItemClick(MenuItem item) {
-					Intent toGPSRunner = new Intent(Welcome.this,
-							GPSRunner.class);
-					toGPSRunner.putExtra("TRAJET", (Parcelable) tj);
-					startActivity(toGPSRunner);
-					return false;
-				}
-			});
-		}
-
-		MenuItem itemRename = menu.add("Renommer");
-		itemRename.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-
-				final AlertDialog.Builder alert = new AlertDialog.Builder(
-						Welcome.this).setTitle("Nouveau nom");
-				final EditText input = new EditText(getApplicationContext());
-				input.setText(tj.getName());
-				input.setTextColor(Color.BLACK);
-				input.setCursorVisible(true);
-				alert.setView(input);
-				alert.setPositiveButton("Ok",
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-								String value = input.getText().toString()
-										.trim();
-								tj.setName(value);
-								myAllTrajets.replace(tj);
-								myAllTrajets.saveAllTrajet();
-							}
-						});
-				alert.show();
-				TrajetAdapter ta = (TrajetAdapter) myLV.getAdapter();
-				ta.notifyDataSetChanged();
-				return false;
-			}
-		});
-		
-		menu.add("Supprimer").setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Welcome.this);
-				//alertDialogBuilder.setTitle("Your Title");
-				alertDialogBuilder
-						.setMessage("Supprimer le trajet \""+tj.getName()+"\" ?")
-						.setCancelable(false)
-						.setPositiveButton("Oui",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										myAllTrajets.remove(tj);
-										myAllTrajets.saveAllTrajet();
-										TrajetAdapter ta = (TrajetAdapter) myLV.getAdapter();
-										ta.notifyDataSetChanged();
-									}
-								})
-						.setNegativeButton("Non",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										dialog.cancel();
-									}
-								});
-				AlertDialog alertDialog = alertDialogBuilder.create();
-				alertDialog.show();
-				return false;
-			}
-		});
 	}
 
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -177,8 +82,9 @@ public class Welcome extends Activity {
 						public void onClick(DialogInterface dialog,int whichButton) {
 							String value = input.getText().toString().trim();
 							Trajet newTrajet = new Trajet(value, false, false, getCurrentDayTime());
-							Intent toCreateTrajetActivity = new Intent(Welcome.this,CreateTrajet.class);
-							toCreateTrajetActivity.putExtra("nouveau_trajet", (Parcelable)newTrajet);
+							Intent toCreateTrajetActivity = new Intent(Welcome.this,CMWTrajet.class);
+							toCreateTrajetActivity.putExtra("trajet", (Parcelable)newTrajet);
+							toCreateTrajetActivity.putExtra("MODE", "Création");
 							startActivity(toCreateTrajetActivity);
 						}
 					});
@@ -196,6 +102,12 @@ public class Welcome extends Activity {
 		return shortDateFormat.format(aujourdhui);
 	}
 	
+	public static void updateDataList(){
+		
+		TrajetAdapter ta = (TrajetAdapter)myLV.getAdapter();
+		ta.updateData(AllTrajets.getInstance());
+	}
+	
 	/*
 	 * Si on clique sur un trajet, on bascule vers TrajetDetails
 	 */
@@ -204,53 +116,135 @@ public class Welcome extends Activity {
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
 			
-			mSlidingMenu.toggleRightDrawer();
-			
-			/*Trajet tj = myAllTrajets.get(arg2);
+			final Trajet tj = myAllTrajets.get(arg2);
 			
 			if(tj.isValidate()){
-				String infoTrajet = "<b>Créer le : </b>"+tj.getDateCreation()
-								   +"<br><b>Modifier le : </b>"+tj.getDateDerModif();
+				TextView tv_datecrea = (TextView)findViewById(R.id.tv_datecrea);
+				tv_datecrea.setText(tj.getDateCreation());
 				
+				TextView tv_kmtrage = (TextView)findViewById(R.id.tv_kmtrage);
 				double dist = tj.getDistTotal();
 				if (dist < 1000) {
-					infoTrajet+="<br><b>Kilométrage : </b>"+((int) dist + "m");
+					tv_kmtrage.setText((int) dist + "m");
 				} else {
-					infoTrajet+="<br><b>Kilométrage : </b>"+((dist / 1000) + "Km");
+					tv_kmtrage.setText((dist / 1000) + "Km");
 				}
+				
+				TextView tv_duree = (TextView)findViewById(R.id.tv_duree);
 				int dureeSecond = tj.getDureeTotal();
 				int heures = (dureeSecond / 3600);
 				int minutes = ((dureeSecond % 3600) / 60);
-				
 				if(heures==0){
-					infoTrajet+="<br><b>Durée : </b>"+minutes+"min";
+					tv_duree.setText(minutes+"min");
 				}else{
-					infoTrajet+="<br><b>Durée : </b>"+heures+"h"+minutes+"min";
+					tv_duree.setText(heures+"h"+minutes+"min");
 				}
 				
-				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Welcome.this);
-				alertDialogBuilder.setTitle(tj.getName());
-				alertDialogBuilder
-						.setMessage(Html.fromHtml(infoTrajet))
-						.setCancelable(true);
-				AlertDialog alertDialog = alertDialogBuilder.create();
-				alertDialog.show();
+				TextView tv_addrdeb = (TextView)findViewById(R.id.tv_adrdepart);
+				tv_addrdeb.setText(tj.getStartAddress());
+				
+				TextView tv_addrfin = (TextView)findViewById(R.id.tv_adrarriv);
+				tv_addrfin.setText(tj.getEndAddress());
+				
+				
+				Button btn_voirmodif = (Button)findViewById(R.id.btn_voirmodif);
+				btn_voirmodif.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						Intent toCreateTrajetActivity = new Intent(Welcome.this,CMWTrajet.class);
+						toCreateTrajetActivity.putExtra("trajet", (Parcelable)tj);
+						toCreateTrajetActivity.putExtra("MODE", "Voir");
+						startActivity(toCreateTrajetActivity);
+						mSlidingMenu.toggleRightDrawer();
+					}
+				});
+				
+				
+				Button btn_gps = (Button)findViewById(R.id.btn_gps);
+				btn_gps.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						Intent toGPSRunner = new Intent(Welcome.this,
+								GPSRunner.class);
+						toGPSRunner.putExtra("TRAJET", (Parcelable) tj);
+						startActivity(toGPSRunner);
+						mSlidingMenu.toggleRightDrawer();
+					}
+				});
+				
+				
+				Button btn_renommer = (Button)findViewById(R.id.btn_renommer);
+				btn_renommer.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						final AlertDialog.Builder alert = new AlertDialog.Builder(
+								Welcome.this).setTitle("Nouveau nom");
+						final EditText input = new EditText(getApplicationContext());
+						input.setText(tj.getName());
+						input.setTextColor(Color.BLACK);
+						input.setCursorVisible(true);
+						alert.setView(input);
+						alert.setPositiveButton("Ok",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int whichButton) {
+										String value = input.getText().toString()
+												.trim();
+										tj.setName(value);
+										myAllTrajets.replace(tj);
+										myAllTrajets.saveAllTrajet();
+									}
+								});
+						alert.show();
+						TrajetAdapter ta = (TrajetAdapter) myLV.getAdapter();
+						ta.notifyDataSetChanged();
+					}
+				});
+				
+				
+				Button btn_delete = (Button)findViewById(R.id.btn_supp);
+				btn_delete.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Welcome.this);
+						//alertDialogBuilder.setTitle("Your Title");
+						alertDialogBuilder
+								.setMessage("Supprimer le trajet \""+tj.getName()+"\" ?")
+								.setCancelable(false)
+								.setPositiveButton("Oui",
+										new DialogInterface.OnClickListener() {
+											public void onClick(DialogInterface dialog,
+													int id) {
+												myAllTrajets.remove(tj);
+												myAllTrajets.saveAllTrajet();
+												TrajetAdapter ta = (TrajetAdapter) myLV.getAdapter();
+												ta.notifyDataSetChanged();
+												mSlidingMenu.toggleRightDrawer();
+											}
+										})
+								.setNegativeButton("Non",
+										new DialogInterface.OnClickListener() {
+											public void onClick(DialogInterface dialog,
+													int id) {
+												dialog.cancel();
+											}
+										});
+						AlertDialog alertDialog = alertDialogBuilder.create();
+						alertDialog.show();
+					}
+				});
+				mSlidingMenu.toggleRightDrawer();
 			}else{
-				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Welcome.this);
-				alertDialogBuilder.setTitle(tj.getName());
-				alertDialogBuilder
-						.setMessage("Trajet non terminé !")
-						.setCancelable(true);
-				AlertDialog alertDialog = alertDialogBuilder.create();
-				alertDialog.show();
-			}*/
+				Intent toCWSTrajet = new Intent(Welcome.this,CMWTrajet.class);
+				toCWSTrajet.putExtra("trajet", (Parcelable)tj);
+				toCWSTrajet.putExtra("MODE", "Modification");
+				startActivity(toCWSTrajet);
+			}
 			
 		}
-	}
-	
-	public void onResume(){
-		super.onResume();
-		TrajetAdapter ta = (TrajetAdapter)myLV.getAdapter();
-		ta.updateData(AllTrajets.getInstance());
 	}
 }

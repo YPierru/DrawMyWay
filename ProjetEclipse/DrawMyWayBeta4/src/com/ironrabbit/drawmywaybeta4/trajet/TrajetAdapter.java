@@ -48,7 +48,6 @@ public class TrajetAdapter extends BaseAdapter {
 			convertView = inflater.inflate(R.layout.itemtrajet, null);
 			
 			holder.tvNameTrajet = (TextView)convertView.findViewById(R.id.tv_nomTrajet);
-			holder.tvKmtrage = (TextView)convertView.findViewById(R.id.tv_kmTrajet);
 
 			convertView.setTag(holder);
 			
@@ -56,17 +55,11 @@ public class TrajetAdapter extends BaseAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 		
-		holder.tvNameTrajet.setText(this.myAllTrajets.get(position).getName());
-	
-		double dist=this.myAllTrajets.get(position).getDistTotal();
-		if(dist==0){
-			holder.tvKmtrage.setText("en cours");
-		}
-		else if(dist<1000){
-			holder.tvKmtrage.setText((int)dist+"m");
-		}
-		else{
-			holder.tvKmtrage.setText((dist/1000)+"Km");
+		Trajet tj = this.myAllTrajets.get(position);
+		if(tj.isValidate()){
+			holder.tvNameTrajet.setText(this.myAllTrajets.get(position).getName());
+		}else{
+			holder.tvNameTrajet.setText("(en cours)"+this.myAllTrajets.get(position).getName());
 		}
 
 		return convertView;
@@ -83,7 +76,6 @@ public class TrajetAdapter extends BaseAdapter {
 	
 	private class ViewHolder {
 		TextView tvNameTrajet;
-		TextView tvKmtrage;
 	}
 	
 }
