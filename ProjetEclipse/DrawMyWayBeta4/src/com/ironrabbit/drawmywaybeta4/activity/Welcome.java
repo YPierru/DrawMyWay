@@ -10,7 +10,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.util.Log;
+import android.text.Html;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,22 +21,29 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.ironrabbit.drawmyway.R;
 import com.ironrabbit.drawmywaybeta4.trajet.AllTrajets;
 import com.ironrabbit.drawmywaybeta4.trajet.Trajet;
 import com.ironrabbit.drawmywaybeta4.trajet.TrajetAdapter;
+import com.navdrawer.SimpleSideDrawer;
 
 
 public class Welcome extends Activity {
 	
 	private AllTrajets myAllTrajets;
 	private ListView myLV;
+	private SimpleSideDrawer mSlidingMenu;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_trajet_display);
+		
+		mSlidingMenu=new SimpleSideDrawer(this);
+		mSlidingMenu.setRightBehindContentView(R.layout.side_menu);
+		
 		myAllTrajets = AllTrajets.getInstance();
 		getActionBar().setTitle("Vos trajets");
 		if(myAllTrajets.size()==0){
@@ -61,37 +68,32 @@ public class Welcome extends Activity {
 		AdapterView.AdapterContextMenuInfo acmi = (AdapterContextMenuInfo) menuInfo;
 		final Trajet tj = (Trajet) lv.getItemAtPosition(acmi.position);
 
-		//MenuItem itemSupprimer = menu.add("Supprimer");
-		menu.add("Supprimer").setOnMenuItemClickListener(new OnMenuItemClickListener() {
+		MenuItem itemVoirModifier = menu.add("Voir/Modifier");
+		itemVoirModifier.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
-				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Welcome.this);
-				//alertDialogBuilder.setTitle("Your Title");
-				alertDialogBuilder
-						.setMessage("Supprimer le trajet \""+tj.getName()+"\" ?")
-						.setCancelable(false)
-						.setPositiveButton("Oui",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										myAllTrajets.remove(tj);
-										myAllTrajets.saveAllTrajet();
-										TrajetAdapter ta = (TrajetAdapter) myLV.getAdapter();
-										ta.notifyDataSetChanged();
-									}
-								})
-						.setNegativeButton("Non",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										dialog.cancel();
-									}
-								});
-				AlertDialog alertDialog = alertDialogBuilder.create();
-				alertDialog.show();
+				/*
+				 * Intent vers un écran permettant de voir et/ou modifier le trajet
+				 */
 				return false;
 			}
 		});
+
+		if(tj.isValidate()){
+			MenuItem itemGPS = menu.add("Lancer le GPS");
+			itemGPS.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+				
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					Intent toGPSRunner = new Intent(Welcome.this,
+							GPSRunner.class);
+					toGPSRunner.putExtra("TRAJET", (Parcelable) tj);
+					startActivity(toGPSRunner);
+					return false;
+				}
+			});
+		}
 
 		MenuItem itemRename = menu.add("Renommer");
 		itemRename.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -119,6 +121,37 @@ public class Welcome extends Activity {
 				alert.show();
 				TrajetAdapter ta = (TrajetAdapter) myLV.getAdapter();
 				ta.notifyDataSetChanged();
+				return false;
+			}
+		});
+		
+		menu.add("Supprimer").setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Welcome.this);
+				//alertDialogBuilder.setTitle("Your Title");
+				alertDialogBuilder
+						.setMessage("Supprimer le trajet \""+tj.getName()+"\" ?")
+						.setCancelable(false)
+						.setPositiveButton("Oui",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										myAllTrajets.remove(tj);
+										myAllTrajets.saveAllTrajet();
+										TrajetAdapter ta = (TrajetAdapter) myLV.getAdapter();
+										ta.notifyDataSetChanged();
+									}
+								})
+						.setNegativeButton("Non",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										dialog.cancel();
+									}
+								});
+				AlertDialog alertDialog = alertDialogBuilder.create();
+				alertDialog.show();
 				return false;
 			}
 		});
@@ -170,18 +203,48 @@ public class Welcome extends Activity {
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
-
-			CreateTrajet.getInstance().finish();
-			if (myAllTrajets.get(arg2).isValidate()) {
-				Intent toTrajetDetails = new Intent(getApplicationContext(),
-						TrajetDetails.class);
-				toTrajetDetails.putExtra("position_Trajet_List", arg2);
-				startActivity(toTrajetDetails);
+			
+			mSlidingMenu.toggleRightDrawer();
+			
+			/*Trajet tj = myAllTrajets.get(arg2);
+			
+			if(tj.isValidate()){
+				String infoTrajet = "<b>Créer le : </b>"+tj.getDateCreation()
+								   +"<br><b>Modifier le : </b>"+tj.getDateDerModif();
+				
+				double dist = tj.getDistTotal();
+				if (dist < 1000) {
+					infoTrajet+="<br><b>Kilométrage : </b>"+((int) dist + "m");
+				} else {
+					infoTrajet+="<br><b>Kilométrage : </b>"+((dist / 1000) + "Km");
+				}
+				int dureeSecond = tj.getDureeTotal();
+				int heures = (dureeSecond / 3600);
+				int minutes = ((dureeSecond % 3600) / 60);
+				
+				if(heures==0){
+					infoTrajet+="<br><b>Durée : </b>"+minutes+"min";
+				}else{
+					infoTrajet+="<br><b>Durée : </b>"+heures+"h"+minutes+"min";
+				}
+				
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Welcome.this);
+				alertDialogBuilder.setTitle(tj.getName());
+				alertDialogBuilder
+						.setMessage(Html.fromHtml(infoTrajet))
+						.setCancelable(true);
+				AlertDialog alertDialog = alertDialogBuilder.create();
+				alertDialog.show();
 			}else{
-				Intent toMyMapActivity = new Intent(getApplicationContext(),CreateTrajet.class);
-				toMyMapActivity.putExtra("idtrajet_for_modification", myAllTrajets.get(arg2).getIdHash());
-				startActivity(toMyMapActivity);
-			}
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Welcome.this);
+				alertDialogBuilder.setTitle(tj.getName());
+				alertDialogBuilder
+						.setMessage("Trajet non terminé !")
+						.setCancelable(true);
+				AlertDialog alertDialog = alertDialogBuilder.create();
+				alertDialog.show();
+			}*/
+			
 		}
 	}
 	

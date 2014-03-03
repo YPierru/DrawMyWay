@@ -27,7 +27,6 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -54,7 +53,6 @@ import com.ironrabbit.drawmywaybeta4.GeocodeJSONParser;
 import com.ironrabbit.drawmywaybeta4.asyncTasks.GettingRoute;
 import com.ironrabbit.drawmywaybeta4.trajet.AllTrajets;
 import com.ironrabbit.drawmywaybeta4.trajet.Trajet;
-import com.ironrabbit.drawmywaybeta4.trajet.TrajetAdapter;
 import com.ironrabbit.drawmywaybeta4.trajet.downloaded.DirectionsResponse;
 import com.ironrabbit.drawmywaybeta4.trajet.downloaded.Legs;
 
@@ -553,9 +551,9 @@ public class CreateTrajet extends SherlockActivity {
 				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CreateTrajet.this);
 				//alertDialogBuilder.setTitle("Your Title");
 				alertDialogBuilder
-						.setMessage("Voulez-vous sauvegarder "+currentTrajet.getName()+" ?\nVous perdrez toutes vos modifications.")
+						.setMessage("Vous allez perdre toutes vos modifications.")
 						.setCancelable(false)
-						.setPositiveButton("Oui",
+						.setPositiveButton("Ok",
 								new DialogInterface.OnClickListener() {
 									public void onClick(DialogInterface dialog,
 											int id) {
