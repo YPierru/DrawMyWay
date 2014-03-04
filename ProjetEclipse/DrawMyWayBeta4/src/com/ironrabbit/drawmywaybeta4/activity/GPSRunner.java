@@ -25,7 +25,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.ironrabbit.drawmyway.R;
-import com.ironrabbit.drawmywaybeta4.trajet.Trajet;
+import com.ironrabbit.drawmywaybeta4.trajet.Route;
 import com.ironrabbit.drawmywaybeta4.trajet.downloaded.Step;
 
 
@@ -34,12 +34,11 @@ import com.ironrabbit.drawmywaybeta4.trajet.downloaded.Step;
  */
 public class GPSRunner extends SherlockActivity {
 
-	private GoogleMap map;
-	private Trajet myTrajet;
-	private Polyline myPolyline;
+	private GoogleMap mMap;
+	private Route mRoute;
 	private Marker meMarker;
-	private ArrayList<Step> listSteps;
-	private int currentStepIndex;
+	private ArrayList<Step> mListSteps;
+	private int mCurrentStepIndex;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,29 +46,29 @@ public class GPSRunner extends SherlockActivity {
 		setContentView(R.layout.layout_gps);
 		getSupportActionBar().hide();
 		
-		myTrajet = getIntent().getExtras().getParcelable("TRAJET");
+		mRoute = getIntent().getExtras().getParcelable("TRAJET");
 		
 		
-		map = ((MapFragment) getFragmentManager().findFragmentById(R.id.mapGPS)).getMap();
+		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.mapGPS)).getMap();
 		
 		
-		listSteps = myTrajet.getListSteps();
+		mListSteps = mRoute.getListSteps();
 		
 		
 		drawParkour();//Dessine le trajet sur la map
-		currentStepIndex = 0;
+		mCurrentStepIndex = 0;
 		setClickListeners();//Permet de passer d'une step e une autre
 		putStepOnScreen();//Affiche les details de la step courante sur l'ecran
 	}
 
 	public void drawParkour() {
-		ArrayList<LatLng> pts = myTrajet.getPointsWhoDrawsPolylineLatLng();
+		ArrayList<LatLng> pts = mRoute.getPointsWhoDrawsPolylineLatLng();
 		
 		//Marker du debut
 		setMarker(pts.get(0), "Depart");
 
 		CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(pts.get(0), 16);
-		map.animateCamera(cu, 600, null);
+		mMap.animateCamera(cu, 600, null);
 		
 		//Dessin du trajet
 		PolylineOptions options = new PolylineOptions()
@@ -79,10 +78,10 @@ public class GPSRunner extends SherlockActivity {
 		for(int i=0;i<pts.size();i++){
 			options.add(pts.get(i));
 		}
-		myPolyline=map.addPolyline(options);
+		mMap.addPolyline(options);
 		
 		//Marker cense representer l'user
-		meMarker=map.addMarker(
+		meMarker=mMap.addMarker(
 				new MarkerOptions()
 						.icon(BitmapDescriptorFactory.fromResource(R.drawable.android))
 						.position(pts.get(0))
@@ -93,7 +92,7 @@ public class GPSRunner extends SherlockActivity {
 	}
 	
 	public void setMarker(LatLng point, String str){
-		map.addMarker(
+		mMap.addMarker(
 				new MarkerOptions()
 						.icon(BitmapDescriptorFactory
 								.fromResource(R.drawable.icon_green))
@@ -109,8 +108,8 @@ public class GPSRunner extends SherlockActivity {
 		TextView viewRight = (TextView) findViewById(R.id.vitesseMoy);
 		viewRight.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				if (currentStepIndex < listSteps.size() - 1) {
-					currentStepIndex++;
+				if (mCurrentStepIndex < mListSteps.size() - 1) {
+					mCurrentStepIndex++;
 					putStepOnScreen();
 				}
 			}
@@ -120,8 +119,8 @@ public class GPSRunner extends SherlockActivity {
 		LinearLayout viewLeft = (LinearLayout) findViewById(R.id.leftLinearLayout);
 		viewLeft.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				if (currentStepIndex > 0) {
-					currentStepIndex--;
+				if (mCurrentStepIndex > 0) {
+					mCurrentStepIndex--;
 					putStepOnScreen();
 				}
 			}
@@ -131,11 +130,11 @@ public class GPSRunner extends SherlockActivity {
 
 	public void putStepOnScreen() {
 		//Deplace le marker "me" selon la step courante
-		Step myStep = listSteps.get(currentStepIndex);
+		Step myStep = mListSteps.get(mCurrentStepIndex);
 		LatLng point = new LatLng(myStep.getStart_location().getLat(), myStep.getStart_location().getLng());
 		meMarker.setPosition(point);
 		CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(point, 16);
-		map.animateCamera(cu, 600, null);
+		mMap.animateCamera(cu, 600, null);
 		
 		initGPSInfoPanel(myStep);
 	}
@@ -154,10 +153,10 @@ public class GPSRunner extends SherlockActivity {
 		// chrono_view.setText("00' 00''");
 
 		TextView kilometrageTrajet_view = (TextView) findViewById(R.id.kilometrageTrajet);
-		kilometrageTrajet_view.setText(myTrajet.getDistTotal() + "m");
+		kilometrageTrajet_view.setText(mRoute.getDistTotal() + "m");
 
 		DateTime dt = new DateTime();
-		int dureeSecond = myTrajet.getDureeTotal();
+		int dureeSecond = mRoute.getDureeTotal();
 		int heures = dt.getHourOfDay() + (dureeSecond / 3600);
 		int minutes = dt.getMinuteOfHour() + ((dureeSecond % 3600) / 60);
 

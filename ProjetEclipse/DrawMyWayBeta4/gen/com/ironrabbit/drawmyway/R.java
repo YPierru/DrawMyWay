@@ -1148,13 +1148,13 @@ containing a value of this type.
         public static final int abs__textButton=0x7f040017;
         public static final int abs__title=0x7f04001f;
         public static final int abs__up=0x7f04000b;
-        public static final int action_settings=0x7f040054;
+        public static final int action_settings=0x7f040055;
         public static final int btn_correctionMode=0x7f040047;
-        public static final int btn_gps=0x7f040051;
-        public static final int btn_renommer=0x7f040052;
-        public static final int btn_supp=0x7f040053;
+        public static final int btn_gps=0x7f040052;
+        public static final int btn_renommer=0x7f040053;
+        public static final int btn_supp=0x7f040054;
         public static final int btn_validate=0x7f040048;
-        public static final int btn_voirmodif=0x7f040050;
+        public static final int btn_voirmodif=0x7f040051;
         public static final int centralLinLay=0x7f04003c;
         public static final int centralLinLaySub=0x7f04003f;
         public static final int disableHome=0x7f040009;
@@ -1172,10 +1172,11 @@ containing a value of this type.
         public static final int kilometrageTrajet=0x7f040044;
         public static final int leftLinearLayout=0x7f040043;
         public static final int listMode=0x7f040002;
-        public static final int listView=0x7f04004a;
+        public static final int listView=0x7f04004b;
         public static final int ll_TrajetItem=0x7f040036;
         public static final int map=0x7f040046;
         public static final int mapGPS=0x7f04003a;
+        public static final int mapSee=0x7f040049;
         public static final int none=0x7f040010;
         public static final int normal=0x7f040001;
         public static final int satellite=0x7f040011;
@@ -1184,12 +1185,12 @@ containing a value of this type.
         public static final int showTitle=0x7f040007;
         public static final int tabMode=0x7f040003;
         public static final int terrain=0x7f040012;
-        public static final int tv_adrarriv=0x7f04004f;
-        public static final int tv_adrdepart=0x7f04004e;
-        public static final int tv_aucunTrajets=0x7f040049;
-        public static final int tv_datecrea=0x7f04004b;
-        public static final int tv_duree=0x7f04004d;
-        public static final int tv_kmtrage=0x7f04004c;
+        public static final int tv_adrarriv=0x7f040050;
+        public static final int tv_adrdepart=0x7f04004f;
+        public static final int tv_aucunTrajets=0x7f04004a;
+        public static final int tv_datecrea=0x7f04004c;
+        public static final int tv_duree=0x7f04004e;
+        public static final int tv_kmtrage=0x7f04004d;
         public static final int tv_nomTrajet=0x7f040037;
         public static final int useLogo=0x7f040004;
         public static final int vitesseMoy=0x7f040042;
@@ -1221,23 +1222,26 @@ containing a value of this type.
         public static final int abs__search_dropdown_item_icons_2line=0x7f030012;
         public static final int abs__search_view=0x7f030013;
         public static final int abs__simple_dropdown_hint=0x7f030014;
-        public static final int itemtrajet=0x7f030015;
-        public static final int layout_gps=0x7f030016;
-        public static final int layout_map=0x7f030017;
-        public static final int layout_trajet_display=0x7f030018;
-        public static final int sherlock_spinner_dropdown_item=0x7f030019;
-        public static final int sherlock_spinner_item=0x7f03001a;
-        public static final int side_menu_welcome=0x7f03001b;
+        public static final int activity_see_trajet=0x7f030015;
+        public static final int itemtrajet=0x7f030016;
+        public static final int layout_gps=0x7f030017;
+        public static final int layout_map_create=0x7f030018;
+        public static final int layout_map_see=0x7f030019;
+        public static final int layout_trajet_display=0x7f03001a;
+        public static final int sherlock_spinner_dropdown_item=0x7f03001b;
+        public static final int sherlock_spinner_item=0x7f03001c;
+        public static final int side_menu_welcome=0x7f03001d;
     }
     public static final class menu {
         public static final int gpsrunner=0x7f0b0000;
         public static final int main=0x7f0b0001;
         public static final int panel_trajet=0x7f0b0002;
-        public static final int test_maps=0x7f0b0003;
-        public static final int trajet_details=0x7f0b0004;
-        public static final int trajet_display=0x7f0b0005;
-        public static final int trajet_save=0x7f0b0006;
-        public static final int welcome=0x7f0b0007;
+        public static final int see_trajet=0x7f0b0003;
+        public static final int test_maps=0x7f0b0004;
+        public static final int trajet_details=0x7f0b0005;
+        public static final int trajet_display=0x7f0b0006;
+        public static final int trajet_save=0x7f0b0007;
+        public static final int welcome=0x7f0b0008;
     }
     public static final class string {
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
@@ -1378,6 +1382,7 @@ containing a value of this type.
         public static final int hello_world=0x7f09002c;
         public static final int title_activity_gpsrunner=0x7f09002a;
         public static final int title_activity_panel_trajet=0x7f090030;
+        public static final int title_activity_see_trajet=0x7f090031;
         public static final int title_activity_test_maps=0x7f09002e;
         public static final int title_activity_trajet_details=0x7f09002d;
         public static final int title_activity_trajet_display=0x7f09002b;

@@ -36,9 +36,9 @@
         <uses-library android:name="com.google.android.maps" />
 
         <activity
-            android:name="com.ironrabbit.drawmywaybeta4.activity.CMWTrajet"
+            android:name="com.ironrabbit.drawmywaybeta4.activity.CreateModifyRoute"
             android:label="@string/app_name"
-            android:noHistory="true" >
+            android:noHistory="false" >
         </activity>
 
         <meta-data
@@ -65,7 +65,7 @@
             android:label="@string/title_activity_test_maps" >
         </activity>
         <activity
-            android:name="com.ironrabbit.drawmywaybeta4.activity.Welcome"
+            android:name="com.ironrabbit.drawmywaybeta4.activity.ListRoutes"
             android:label="@string/title_activity_welcome" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -76,6 +76,11 @@
         <activity
             android:name="com.ironrabbit.drawmyway.PanelTrajet"
             android:label="@string/title_activity_panel_trajet" >
+        </activity>
+        <activity
+            android:name="com.ironrabbit.drawmywaybeta4.activity.SeeRoute"
+            android:label="@string/title_activity_see_trajet"
+            android:noHistory="true" >
         </activity>
     </application>
 

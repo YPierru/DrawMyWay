@@ -11,5 +11,6 @@
     <string name="title_activity_test_maps">TestMaps</string>
     <string name="title_activity_welcome">Welcome</string>
     <string name="title_activity_panel_trajet">PanelTrajet</string>
+    <string name="title_activity_see_trajet">SeeTrajet</string>
 
 </resources>
