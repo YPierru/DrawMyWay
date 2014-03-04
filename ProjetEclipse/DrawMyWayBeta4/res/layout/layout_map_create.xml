@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <RelativeLayout
+    <!-- <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -27,6 +27,6 @@
             android:layout_alignParentRight="true"
             android:layout_below="@id/btn_correctionMode"
             android:text="Dessiner" />
-    </RelativeLayout>
+    </RelativeLayout>-->
 
 </fragment>

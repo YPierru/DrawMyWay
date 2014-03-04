@@ -24,9 +24,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.ironrabbit.drawmyway.R;
-import com.ironrabbit.drawmywaybeta4.trajet.RoutesCollection;
-import com.ironrabbit.drawmywaybeta4.trajet.Route;
-import com.ironrabbit.drawmywaybeta4.trajet.RouteAdapter;
+import com.ironrabbit.drawmywaybeta4.route.Route;
+import com.ironrabbit.drawmywaybeta4.route.RouteAdapter;
+import com.ironrabbit.drawmywaybeta4.route.RoutesCollection;
 import com.navdrawer.SimpleSideDrawer;
 
 public class ListRoutes extends Activity {
@@ -41,7 +41,7 @@ public class ListRoutes extends Activity {
 		setContentView(R.layout.layout_trajet_display);
 
 		mSlidingMenu = new SimpleSideDrawer(this);
-		mSlidingMenu.setRightBehindContentView(R.layout.side_menu_welcome);
+		mSlidingMenu.setRightBehindContentView(R.layout.side_menu_listroutes);
 
 		mRoutesCollection = RoutesCollection.getInstance();
 		getActionBar().setTitle("Vos trajets");
@@ -169,11 +169,16 @@ public class ListRoutes extends Activity {
 
 					@Override
 					public void onClick(View v) {
+						
+						Intent toSeeRoute = new Intent(ListRoutes.this,SeeRoute.class);
+						toSeeRoute.putExtra("trajet", (Parcelable) tj);
+						startActivity(toSeeRoute);
 
-						Intent toCMTrajetActivity = new Intent(ListRoutes.this,
+						/*Intent toCMTrajetActivity = new Intent(ListRoutes.this,
 								CreateModifyRoute.class);
 						toCMTrajetActivity.putExtra("trajet", (Parcelable) tj);
-						startActivity(toCMTrajetActivity);
+						toCMTrajetActivity.putExtra("MODE", "Modification");
+						startActivity(toCMTrajetActivity);*/
 
 						mSlidingMenu.toggleRightDrawer();
 					}

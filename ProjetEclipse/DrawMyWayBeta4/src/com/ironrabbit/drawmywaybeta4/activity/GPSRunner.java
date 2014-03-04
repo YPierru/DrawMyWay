@@ -22,11 +22,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.ironrabbit.drawmyway.R;
-import com.ironrabbit.drawmywaybeta4.trajet.Route;
-import com.ironrabbit.drawmywaybeta4.trajet.downloaded.Step;
+import com.ironrabbit.drawmywaybeta4.route.Route;
+import com.ironrabbit.drawmywaybeta4.route.downloaded.Step;
 
 
 /*

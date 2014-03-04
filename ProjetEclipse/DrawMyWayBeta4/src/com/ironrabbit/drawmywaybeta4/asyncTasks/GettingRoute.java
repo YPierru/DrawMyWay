@@ -13,7 +13,7 @@ import android.os.AsyncTask;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ironrabbit.drawmywaybeta4.trajet.downloaded.DirectionsResponse;
+import com.ironrabbit.drawmywaybeta4.route.downloaded.DirectionsResponse;
 
 
 /*
