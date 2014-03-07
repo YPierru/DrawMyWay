@@ -12,11 +12,11 @@ import com.ironrabbit.drawmyway.R;
 
 
 public class RouteAdapter extends BaseAdapter {
-	
+
 	private RoutesCollection myAllTrajets;
 	private int position;
 	private LayoutInflater inflater;
-	
+
 	public RouteAdapter(Context cnt, RoutesCollection at){
 		inflater = LayoutInflater.from(cnt);
 		this.myAllTrajets=at;
@@ -44,15 +44,15 @@ public class RouteAdapter extends BaseAdapter {
 		if(convertView == null) {
 			holder = new ViewHolder();
 			convertView = inflater.inflate(R.layout.itemtrajet, null);
-			
+
 			holder.tvNameTrajet = (TextView)convertView.findViewById(R.id.tv_nomTrajet);
 
 			convertView.setTag(holder);
-			
+
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		
+
 		Route tj = this.myAllTrajets.get(position);
 		if(tj.isValidate()){
 			holder.tvNameTrajet.setText(this.myAllTrajets.get(position).getName());
@@ -63,7 +63,7 @@ public class RouteAdapter extends BaseAdapter {
 		return convertView;
 	}
 
-	
+
 	public void updateData(RoutesCollection newAT){
 		Log.d("DEBUUUUUUG", "lAAAAAA");
 		myAllTrajets.clear();
@@ -71,9 +71,9 @@ public class RouteAdapter extends BaseAdapter {
 		this.notifyDataSetChanged();
 	}
 
-	
+
 	private class ViewHolder {
 		TextView tvNameTrajet;
 	}
-	
+
 }

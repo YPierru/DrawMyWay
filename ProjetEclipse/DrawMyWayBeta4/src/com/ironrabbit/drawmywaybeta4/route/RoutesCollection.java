@@ -67,6 +67,18 @@ public class RoutesCollection extends ArrayList<Route> implements Serializable {
 		
 		return false;
 	}
+	
+	public String[] getRouteNameList(){
+		String rtr[] = new String[this.size()];
+		for(int i=0;i<this.size();i++){
+			if(this.get(i).isValidate()){
+				rtr[i]=this.get(i).getName();
+			}else{
+				rtr[i]="(en cours) "+this.get(i).getName();
+			}
+		}
+		return rtr;
+	}
 
 	public void remove(Route t) {
 		if (isPresent(t)) {

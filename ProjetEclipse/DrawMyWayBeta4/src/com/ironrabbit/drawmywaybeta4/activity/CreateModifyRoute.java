@@ -143,8 +143,7 @@ public class CreateModifyRoute extends SherlockActivity {
 					mMap.animateCamera(cu, 600, null);
 
 					/*
-					 * On ajoute le jalon en LatLng. Dans lmb car le jalon peut
-					 * ????tre pos?? wanegain
+					 * On ajoute le jalon en LatLng.
 					 */
 					mListMarkers.add(putMarker(point, "Départ", true));
 					mRoute.getListMarkers().clear();
@@ -173,6 +172,7 @@ public class CreateModifyRoute extends SherlockActivity {
 					findViewById(R.id.btn_correctionMode).setEnabled(true);
 					// listJalons.add(point);
 					mListMarkers.add(putMarker(point, "Jalon posé", true));
+					btn_dessiner.setEnabled(true);
 					mRoute.getListMarkers().add(point.latitude, point.longitude);
 				}
 			});
@@ -336,6 +336,7 @@ public class CreateModifyRoute extends SherlockActivity {
 						mSlidingMenu.toggleRightDrawer();
 					}
 				});
+				//btn_dessiner.setEnabled(false);
 				
 				
 				btn_correctionmode.setTextColor(Color.RED);
@@ -344,7 +345,6 @@ public class CreateModifyRoute extends SherlockActivity {
 					@Override
 					public void onClick(View v) {
 						if (btn_correctionmode.getTextColors().getDefaultColor() == Color.RED) {
-							findViewById(R.id.btn_dessiner).setEnabled(false);
 							btn_correctionmode.setTextColor(Color.GREEN);
 							if (mPolyline != null) {
 								mPolyline.remove();
@@ -369,19 +369,20 @@ public class CreateModifyRoute extends SherlockActivity {
 								}
 							});
 							Toast.makeText(getApplicationContext(),
-									"Mode correction activ??", Toast.LENGTH_SHORT)
+									"Mode correction activé", Toast.LENGTH_SHORT)
 									.show();
 						} else {
 							btn_correctionmode.setTextColor(Color.RED);
 							settingMapLongClickListener(false);
 							settingMapClickListener(false);
 							Toast.makeText(getApplicationContext(),
-									"Mode correction d??sactiv??", Toast.LENGTH_SHORT)
+									"Mode correction désactiv??", Toast.LENGTH_SHORT)
 									.show();
 						}
 						mSlidingMenu.toggleRightDrawer();
 					}
 				});
+				//btn_correctionmode.setEnabled(false);
 				
 				btn_finirTrajet = (Button)findViewById(R.id.btn_finirTrajet);
 				btn_finirTrajet.setOnClickListener(new OnClickListener() {

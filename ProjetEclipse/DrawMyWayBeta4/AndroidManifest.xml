@@ -65,6 +65,10 @@
             android:label="@string/title_activity_test_maps" >
         </activity>
         <activity
+            android:name="com.ironrabbit.drawmywaybeta4.activity.ArrayAdapterDemo"
+            android:label="@string/title_activity_array_adapter_demo" >
+        </activity>
+        <activity
             android:name="com.ironrabbit.drawmywaybeta4.activity.ListRoutes"
             android:label="@string/title_activity_welcome" >
             <intent-filter>
@@ -81,6 +85,10 @@
             android:name="com.ironrabbit.drawmywaybeta4.activity.SeeRoute"
             android:label="@string/title_activity_see_trajet"
             android:noHistory="true" >
+        </activity>
+        <activity
+            android:name="com.ironrabbit.drawmywaybeta4.route.RouteAdapter"
+            android:label="@string/title_activity_route_adapter" >
         </activity>
     </application>
 

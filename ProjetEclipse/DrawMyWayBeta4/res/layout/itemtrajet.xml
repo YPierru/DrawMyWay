@@ -20,8 +20,8 @@
         android:layout_height="50dp"
         android:layout_weight="0.3"
         android:gravity="center"
-		android:src="@drawable/arrowr"
-		android:visibility="visible" />
+        android:src="@drawable/arrowr"
+        android:visibility="visible" />
 
     <ImageView
         android:id="@+id/icn_arrow_l"
@@ -29,7 +29,7 @@
         android:layout_height="50dp"
         android:layout_weight="0.3"
         android:gravity="center"
-		android:src="@drawable/arrowl"
-		android:visibility="gone" />
+        android:src="@drawable/arrowl"
+        android:visibility="gone" />
 
 </LinearLayout>
