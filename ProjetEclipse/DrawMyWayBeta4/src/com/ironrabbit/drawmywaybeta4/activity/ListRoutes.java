@@ -11,11 +11,14 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -33,33 +36,175 @@ public class ListRoutes extends Activity {
 
 	private RoutesCollection mRoutesCollection;
 	private static ListView mListView;
-	private SimpleSideDrawer mSlidingMenu;
+	private SimpleSideDrawer mSlidingMenuRight, mSlidingMenuLeft;
+	private static String mTypeRouteCurrent;// VOITURE ou COUREUR
+	private float x1, x2;
+	static final int MIN_DISTANCE = 100;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_trajet_display);
+		getActionBar().setHomeButtonEnabled(true);
+		mSlidingMenuRight = new SimpleSideDrawer(this);
+		mSlidingMenuRight.setRightBehindContentView(R.layout.side_menu_listroutes);
 
-		mSlidingMenu = new SimpleSideDrawer(this);
-		mSlidingMenu.setRightBehindContentView(R.layout.side_menu_listroutes);
+		mSlidingMenuLeft = new SimpleSideDrawer(this);
+		mSlidingMenuLeft.setLeftBehindContentView(R.layout.side_menu_typeroute);
+		mListView = (ListView) findViewById(R.id.listView);
 
 		mRoutesCollection = RoutesCollection.getInstance();
-		getActionBar().setTitle("Vos trajets");
-		if (mRoutesCollection.size() == 0) {
-			findViewById(R.id.tv_aucunTrajets).setVisibility(View.VISIBLE);
-		} else {
-			findViewById(R.id.listView).setVisibility(View.VISIBLE);
+		/*
+		 * Ici, on récupère le typeCurrentRoute par un intent. On le fait dans
+		 * un try catch, si ça passe par le catch, on met un typeCurrentRoute
+		 * par défaut (VOITURE ou COUREUR, osef)
+		 */
+		try {
+			mTypeRouteCurrent = getIntent().getExtras().getString("TYPEROUTE");
+		} catch (NullPointerException npe) {
+			mTypeRouteCurrent = "VOITURE";
 		}
-		mListView = (ListView) findViewById(R.id.listView);
+
+		initListWithRouteType();
 
 		// myLV.setOnItemLongClickListener(new
 		// ActionOnLongClickItemTrajet());
 		mListView.setOnItemClickListener(new ActionOnClickItemTrajet());
+		mListView.setOnTouchListener(new OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				switch (event.getAction()) {
+				case MotionEvent.ACTION_DOWN:
+					if (event.getX() <= 30) {
+						x1 = event.getX();
+					} else {
+						x1 = 40;
+					}
+					break;
+				case MotionEvent.ACTION_UP:
+					if (x1 <= 30) {
+						x2 = event.getX();
+						float deltaX = x2 - x1;
+						if (deltaX > MIN_DISTANCE) {
+							showLeftSideMenu();
+						}
+					}
+					break;
+				}
+				return false;
+			}
+		});
 
-		RouteAdapter adapter = new RouteAdapter(this, mRoutesCollection);
-		mListView.setAdapter(adapter);
+		// RouteAdapter adapter = new RouteAdapter(this, mRoutesCollection);
+		// mListView.setAdapter(adapter);
 		// registerForContextMenu(myLV);
 
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    if (item.getItemId() == android.R.id.home) {
+	        showLeftSideMenu();
+	        return true;
+	    }
+	    return super.onOptionsItemSelected(item);
+	}
+	
+	public void showLeftSideMenu(){
+		mSlidingMenuLeft.toggleLeftDrawer();
+		Button btn_routeVoiture = (Button) findViewById(R.id.btn_routeVoiture);
+		btn_routeVoiture.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mTypeRouteCurrent = "VOITURE";
+				initListWithRouteType();
+				mSlidingMenuLeft.toggleLeftDrawer();
+			}
+		});
+		Button btn_routeRunner = (Button) findViewById(R.id.btn_routeRunner);
+		btn_routeRunner.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mTypeRouteCurrent = "COUREUR";
+				initListWithRouteType();
+				mSlidingMenuLeft.toggleLeftDrawer();
+			}
+		});
+	}
+
+	/*@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		switch (event.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			if (event.getX() <= 5) {
+				x1 = event.getX();
+			} else {
+				x1 = 10;
+			}
+			break;
+		case MotionEvent.ACTION_UP:
+			if (x1 <= 5) {
+				x2 = event.getX();
+				float deltaX = x2 - x1;
+				if (deltaX > MIN_DISTANCE) {
+					mSlidingMenuLeft.toggleLeftDrawer();
+					Button btn_routeVoiture = (Button) findViewById(R.id.btn_routeVoiture);
+					btn_routeVoiture.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							mTypeRouteCurrent = "VOITURE";
+							initListWithRouteType();
+							mSlidingMenuLeft.toggleLeftDrawer();
+						}
+					});
+					Button btn_routeRunner = (Button) findViewById(R.id.btn_routeRunner);
+					btn_routeRunner.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							mTypeRouteCurrent = "COUREUR";
+							initListWithRouteType();
+							mSlidingMenuLeft.toggleLeftDrawer();
+						}
+					});
+				}
+			}
+			break;
+		}
+		return super.onTouchEvent(event);
+	}*/
+
+	public void initListWithRouteType() {
+		RouteAdapter newAdapter;
+		mRoutesCollection = RoutesCollection.getInstance();
+		if (mTypeRouteCurrent.equals("VOITURE")) {
+			getActionBar().setTitle("Vos trajets voiture");
+			if (mRoutesCollection.getListRoutesVoiture().size() == 0) {
+				findViewById(R.id.tv_aucunTrajets).setVisibility(View.VISIBLE);
+				findViewById(R.id.listView).setVisibility(View.GONE);
+			} else {
+				findViewById(R.id.listView).setVisibility(View.VISIBLE);
+				findViewById(R.id.tv_aucunTrajets).setVisibility(View.GONE);
+			}
+			newAdapter = new RouteAdapter(this,
+					mRoutesCollection.getListRoutesVoiture());
+		} else {
+			getActionBar().setTitle("Vos trajets coureur");
+			if (mRoutesCollection.getListRoutesCoureur().size() == 0) {
+				findViewById(R.id.tv_aucunTrajets).setVisibility(View.VISIBLE);
+				findViewById(R.id.listView).setVisibility(View.GONE);
+			} else {
+				findViewById(R.id.listView).setVisibility(View.VISIBLE);
+				findViewById(R.id.tv_aucunTrajets).setVisibility(View.GONE);
+			}
+			newAdapter = new RouteAdapter(this,
+					mRoutesCollection.getListRoutesCoureur());
+		}
+		mListView.setAdapter(newAdapter);
 	}
 
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -98,7 +243,7 @@ public class ListRoutes extends Activity {
 								int whichButton) {
 							String value = input.getText().toString().trim();
 							Route newTrajet = new Route(value, false, false,
-									getCurrentDayTime());
+									getCurrentDayTime(), mTypeRouteCurrent);
 							Intent toCreateTrajetActivity = new Intent(
 									ListRoutes.this, CreateModifyRoute.class);
 							toCreateTrajetActivity.putExtra("trajet",
@@ -123,7 +268,11 @@ public class ListRoutes extends Activity {
 
 	public static void updateDataList() {
 		RouteAdapter ta = (RouteAdapter) mListView.getAdapter();
-		ta.updateData(RoutesCollection.getInstance());
+		if (mTypeRouteCurrent.equals("VOITURE")) {
+			ta.updateData(RoutesCollection.getInstance().getListRoutesVoiture());
+		} else {
+			ta.updateData(RoutesCollection.getInstance().getListRoutesCoureur());
+		}
 	}
 
 	/*
@@ -134,7 +283,14 @@ public class ListRoutes extends Activity {
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
 
-			final Route tj = mRoutesCollection.get(arg2);
+			final Route tj;
+			mRoutesCollection = RoutesCollection.getInstance();
+			Log.d("DEBUUUUUUUG", "" + arg2);
+			if (mTypeRouteCurrent.equals("VOITURE")) {
+				tj = mRoutesCollection.getListRoutesVoiture().get(arg2);
+			} else {
+				tj = mRoutesCollection.getListRoutesCoureur().get(arg2);
+			}
 
 			if (tj.isValidate()) {
 				TextView tv_datecrea = (TextView) findViewById(R.id.tv_datecrea);
@@ -169,18 +325,21 @@ public class ListRoutes extends Activity {
 
 					@Override
 					public void onClick(View v) {
-						
-						Intent toSeeRoute = new Intent(ListRoutes.this,SeeRoute.class);
+
+						Intent toSeeRoute = new Intent(ListRoutes.this,
+								SeeRoute.class);
 						toSeeRoute.putExtra("trajet", (Parcelable) tj);
 						startActivity(toSeeRoute);
 
-						/*Intent toCMTrajetActivity = new Intent(ListRoutes.this,
-								CreateModifyRoute.class);
-						toCMTrajetActivity.putExtra("trajet", (Parcelable) tj);
-						toCMTrajetActivity.putExtra("MODE", "Modification");
-						startActivity(toCMTrajetActivity);*/
+						/*
+						 * Intent toCMTrajetActivity = new
+						 * Intent(ListRoutes.this, CreateModifyRoute.class);
+						 * toCMTrajetActivity.putExtra("trajet", (Parcelable)
+						 * tj); toCMTrajetActivity.putExtra("MODE",
+						 * "Modification"); startActivity(toCMTrajetActivity);
+						 */
 
-						mSlidingMenu.toggleRightDrawer();
+						mSlidingMenuRight.toggleRightDrawer();
 					}
 				});
 
@@ -193,7 +352,7 @@ public class ListRoutes extends Activity {
 								GPSRunner.class);
 						toGPSRunner.putExtra("TRAJET", (Parcelable) tj);
 						startActivity(toGPSRunner);
-						mSlidingMenu.toggleRightDrawer();
+						mSlidingMenuRight.toggleRightDrawer();
 					}
 				});
 
@@ -246,11 +405,12 @@ public class ListRoutes extends Activity {
 													DialogInterface dialog,
 													int id) {
 												mRoutesCollection.remove(tj);
-												mRoutesCollection.saveAllTrajet();
+												mRoutesCollection
+														.saveAllTrajet();
 												RouteAdapter ta = (RouteAdapter) mListView
 														.getAdapter();
 												ta.notifyDataSetChanged();
-												mSlidingMenu
+												mSlidingMenuRight
 														.toggleRightDrawer();
 											}
 										})
@@ -266,7 +426,7 @@ public class ListRoutes extends Activity {
 						alertDialog.show();
 					}
 				});
-				mSlidingMenu.toggleRightDrawer();
+				mSlidingMenuRight.toggleRightDrawer();
 			} else {
 				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 						ListRoutes.this);
@@ -283,7 +443,8 @@ public class ListRoutes extends Activity {
 									public void onClick(DialogInterface dialog,
 											int id) {
 										Intent toFinishTrajet = new Intent(
-												ListRoutes.this, CreateModifyRoute.class);
+												ListRoutes.this,
+												CreateModifyRoute.class);
 										toFinishTrajet.putExtra("trajet",
 												(Parcelable) tj);
 										toFinishTrajet.putExtra("MODE",

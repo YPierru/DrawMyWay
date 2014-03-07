@@ -27,6 +27,7 @@ public class Route implements Parcelable,Serializable {
 	private DoubleArrayList<Double> listLatLngMarkers; //List des points concernant les markers
 	private String dateCreation;
 	private String dateDerModif;
+	private String typeRoute; //VOITURE ou COUREUR
 	private int idHash;
 
 	public Route(  ArrayList<DirectionsResponse> ls,
@@ -37,6 +38,7 @@ public class Route implements Parcelable,Serializable {
 					boolean v,
 					String dc,
 					String ddm,
+					String tr,
 					int ih){
 		this.listSegment=ls;
 		this.name=n;
@@ -52,10 +54,11 @@ public class Route implements Parcelable,Serializable {
 		this.validate=v;
 		this.dateCreation=dc;
 		this.dateDerModif=ddm;
+		this.typeRoute=tr;
 		this.idHash=ih;
 	}
 	
-	public Route(String n, boolean isS, boolean isV,String dc) {
+	public Route(String n, boolean isS, boolean isV,String dc, String tr) {
 		this.name = n;
 		this.save = isS;
 		this.validate=isV;
@@ -64,6 +67,7 @@ public class Route implements Parcelable,Serializable {
 		this.listLatLngMarkers=new DoubleArrayList<Double>();
 		this.dateCreation=dc;
 		this.dateDerModif=dc;
+		this.typeRoute=tr;
 		this.idHash=System.identityHashCode(this);
 	}
 	
@@ -79,6 +83,7 @@ public class Route implements Parcelable,Serializable {
 		this.listLatLngMarkers=in.readParcelable(getClass().getClassLoader());
 		this.dateCreation=in.readString();
 		this.dateDerModif=in.readString();
+		this.typeRoute=in.readString();
 		this.idHash=in.readInt();
 	}
 
@@ -97,6 +102,14 @@ public class Route implements Parcelable,Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getTypeRoute() {
+		return typeRoute;
+	}
+
+	public void setTypeRoute(String tr) {
+		this.typeRoute = tr;
 	}
 
 	public String getDateDerModif() {
@@ -234,6 +247,7 @@ public class Route implements Parcelable,Serializable {
 		dest.writeParcelable(this.listLatLngMarkers,0);
 		dest.writeString(this.dateCreation);
 		dest.writeString(this.dateDerModif);
+		dest.writeString(this.typeRoute);
 		dest.writeInt(this.idHash);
 	}
 	

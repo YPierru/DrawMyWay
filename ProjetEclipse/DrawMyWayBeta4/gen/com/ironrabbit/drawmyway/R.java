@@ -1149,7 +1149,7 @@ containing a value of this type.
         public static final int abs__textButton=0x7f040017;
         public static final int abs__title=0x7f04001f;
         public static final int abs__up=0x7f04000b;
-        public static final int action_settings=0x7f04005c;
+        public static final int action_settings=0x7f04005f;
         public static final int btn_correctionMode=0x7f040055;
         public static final int btn_dessiner=0x7f040054;
         public static final int btn_finirTrajet=0x7f040056;
@@ -1159,6 +1159,8 @@ containing a value of this type.
         public static final int btn_mapSatellite=0x7f04005a;
         public static final int btn_mapTerrain=0x7f04005b;
         public static final int btn_renommer=0x7f040052;
+        public static final int btn_routeRunner=0x7f04005e;
+        public static final int btn_routeVoiture=0x7f04005d;
         public static final int btn_supp=0x7f040053;
         public static final int btn_voirmodif=0x7f040050;
         public static final int centralLinLay=0x7f04003c;
@@ -1200,6 +1202,7 @@ containing a value of this type.
         public static final int tv_kmtrage=0x7f04004c;
         public static final int tv_mapType=0x7f040057;
         public static final int tv_nomTrajet=0x7f040037;
+        public static final int tv_typeRoute=0x7f04005c;
         public static final int useLogo=0x7f040004;
         public static final int vitesseMoy=0x7f040042;
         public static final int wrap_content=0x7f040000;
@@ -1243,6 +1246,7 @@ containing a value of this type.
         public static final int sherlock_spinner_item=0x7f03001f;
         public static final int side_menu_listroutes=0x7f030020;
         public static final int side_menu_map=0x7f030021;
+        public static final int side_menu_typeroute=0x7f030022;
     }
     public static final class menu {
         public static final int gpsrunner=0x7f0b0000;

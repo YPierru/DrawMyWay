@@ -1,5 +1,7 @@
 package com.ironrabbit.drawmywaybeta4.route;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,23 +15,23 @@ import com.ironrabbit.drawmyway.R;
 
 public class RouteAdapter extends BaseAdapter {
 
-	private RoutesCollection myAllTrajets;
+	private ArrayList<Route> mListRoute;
 	private int position;
 	private LayoutInflater inflater;
 
-	public RouteAdapter(Context cnt, RoutesCollection at){
+	public RouteAdapter(Context cnt, ArrayList<Route> at){
 		inflater = LayoutInflater.from(cnt);
-		this.myAllTrajets=at;
+		this.mListRoute=at;
 	}
 
 	@Override
 	public int getCount() {
-		return this.myAllTrajets.size();
+		return this.mListRoute.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return this.myAllTrajets.get(position);
+		return this.mListRoute.get(position);
 	}
 
 	@Override
@@ -53,21 +55,20 @@ public class RouteAdapter extends BaseAdapter {
 			holder = (ViewHolder) convertView.getTag();
 		}
 
-		Route tj = this.myAllTrajets.get(position);
+		Route tj = this.mListRoute.get(position);
 		if(tj.isValidate()){
-			holder.tvNameTrajet.setText(this.myAllTrajets.get(position).getName());
+			holder.tvNameTrajet.setText(this.mListRoute.get(position).getName());
 		}else{
-			holder.tvNameTrajet.setText("(en cours)"+this.myAllTrajets.get(position).getName());
+			holder.tvNameTrajet.setText("(en cours)"+this.mListRoute.get(position).getName());
 		}
 
 		return convertView;
 	}
 
 
-	public void updateData(RoutesCollection newAT){
-		Log.d("DEBUUUUUUG", "lAAAAAA");
-		myAllTrajets.clear();
-		myAllTrajets.addAll(newAT);
+	public void updateData(ArrayList<Route> newAT){
+		mListRoute.clear();
+		mListRoute.addAll(newAT);
 		this.notifyDataSetChanged();
 	}
 

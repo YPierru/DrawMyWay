@@ -352,7 +352,7 @@ int id abs__submit_area 0x7f040033
 int id abs__textButton 0x7f040017
 int id abs__title 0x7f04001f
 int id abs__up 0x7f04000b
-int id action_settings 0x7f04005c
+int id action_settings 0x7f04005f
 int id btn_correctionMode 0x7f040055
 int id btn_dessiner 0x7f040054
 int id btn_finirTrajet 0x7f040056
@@ -362,6 +362,8 @@ int id btn_mapNormal 0x7f040058
 int id btn_mapSatellite 0x7f04005a
 int id btn_mapTerrain 0x7f04005b
 int id btn_renommer 0x7f040052
+int id btn_routeRunner 0x7f04005e
+int id btn_routeVoiture 0x7f04005d
 int id btn_supp 0x7f040053
 int id btn_voirmodif 0x7f040050
 int id centralLinLay 0x7f04003c
@@ -403,6 +405,7 @@ int id tv_duree 0x7f04004d
 int id tv_kmtrage 0x7f04004c
 int id tv_mapType 0x7f040057
 int id tv_nomTrajet 0x7f040037
+int id tv_typeRoute 0x7f04005c
 int id useLogo 0x7f040004
 int id vitesseMoy 0x7f040042
 int id wrap_content 0x7f040000
@@ -442,6 +445,7 @@ int layout sherlock_spinner_dropdown_item 0x7f03001e
 int layout sherlock_spinner_item 0x7f03001f
 int layout side_menu_listroutes 0x7f030020
 int layout side_menu_map 0x7f030021
+int layout side_menu_typeroute 0x7f030022
 int menu gpsrunner 0x7f0b0000
 int menu main 0x7f0b0001
 int menu panel_trajet 0x7f0b0002

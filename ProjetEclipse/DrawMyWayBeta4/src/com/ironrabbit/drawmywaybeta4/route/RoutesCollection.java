@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import android.media.MediaRouter.RouteCategory;
 import android.os.Environment;
 
 /*
@@ -78,6 +79,26 @@ public class RoutesCollection extends ArrayList<Route> implements Serializable {
 			}
 		}
 		return rtr;
+	}
+	
+	public ArrayList<Route> getListRoutesVoiture(){
+		ArrayList<Route> listRouteVoiture = new ArrayList<Route>();
+		for(int i=0;i<this.size();i++){
+			if(this.get(i).getTypeRoute().equals("VOITURE")){
+				listRouteVoiture.add(this.get(i));
+			}
+		}
+		return listRouteVoiture;
+	}
+	
+	public ArrayList<Route> getListRoutesCoureur(){
+		ArrayList<Route> listRouteCoureur = new ArrayList<Route>();
+		for(int i=0;i<this.size();i++){
+			if(this.get(i).getTypeRoute().equals("COUREUR")){
+				listRouteCoureur.add(this.get(i));
+			}
+		}
+		return listRouteCoureur;
 	}
 
 	public void remove(Route t) {

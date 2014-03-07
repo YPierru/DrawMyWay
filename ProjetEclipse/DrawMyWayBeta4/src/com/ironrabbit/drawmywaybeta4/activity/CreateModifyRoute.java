@@ -267,7 +267,7 @@ public class CreateModifyRoute extends SherlockActivity {
 						}
 
 
-						new GettingRoute().execute(mRoute.getListMarkersLatLng());
+						new GettingRoute().execute(mRoute);
 						try {
 							Thread.sleep(3500);
 						} catch (InterruptedException e) {

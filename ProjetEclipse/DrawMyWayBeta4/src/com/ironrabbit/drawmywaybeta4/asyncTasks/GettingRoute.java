@@ -9,27 +9,37 @@ import java.util.ArrayList;
 import org.apache.commons.io.IOUtils;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ironrabbit.drawmywaybeta4.route.Route;
 import com.ironrabbit.drawmywaybeta4.route.downloaded.DirectionsResponse;
 
 
 /*
  * R????cup????re les d????tails d'un trajet via l'API DirectionsResponse
  */
-public class GettingRoute extends AsyncTask<ArrayList<LatLng>, Void, Void> {
+public class GettingRoute extends AsyncTask<Route, Void, Void> {
 
 	private LatLng origin, destination;
-	private final String URL_PATTERN = "https://maps.googleapis.com/maps/api/directions/json?sensor=true&language=fr&mode=walking&";
+	private final String URL_PATTERN = "https://maps.googleapis.com/maps/api/directions/json?sensor=true&language=fr&mode=";
 	private static DirectionsResponse myRoad;
+	private String mode;
 	private static ArrayList<LatLng> listWayPoints;//LIste des jalons
 
-	protected Void doInBackground(ArrayList<LatLng>... param) {
+	protected Void doInBackground(Route... param) {
 
 		//Construction de l'URL
-		listWayPoints=param[0];
+		
+		listWayPoints=param[0].getListMarkersLatLng();
+		if(param[0].getTypeRoute().equals("VOITURE")){
+			this.mode="driving";
+		}else{
+			this.mode="walking";
+		}
+		Log.d("DEBUUUUUUG", this.mode);
 		this.origin = listWayPoints.get(0);
 		this.destination = listWayPoints.get(listWayPoints.size()-1);
 		listWayPoints.remove(0);
@@ -45,7 +55,7 @@ public class GettingRoute extends AsyncTask<ArrayList<LatLng>, Void, Void> {
 		
 		URL url = null;
 		try {
-			url = new URL(this.URL_PATTERN + "origin=" + this.origin.latitude
+			url = new URL(this.URL_PATTERN+"mode="+this.mode+"&" + "origin=" + this.origin.latitude
 					+ "," + this.origin.longitude + "&destination="
 					+ this.destination.latitude + ","
 					+ this.destination.longitude+wayPointsStr);
