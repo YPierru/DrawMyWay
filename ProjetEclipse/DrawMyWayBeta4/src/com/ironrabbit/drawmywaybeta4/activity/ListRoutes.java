@@ -34,11 +34,10 @@ import com.navdrawer.SimpleSideDrawer;
 
 public class ListRoutes extends Activity {
 
-	private RoutesCollection mRoutesCollection;
 	private static ListView mListView;
 	private SimpleSideDrawer mSlidingMenuRight, mSlidingMenuLeft;
 	private static String mTypeRouteCurrent;// VOITURE ou COUREUR
-	private float x1, x2;
+	private float x1, x2;// Points permettant de stocker l'abscisse de l'user
 	static final int MIN_DISTANCE = 100;
 
 	@Override
@@ -46,14 +45,16 @@ public class ListRoutes extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_trajet_display);
 		getActionBar().setHomeButtonEnabled(true);
+
 		mSlidingMenuRight = new SimpleSideDrawer(this);
-		mSlidingMenuRight.setRightBehindContentView(R.layout.side_menu_listroutes);
+		mSlidingMenuRight
+				.setRightBehindContentView(R.layout.side_menu_listroutes);
 
 		mSlidingMenuLeft = new SimpleSideDrawer(this);
 		mSlidingMenuLeft.setLeftBehindContentView(R.layout.side_menu_typeroute);
+
 		mListView = (ListView) findViewById(R.id.listView);
 
-		mRoutesCollection = RoutesCollection.getInstance();
 		/*
 		 * Ici, on récupère le typeCurrentRoute par un intent. On le fait dans
 		 * un try catch, si ça passe par le catch, on met un typeCurrentRoute
@@ -67,48 +68,23 @@ public class ListRoutes extends Activity {
 
 		initListWithRouteType();
 
-		// myLV.setOnItemLongClickListener(new
-		// ActionOnLongClickItemTrajet());
 		mListView.setOnItemClickListener(new ActionOnClickItemTrajet());
-		mListView.setOnTouchListener(new OnTouchListener() {
-			
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				switch (event.getAction()) {
-				case MotionEvent.ACTION_DOWN:
-					if (event.getX() <= 30) {
-						x1 = event.getX();
-					} else {
-						x1 = 40;
-					}
-					break;
-				case MotionEvent.ACTION_UP:
-					if (x1 <= 30) {
-						x2 = event.getX();
-						float deltaX = x2 - x1;
-						if (deltaX > MIN_DISTANCE) {
-							showLeftSideMenu();
-						}
-					}
-					break;
-				}
-				return false;
-			}
-		});
+		mListView.setOnTouchListener(new ActionOnTouchEvent());
 
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    if (item.getItemId() == android.R.id.home) {
-	        showLeftSideMenu();
-	        return true;
-	    }
-	    return super.onOptionsItemSelected(item);
+		if (item.getItemId() == android.R.id.home) {
+			showLeftSideMenu();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
-	
-	public void showLeftSideMenu(){
+
+	public void showLeftSideMenu() {
 		mSlidingMenuLeft.toggleLeftDrawer();
+		
 		Button btn_routeVoiture = (Button) findViewById(R.id.btn_routeVoiture);
 		btn_routeVoiture.setOnClickListener(new OnClickListener() {
 
@@ -119,6 +95,7 @@ public class ListRoutes extends Activity {
 				mSlidingMenuLeft.toggleLeftDrawer();
 			}
 		});
+		
 		Button btn_routeRunner = (Button) findViewById(R.id.btn_routeRunner);
 		btn_routeRunner.setOnClickListener(new OnClickListener() {
 
@@ -131,52 +108,9 @@ public class ListRoutes extends Activity {
 		});
 	}
 
-	/*@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_DOWN:
-			if (event.getX() <= 5) {
-				x1 = event.getX();
-			} else {
-				x1 = 10;
-			}
-			break;
-		case MotionEvent.ACTION_UP:
-			if (x1 <= 5) {
-				x2 = event.getX();
-				float deltaX = x2 - x1;
-				if (deltaX > MIN_DISTANCE) {
-					mSlidingMenuLeft.toggleLeftDrawer();
-					Button btn_routeVoiture = (Button) findViewById(R.id.btn_routeVoiture);
-					btn_routeVoiture.setOnClickListener(new OnClickListener() {
-
-						@Override
-						public void onClick(View v) {
-							mTypeRouteCurrent = "VOITURE";
-							initListWithRouteType();
-							mSlidingMenuLeft.toggleLeftDrawer();
-						}
-					});
-					Button btn_routeRunner = (Button) findViewById(R.id.btn_routeRunner);
-					btn_routeRunner.setOnClickListener(new OnClickListener() {
-
-						@Override
-						public void onClick(View v) {
-							mTypeRouteCurrent = "COUREUR";
-							initListWithRouteType();
-							mSlidingMenuLeft.toggleLeftDrawer();
-						}
-					});
-				}
-			}
-			break;
-		}
-		return super.onTouchEvent(event);
-	}*/
-
 	public void initListWithRouteType() {
 		RouteAdapter newAdapter;
-		mRoutesCollection = RoutesCollection.getInstance();
+		RoutesCollection mRoutesCollection = RoutesCollection.getInstance();
 		if (mTypeRouteCurrent.equals("VOITURE")) {
 			getActionBar().setTitle("Vos trajets voiture");
 			if (mRoutesCollection.getListRoutesVoiture().size() == 0) {
@@ -218,6 +152,7 @@ public class ListRoutes extends Activity {
 
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
+						RoutesCollection mRoutesCollection = RoutesCollection.getInstance();
 						mRoutesCollection.deleteFile();
 						return false;
 					}
@@ -271,6 +206,31 @@ public class ListRoutes extends Activity {
 		}
 	}
 
+	private class ActionOnTouchEvent implements OnTouchListener {
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				if (event.getX() <= 30) {
+					x1 = event.getX();
+				} else {
+					x1 = 40;
+				}
+				break;
+			case MotionEvent.ACTION_UP:
+				if (x1 <= 30) {
+					x2 = event.getX();
+					float deltaX = x2 - x1;
+					if (deltaX > MIN_DISTANCE) {
+						showLeftSideMenu();
+					}
+				}
+				break;
+			}
+			return false;
+		}
+	}
+
 	/*
 	 * Si on clique sur un trajet, on bascule vers TrajetDetails
 	 */
@@ -280,7 +240,7 @@ public class ListRoutes extends Activity {
 				long arg3) {
 
 			final Route tj;
-			mRoutesCollection = RoutesCollection.getInstance();
+			final 	RoutesCollection mRoutesCollection = RoutesCollection.getInstance();
 			Log.d("DEBUUUUUUUG", "" + arg2);
 			if (mTypeRouteCurrent.equals("VOITURE")) {
 				tj = mRoutesCollection.getListRoutesVoiture().get(arg2);
@@ -326,14 +286,6 @@ public class ListRoutes extends Activity {
 								SeeRoute.class);
 						toSeeRoute.putExtra("trajet", (Parcelable) tj);
 						startActivity(toSeeRoute);
-
-						/*
-						 * Intent toCMTrajetActivity = new
-						 * Intent(ListRoutes.this, CreateModifyRoute.class);
-						 * toCMTrajetActivity.putExtra("trajet", (Parcelable)
-						 * tj); toCMTrajetActivity.putExtra("MODE",
-						 * "Modification"); startActivity(toCMTrajetActivity);
-						 */
 
 						mSlidingMenuRight.toggleRightDrawer();
 					}
