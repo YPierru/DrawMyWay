@@ -96,10 +96,6 @@ public class ListRoutes extends Activity {
 			}
 		});
 
-		// RouteAdapter adapter = new RouteAdapter(this, mRoutesCollection);
-		// mListView.setAdapter(adapter);
-		// registerForContextMenu(myLV);
-
 	}
 	
 	@Override

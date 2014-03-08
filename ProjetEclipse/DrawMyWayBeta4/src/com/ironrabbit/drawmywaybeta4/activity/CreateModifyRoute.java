@@ -82,6 +82,7 @@ public class CreateModifyRoute extends SherlockActivity {
 			mMap.animateCamera(cu, 600, null);
 		}
 		
+		
 		btn_dessiner= (Button) findViewById(R.id.btn_dessiner);
 		btn_correctionmode = (Button) findViewById(R.id.btn_correctionMode);
 		btn_finirTrajet = (Button) findViewById(R.id.btn_finirTrajet);
