@@ -6,8 +6,8 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -51,74 +51,82 @@ public class CreateModifyRoute extends SherlockActivity {
 	private GoogleMap mMap;
 	private Polyline mPolyline;
 	private ArrayList<Marker> mListMarkers;
-	private ArrayList<LatLng> mListOverviewPolylinePoints; //Liste des points overview_polyline
-	private Button btn_dessiner,btn_correctionmode,btn_finirTrajet;
+	private ArrayList<LatLng> mListOverviewPolylinePoints; // Liste des points
+															// overview_polyline
+	private Button btn_dessiner, btn_correctionmode, btn_finirTrajet;
+	private Point mPoint;
 	private String mMode;
 	private Route mRoute;
 	static CreateModifyRoute thisActivity;
-	private SimpleSideDrawer mSlidingMenu;//Slide menu à droite
+	private SimpleSideDrawer mSlidingMenu;// Slide menu à droite
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_map_create);
-		
-		thisActivity=this;
-		
+		thisActivity = this;
+
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-		
-		//Initialisation du SSD. On lui affecte le layout pour le côté droit.
+
+		// Initialisation du SSD. On lui affecte le layout pour le côté droit.
 		mSlidingMenu = new SimpleSideDrawer(this);
 		mSlidingMenu.setRightBehindContentView(R.layout.side_menu_map);
-	
-		//On recupère : le trajet ainsi que le "mode" : 
-		//Modification : le trajet est "en cours"
-		//Création : on créer un nouveau trajet.
+
+		// On recupère : le trajet ainsi que le "mode" :
+		// Modification : le trajet est "en cours"
+		// Création : on créer un nouveau trajet.
 		mRoute = getIntent().getExtras().getParcelable("trajet");
 		mMode = getIntent().getExtras().getString("MODE");
 		mListMarkers = new ArrayList<Marker>();
-		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-		if(mMode.equals("Modification")){
+		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
+				.getMap();
+		if (mMode.equals("Modification")) {
 			ArrayList<LatLng> tmpListMarkers = mRoute.getListMarkersLatLng();
-			for(int i=0;i<tmpListMarkers.size();i++){
-				if(i==0){
-					mListMarkers.add(putMarker(tmpListMarkers.get(i), "Départ", true));
-				}else{
-					mListMarkers.add(putMarker(tmpListMarkers.get(i), "", true));
+			for (int i = 0; i < tmpListMarkers.size(); i++) {
+				if (i == 0) {
+					mListMarkers.add(putMarker(tmpListMarkers.get(i), "Départ",
+							true));
+				} else {
+					mListMarkers
+							.add(putMarker(tmpListMarkers.get(i), "", true));
 				}
 			}
-			CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(tmpListMarkers.get(tmpListMarkers.size()-1),
-					15);
+			CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(
+					tmpListMarkers.get(tmpListMarkers.size() - 1), 15);
 			mMap.animateCamera(cu, 600, null);
 		}
-		
-		
-		btn_dessiner= (Button) findViewById(R.id.btn_dessiner);
+
+		btn_dessiner = (Button) findViewById(R.id.btn_dessiner);
 		btn_correctionmode = (Button) findViewById(R.id.btn_correctionMode);
 		btn_finirTrajet = (Button) findViewById(R.id.btn_finirTrajet);
-	
-		//Initialisation des objets
+
+		// Initialisation des objets
 		mPolyline = null;
 
-		//map.setMyLocationEnabled(true);
-		
-		//Méthodes initialisant les comportements de l'écran
+		// map.setMyLocationEnabled(true);
+
+		// Méthodes initialisant les comportements de l'écran
 		settingMapLongClickListener(false);
-		settingMapClickListener(false);	
-		
+		settingMapClickListener(false);
+
 		mMap.setOnMarkerDragListener(new ActionDragMarker());
-		
+
+		mPoint = new Point();
+		getWindowManager().getDefaultDisplay().getSize(mPoint);
+		Button btn = (Button) findViewById(R.id.btn_slideMenuCM);
+		btn.setOnTouchListener(new ActionOnTouchForSlide());
+
 		getActionBar().setTitle(mRoute.getName());
 
 	}
-	
-	public static CreateModifyRoute getInstance(){
+
+	public static CreateModifyRoute getInstance() {
 		return thisActivity;
 	}
 
 	/*
-	 * Comportement lors d'un long click sur la map,
-	 * selon le mode courant (CorrectionMode ou pas)
+	 * Comportement lors d'un long click sur la map, selon le mode courant
+	 * (CorrectionMode ou pas)
 	 */
 	private void settingMapLongClickListener(boolean isCorrectionMode) {
 		if (!isCorrectionMode) {
@@ -131,7 +139,7 @@ public class CreateModifyRoute extends SherlockActivity {
 					mMap.clear();
 					// listJalons.clear();
 					mListMarkers.clear();
-					
+
 					// On positionne la cam??ra sur le point click??
 					CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(point,
 							16);
@@ -142,7 +150,8 @@ public class CreateModifyRoute extends SherlockActivity {
 					 */
 					mListMarkers.add(putMarker(point, "Départ", true));
 					mRoute.getListMarkers().clear();
-					mRoute.getListMarkers().add(point.latitude, point.longitude);
+					mRoute.getListMarkers()
+							.add(point.latitude, point.longitude);
 					// On active l'ajout de marker pour les jalons
 				}
 			});
@@ -152,8 +161,8 @@ public class CreateModifyRoute extends SherlockActivity {
 	}
 
 	/*
-	 * Comportement lors d'un click court (click simple),
-	 * selon le mode courant (CorrectionMode ou pas)
+	 * Comportement lors d'un click court (click simple), selon le mode courant
+	 * (CorrectionMode ou pas)
 	 */
 	private void settingMapClickListener(boolean isCorrectionMode) {
 
@@ -168,7 +177,8 @@ public class CreateModifyRoute extends SherlockActivity {
 					// listJalons.add(point);
 					mListMarkers.add(putMarker(point, "Jalon posé", true));
 					btn_dessiner.setEnabled(true);
-					mRoute.getListMarkers().add(point.latitude, point.longitude);
+					mRoute.getListMarkers()
+							.add(point.latitude, point.longitude);
 				}
 			});
 		} else {
@@ -204,18 +214,20 @@ public class CreateModifyRoute extends SherlockActivity {
 			}
 		});
 	}
-	
+
 	/*
 	 * Comportement lors du click sur le bouton "home"
 	 */
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
-		
-		if(menuItem.getItemId()==android.R.id.home){
-			if(mListMarkers.size()>0){
-				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(CreateModifyRoute.this);
+
+		if (menuItem.getItemId() == android.R.id.home) {
+			if (mListMarkers.size() > 0) {
+				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+						CreateModifyRoute.this);
 				alertDialogBuilder.setTitle("Attention");
 				alertDialogBuilder
-						.setMessage("Vous allez perdre toutes vos modifications.")
+						.setMessage(
+								"Vous allez perdre toutes vos modifications.")
 						.setCancelable(false)
 						.setPositiveButton("Ok",
 								new DialogInterface.OnClickListener() {
@@ -223,7 +235,8 @@ public class CreateModifyRoute extends SherlockActivity {
 											int id) {
 										dialog.cancel();
 										onBackPressed();
-										CreateModifyRoute.getInstance().finish();
+										CreateModifyRoute.getInstance()
+												.finish();
 									}
 								})
 						.setNegativeButton("Annuler",
@@ -235,45 +248,51 @@ public class CreateModifyRoute extends SherlockActivity {
 								});
 				AlertDialog alertDialog = alertDialogBuilder.create();
 				alertDialog.show();
-			}else{
+			} else {
 				onBackPressed();
 			}
 		}
 		return true;
 	}
-	
+
 	/*
 	 * Ajoute les items.
 	 */
-	public boolean onCreateOptionsMenu(Menu menu) {
-	
-		//Permet de faire apparaitre le menu droit.
-		MenuItem item_showSideMenu = menu.add("Menu droit").setIcon(R.drawable.sidemenu);
+	/*public boolean onCreateOptionsMenu(Menu menu) {
+
+		// Permet de faire apparaitre le menu droit.
+		MenuItem item_showSideMenu = menu.add("Menu droit").setIcon(
+				R.drawable.sidemenu);
 		item_showSideMenu.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-		item_showSideMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-			
-			@Override
-			public boolean onMenuItemClick(MenuItem item) {
-				mSlidingMenu.toggleRightDrawer();
-				
-				behaviorButtonDraw();				
-				behaviorButtonCorrectionMode();
-				behaviorButtonFinishRoute();
-				behaviorButtonsMapType(R.id.btn_mapNormal, GoogleMap.MAP_TYPE_NORMAL);
-				behaviorButtonsMapType(R.id.btn_mapHybride, GoogleMap.MAP_TYPE_HYBRID);
-				behaviorButtonsMapType(R.id.btn_mapSatellite, GoogleMap.MAP_TYPE_SATELLITE);
-				behaviorButtonsMapType(R.id.btn_mapTerrain, GoogleMap.MAP_TYPE_TERRAIN);
-				
-				return false;
-			}
-		});
+		item_showSideMenu
+				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						mSlidingMenu.toggleRightDrawer();
+
+						behaviorButtonDraw();
+						behaviorButtonCorrectionMode();
+						behaviorButtonFinishRoute();
+						behaviorButtonsMapType(R.id.btn_mapNormal,
+								GoogleMap.MAP_TYPE_NORMAL);
+						behaviorButtonsMapType(R.id.btn_mapHybride,
+								GoogleMap.MAP_TYPE_HYBRID);
+						behaviorButtonsMapType(R.id.btn_mapSatellite,
+								GoogleMap.MAP_TYPE_SATELLITE);
+						behaviorButtonsMapType(R.id.btn_mapTerrain,
+								GoogleMap.MAP_TYPE_TERRAIN);
+
+						return false;
+					}
+				});
 
 		return true;
-	}
-	
-	public void behaviorButtonDraw(){
+	}*/
+
+	public void behaviorButtonDraw() {
 		btn_dessiner.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				if (btn_correctionmode.getTextColors().getDefaultColor() == Color.GREEN) {
@@ -283,7 +302,6 @@ public class CreateModifyRoute extends SherlockActivity {
 				if (mPolyline != null) {
 					mPolyline.remove();
 				}
-
 
 				new GettingRoute().execute(mRoute);
 				try {
@@ -297,11 +315,12 @@ public class CreateModifyRoute extends SherlockActivity {
 				DirectionsResponse myRoad = GettingRoute.getDR();
 				mRoute.getListSegment().clear();
 				mRoute.getListSegment().add(myRoad);
-				//tj.setDraw(true);
+				// tj.setDraw(true);
 
 				// listRealPoints.clear();
 				// Liste de tout les points du trajet (overview_polyline)
-				mListOverviewPolylinePoints = Decoder.decodePoly(myRoad.getRoutes().get(0).getOverview_polyline().getPoints());
+				mListOverviewPolylinePoints = Decoder.decodePoly(myRoad
+						.getRoutes().get(0).getOverview_polyline().getPoints());
 
 				// Le bloc ci-dessous permet de r??cup??rer les coo LatLng des
 				// Markers apr??s correction de google
@@ -333,7 +352,7 @@ public class CreateModifyRoute extends SherlockActivity {
 				mPolyline = mMap.addPolyline(options);
 				mRoute.setPointsWhoDrawsPolylineLatLng(mListOverviewPolylinePoints);
 				mRoute.setValidate(true);
-				
+
 				String strSubtitle = "";
 				double dist = mRoute.getDistTotal();
 				if (dist < 1000) {
@@ -355,11 +374,11 @@ public class CreateModifyRoute extends SherlockActivity {
 			}
 		});
 	}
-	
-	public void behaviorButtonCorrectionMode(){
+
+	public void behaviorButtonCorrectionMode() {
 		btn_correctionmode.setTextColor(Color.RED);
 		btn_correctionmode.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				if (btn_correctionmode.getTextColors().getDefaultColor() == Color.RED) {
@@ -401,16 +420,16 @@ public class CreateModifyRoute extends SherlockActivity {
 			}
 		});
 	}
-	
-	public void behaviorButtonFinishRoute(){
-		btn_finirTrajet = (Button)findViewById(R.id.btn_finirTrajet);
+
+	public void behaviorButtonFinishRoute() {
+		btn_finirTrajet = (Button) findViewById(R.id.btn_finirTrajet);
 		btn_finirTrajet.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				RoutesCollection at = RoutesCollection.getInstance();
 				mRoute.setSave(true);
-				if(!at.replace(mRoute)){
+				if (!at.replace(mRoute)) {
 					at.add(mRoute);
 				}
 				at.saveAllTrajet();
@@ -419,11 +438,11 @@ public class CreateModifyRoute extends SherlockActivity {
 			}
 		});
 	}
-	
-	public void behaviorButtonsMapType(int btnId, final int mapType){
-		Button btn = (Button)findViewById(btnId);
+
+	public void behaviorButtonsMapType(int btnId, final int mapType) {
+		Button btn = (Button) findViewById(btnId);
 		btn.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				mMap.setMapType(mapType);
@@ -431,16 +450,41 @@ public class CreateModifyRoute extends SherlockActivity {
 			}
 		});
 	}
-	
+
+	private class ActionOnTouchForSlide implements OnTouchListener {
+
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				mSlidingMenu.toggleRightDrawer();
+
+				behaviorButtonDraw();
+				behaviorButtonCorrectionMode();
+				behaviorButtonFinishRoute();
+				behaviorButtonsMapType(R.id.btn_mapNormal,
+						GoogleMap.MAP_TYPE_NORMAL);
+				behaviorButtonsMapType(R.id.btn_mapHybride,
+						GoogleMap.MAP_TYPE_HYBRID);
+				behaviorButtonsMapType(R.id.btn_mapSatellite,
+						GoogleMap.MAP_TYPE_SATELLITE);
+				behaviorButtonsMapType(R.id.btn_mapTerrain,
+						GoogleMap.MAP_TYPE_TERRAIN);
+				break;
+			}
+			return false;
+		}
+	}
+
 	/*
 	 * Lorsqu'un marker est deplacé, on actualise la liste des marker du trajet
 	 */
-	private class ActionDragMarker implements OnMarkerDragListener{
+	private class ActionDragMarker implements OnMarkerDragListener {
 
 		@Override
 		public void onMarkerDrag(Marker arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
@@ -451,8 +495,8 @@ public class CreateModifyRoute extends SherlockActivity {
 		@Override
 		public void onMarkerDragStart(Marker arg0) {
 			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 	}
 }

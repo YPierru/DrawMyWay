@@ -5,28 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <!-- <RelativeLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingLeft="5dp"
-        android:paddingRight="8dp"
-        android:paddingTop="50dp" >
+        android:orientation="vertical" >
 
         <Button
-            android:id="@+id/btn_correctionMode"
-            android:layout_width="115dp"
-            android:layout_height="70dp"
+            android:id="@+id/btn_slideMenuCM"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
             android:layout_alignParentRight="true"
-            android:text="Correction Mode"/>
-
-        <Button
-            android:id="@+id/btn_validate"
-            android:layout_width="95dp"
-            android:layout_height="45dp"
-            android:layout_alignParentRight="true"
-            android:layout_below="@id/btn_correctionMode"
-            android:text="Dessiner" />
-    </RelativeLayout>-->
+            android:background="@android:color/transparent" />
+    </RelativeLayout>
 
 </fragment>
