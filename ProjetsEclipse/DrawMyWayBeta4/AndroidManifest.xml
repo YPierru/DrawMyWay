@@ -49,7 +49,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name="com.ironrabbit.drawmywaybeta4.activity.GPSRunner"
+            android:name="com.ironrabbit.drawmywaybeta4.activity.GPSRunner_ex"
             android:label="@string/title_activity_gpsrunner" >
         </activity>
         <activity
@@ -89,6 +89,10 @@
         <activity
             android:name="com.ironrabbit.drawmywaybeta4.route.RouteAdapter"
             android:label="@string/title_activity_route_adapter" >
+        </activity>
+        <activity
+            android:name="com.ironrabbit.drawmywaybeta4.activity.GPSRunner"
+            android:label="@string/title_activity_gpsrunner" >
         </activity>
     </application>
 

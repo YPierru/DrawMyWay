@@ -944,6 +944,11 @@ containing a value of this type.
         public static final int abs__search_view_text_min_width=0x7f07000b;
         /**  Default screen margins, per the Android Design guidelines. 
 
+         Example customization of dimensions originally defined in res/values/dimens.xml
+         (such as screen margins) for screens with more than 820dp of available width. This
+         would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively).
+    
+
          Customize dimensions originally defined in res/values/dimens.xml (such as
          screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
     
@@ -1149,43 +1154,34 @@ containing a value of this type.
         public static final int abs__textButton=0x7f040017;
         public static final int abs__title=0x7f04001f;
         public static final int abs__up=0x7f04000b;
-        public static final int action_settings=0x7f04005f;
-        public static final int btn_correctionMode=0x7f040055;
-        public static final int btn_dessiner=0x7f040054;
-        public static final int btn_finirTrajet=0x7f040056;
-        public static final int btn_gps=0x7f040051;
-        public static final int btn_mapHybride=0x7f040059;
-        public static final int btn_mapNormal=0x7f040058;
-        public static final int btn_mapSatellite=0x7f04005a;
-        public static final int btn_mapTerrain=0x7f04005b;
-        public static final int btn_renommer=0x7f040052;
-        public static final int btn_routeRunner=0x7f04005e;
-        public static final int btn_routeVoiture=0x7f04005d;
-        public static final int btn_slideMenuCM=0x7f040047;
-        public static final int btn_supp=0x7f040053;
-        public static final int btn_voirmodif=0x7f040050;
-        public static final int centralLinLay=0x7f04003c;
-        public static final int centralLinLaySub=0x7f04003f;
+        public static final int action_settings=0x7f040055;
+        public static final int btn_correctionMode=0x7f04004b;
+        public static final int btn_dessiner=0x7f04004a;
+        public static final int btn_finirTrajet=0x7f04004c;
+        public static final int btn_gps=0x7f040047;
+        public static final int btn_mapHybride=0x7f04004f;
+        public static final int btn_mapNormal=0x7f04004e;
+        public static final int btn_mapSatellite=0x7f040050;
+        public static final int btn_mapTerrain=0x7f040051;
+        public static final int btn_renommer=0x7f040048;
+        public static final int btn_routeRunner=0x7f040054;
+        public static final int btn_routeVoiture=0x7f040053;
+        public static final int btn_slideMenuCM=0x7f04003d;
+        public static final int btn_supp=0x7f040049;
+        public static final int btn_voirmodif=0x7f040046;
         public static final int disableHome=0x7f040009;
-        public static final int distanceAvantChangement=0x7f04003e;
-        public static final int dureeTotal=0x7f040041;
         public static final int edit_query=0x7f04002a;
-        public static final int et_place=0x7f04003b;
-        public static final int heureFin=0x7f040045;
         public static final int homeAsUp=0x7f040006;
-        public static final int html_instructions=0x7f04003d;
         public static final int hybrid=0x7f040013;
-        public static final int icn_arrow_l=0x7f040039;
-        public static final int icn_arrow_r=0x7f040038;
-        public static final int kilometrageEffectue=0x7f040040;
-        public static final int kilometrageTrajet=0x7f040044;
-        public static final int leftLinearLayout=0x7f040043;
+        public static final int icn_arrow_l=0x7f04003a;
+        public static final int icn_arrow_r=0x7f040039;
         public static final int listMode=0x7f040002;
-        public static final int listView=0x7f04004a;
-        public static final int ll_TrajetItem=0x7f040036;
-        public static final int map=0x7f040046;
-        public static final int mapGPS=0x7f04003a;
-        public static final int mapSee=0x7f040048;
+        public static final int listView=0x7f040040;
+        public static final int ll_TrajetItem=0x7f040037;
+        public static final int map=0x7f04003c;
+        public static final int mapForGPS=0x7f040036;
+        public static final int mapGPS=0x7f04003b;
+        public static final int mapSee=0x7f04003e;
         public static final int none=0x7f040010;
         public static final int normal=0x7f040001;
         public static final int satellite=0x7f040011;
@@ -1194,17 +1190,16 @@ containing a value of this type.
         public static final int showTitle=0x7f040007;
         public static final int tabMode=0x7f040003;
         public static final int terrain=0x7f040012;
-        public static final int tv_adrarriv=0x7f04004f;
-        public static final int tv_adrdepart=0x7f04004e;
-        public static final int tv_aucunTrajets=0x7f040049;
-        public static final int tv_datecrea=0x7f04004b;
-        public static final int tv_duree=0x7f04004d;
-        public static final int tv_kmtrage=0x7f04004c;
-        public static final int tv_mapType=0x7f040057;
-        public static final int tv_nomTrajet=0x7f040037;
-        public static final int tv_typeRoute=0x7f04005c;
+        public static final int tv_adrarriv=0x7f040045;
+        public static final int tv_adrdepart=0x7f040044;
+        public static final int tv_aucunTrajets=0x7f04003f;
+        public static final int tv_datecrea=0x7f040041;
+        public static final int tv_duree=0x7f040043;
+        public static final int tv_kmtrage=0x7f040042;
+        public static final int tv_mapType=0x7f04004d;
+        public static final int tv_nomTrajet=0x7f040038;
+        public static final int tv_typeRoute=0x7f040052;
         public static final int useLogo=0x7f040004;
-        public static final int vitesseMoy=0x7f040042;
         public static final int wrap_content=0x7f040000;
     }
     public static final class integer {
@@ -1233,16 +1228,17 @@ containing a value of this type.
         public static final int abs__search_dropdown_item_icons_2line=0x7f030012;
         public static final int abs__search_view=0x7f030013;
         public static final int abs__simple_dropdown_hint=0x7f030014;
-        public static final int itemtrajet=0x7f030015;
-        public static final int layout_gps=0x7f030016;
-        public static final int layout_map_create=0x7f030017;
-        public static final int layout_map_see=0x7f030018;
-        public static final int layout_trajet_display=0x7f030019;
-        public static final int sherlock_spinner_dropdown_item=0x7f03001a;
-        public static final int sherlock_spinner_item=0x7f03001b;
-        public static final int side_menu_listroutes=0x7f03001c;
-        public static final int side_menu_map=0x7f03001d;
-        public static final int side_menu_typeroute=0x7f03001e;
+        public static final int activity_gpsrunner=0x7f030015;
+        public static final int itemtrajet=0x7f030016;
+        public static final int layout_gps=0x7f030017;
+        public static final int layout_map_create=0x7f030018;
+        public static final int layout_map_see=0x7f030019;
+        public static final int layout_trajet_display=0x7f03001a;
+        public static final int sherlock_spinner_dropdown_item=0x7f03001b;
+        public static final int sherlock_spinner_item=0x7f03001c;
+        public static final int side_menu_listroutes=0x7f03001d;
+        public static final int side_menu_map=0x7f03001e;
+        public static final int side_menu_typeroute=0x7f03001f;
     }
     public static final class menu {
         public static final int gpsrunner=0x7f0b0000;

@@ -1,0 +1,6 @@
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mapForGPS"
+    android:name="com.google.android.gms.maps.MapFragment"
+    android:layout_width="fill_parent"
+    android:layout_height="0px"
+    android:layout_weight="6" />

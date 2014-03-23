@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <fragment
-        android:id="@+id/mapGPS"
-        android:name="com.google.android.gms.maps.MapFragment"
-        android:layout_width="fill_parent"
-        android:layout_height="0px"
-        android:layout_weight="6" />
+<fragment
+    android:id="@+id/mapGPS"
+    android:name="com.google.android.gms.maps.MapFragment"
+    android:layout_width="fill_parent"
+    android:layout_height="0px"
+    android:layout_weight="6" />
 
-    <RelativeLayout
+    <!--
+<RelativeLayout
         android:id="@+id/et_place"
         android:layout_width="fill_parent"
         android:layout_height="0px"
@@ -86,5 +88,6 @@
                 android:layout_weight="1" />
         </LinearLayout>
     </RelativeLayout>
+    -->
 
 </LinearLayout>
