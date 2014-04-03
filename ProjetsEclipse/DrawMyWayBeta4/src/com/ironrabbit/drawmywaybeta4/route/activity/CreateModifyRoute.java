@@ -80,6 +80,7 @@ public class CreateModifyRoute extends SherlockActivity {
 		mListMarkers = new ArrayList<Marker>();
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
+		//mMap.setMyLocationEnabled(true);
 		if (mMode.equals("Modification")) {
 			ArrayList<LatLng> tmpListMarkers = mRoute.getListMarkersLatLng();
 			for (int i = 0; i < tmpListMarkers.size(); i++) {

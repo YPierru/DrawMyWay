@@ -52,6 +52,10 @@
             android:label="@string/title_activity_gpsrunner" >
         </activity>
         <activity
+            android:name="com.ironrabbit.drawmywaybeta4.route.activity.SeeRoute"
+            android:label="@string/title_activity_seeroute" >
+        </activity>
+        <activity
             android:name="com.ironrabbit.drawmywaybeta4.route.activity.ListRoutes"
             android:label="@string/title_activity_welcome" >
             <intent-filter>

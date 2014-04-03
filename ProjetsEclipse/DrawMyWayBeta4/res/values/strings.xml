@@ -9,7 +9,8 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_trajet_details">TrajetDetails</string>
     <string name="title_activity_test_maps">TestMaps</string>
-    <string name="title_activity_welcome">Welcome</string>
+    <string name="title_activity_seeroute">SeeRoute</string>
+    <string name="title_activity_welcome">DrawMyWay</string>
     <string name="title_activity_panel_trajet">PanelTrajet</string>
     <string name="title_activity_see_trajet">SeeTrajet</string>
     <string name="title_activity_array_adapter_demo">ArrayAdapterDemo</string>
