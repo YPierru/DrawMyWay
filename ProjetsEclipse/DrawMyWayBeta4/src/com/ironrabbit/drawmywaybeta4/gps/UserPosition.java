@@ -2,6 +2,7 @@ package com.ironrabbit.drawmywaybeta4.gps;
 
 import java.util.ArrayList;
 
+import android.graphics.Color;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -11,6 +12,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.ironrabbit.drawmyway.R;
 
 public class UserPosition {
@@ -20,10 +23,12 @@ public class UserPosition {
 	private Marker mMyMarker;
 	private boolean isOnRoute;
 	private int mIndexPointToFollow;
+	private Polyline mPolyline;
 
 	public UserPosition(LatLng p) {
 		this.mCurrentPos = p;
 		this.mMyMarker = null;
+		this.mPolyline = null;
 		this.mHistoPos = new ArrayList<LatLng>();
 		this.mHistoPos.add(p);
 		this.isOnRoute = false;
@@ -32,19 +37,20 @@ public class UserPosition {
 
 	public UserPosition() {
 		this.mMyMarker = null;
+		this.mPolyline = null;
 		this.mHistoPos = new ArrayList<LatLng>();
 		this.isOnRoute = false;
 		this.mIndexPointToFollow = 0;
 	}
 
 	public void setCurrentPos(LatLng p) {
-		this.mHistoPos.add(this.mCurrentPos);
 		this.mCurrentPos = p;
+		this.mHistoPos.add(this.mCurrentPos);
 	}
 
 	public void setCurrentPos(Double lat, Double lng) {
-		this.mHistoPos.add(this.mCurrentPos);
 		this.mCurrentPos = new LatLng(lat, lng);
+		this.mHistoPos.add(this.mCurrentPos);
 	}
 
 	public LatLng getCurrentPos() {
@@ -71,27 +77,35 @@ public class UserPosition {
 
 		if (this.mMyMarker == null) {
 			this.mMyMarker = map.addMarker(new MarkerOptions()
-					.icon(BitmapDescriptorFactory.fromResource(R.drawable.android))
-					.anchor(0.0f, 1.0f)
-					.position(this.mCurrentPos));
+					.icon(BitmapDescriptorFactory
+							.fromResource(R.drawable.android))
+					.anchor(0.0f, 1.0f).position(this.mCurrentPos));
 
-			CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(this.mCurrentPos,
-					19);
+			CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(
+					this.mCurrentPos, 19);
 			map.animateCamera(cu);
-		}else{
+		} else {
 			this.mMyMarker.setPosition(this.mCurrentPos);
+			CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(
+					this.mCurrentPos, 19);
+			map.animateCamera(cu);
 		}
 	}
 
-	public void drawUserRoute(GoogleMap map) {
-		Log.d("DEBUUUUG", ""+this.mHistoPos.size());
-		/*PolylineOptions options = new PolylineOptions().geodesic(false)
-				.width(15).color(Color.argb(255, 0, 0, 221));
-		for (int i = 0; i < this.mHistoPos.size(); i++) {
-			options.add(this.mHistoPos.get(i));
+	/*public void drawUserRoute(GoogleMap map) {
+		if (this.mPolyline == null) {
+			if (this.mHistoPos.size() > 0) {
+				PolylineOptions options = new PolylineOptions().geodesic(false)
+						.width(15).color(Color.argb(255, 0, 0, 221));
+				for (int i = 0; i < this.mHistoPos.size(); i++) {
+					options.add(this.mHistoPos.get(i));
+				}
+				this.mPolyline = map.addPolyline(options);
+			}
+		} else {
+			this.mPolyline.setPoints(this.mHistoPos);
 		}
-		map.addPolyline(options);*/
-	}
+	}*/
 
 	public int distanceBetween(LatLng p) {
 		double lat1 = this.mCurrentPos.latitude;

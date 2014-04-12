@@ -80,7 +80,7 @@ public class CreateModifyRoute extends SherlockActivity {
 		mListMarkers = new ArrayList<Marker>();
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
-		//mMap.setMyLocationEnabled(true);
+		// mMap.setMyLocationEnabled(true);
 		if (mMode.equals("Modification")) {
 			ArrayList<LatLng> tmpListMarkers = mRoute.getListMarkersLatLng();
 			for (int i = 0; i < tmpListMarkers.size(); i++) {
@@ -304,74 +304,18 @@ public class CreateModifyRoute extends SherlockActivity {
 					mPolyline.remove();
 				}
 
-				new GettingRoute().execute(mRoute);
-				try {
-					Thread.sleep(3500);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				// On r??cup????re tout notre trajet
-				DirectionsResponse myRoad = GettingRoute.getDR();
-				mRoute.getListSegment().clear();
-				mRoute.getListSegment().add(myRoad);
-				// tj.setDraw(true);
-
-				// listRealPoints.clear();
-				// Liste de tout les points du trajet (overview_polyline)
-				mListOverviewPolylinePoints = Decoder.decodePoly(myRoad
-						.getRoutes().get(0).getOverview_polyline().getPoints());
-
-				// Le bloc ci-dessous permet de r??cup??rer les coo LatLng des
-				// Markers apr??s correction de google
-				List<Legs> listLegs = myRoad.getRoutes().get(0).getLegs();
-				ArrayList<LatLng> tmpPoints = new ArrayList<LatLng>();
-				for (int i = 0; i < listLegs.size(); i++) {
-					tmpPoints.add(new LatLng(listLegs.get(i)
-							.getStart_location().getLat(), listLegs.get(i)
-							.getStart_location().getLng()));
-					if (i + 1 == listLegs.size()) {
-						tmpPoints.add(new LatLng(listLegs.get(i)
-								.getEnd_location().getLat(), listLegs.get(i)
-								.getEnd_location().getLng()));
-					}
-				}
-				mRoute.setListMarkersLatLng(tmpPoints);
-				// Met les Marker ?? leur nouvelle place
-				for (int i = 0; i < mListMarkers.size(); i++) {
-					mListMarkers.get(i).setPosition(tmpPoints.get(i));
-				}
-				// currentTrajet.setListMarker(listMarkers);
-
-				// Log.d("DEBUUUUUUG","LT = "+tmpPoints.size()+" LMB = "+listMarkersBad.size());
-				PolylineOptions options = new PolylineOptions().geodesic(false)
-						.width(15).color(Color.argb(120, 0, 0, 221));
-				for (int i = 0; i < mListOverviewPolylinePoints.size(); i++) {
-					options.add(mListOverviewPolylinePoints.get(i));
-				}
-				mPolyline = mMap.addPolyline(options);
-				mRoute.setPointsWhoDrawsPolylineLatLng(mListOverviewPolylinePoints);
-				mRoute.setValidate(true);
-
-				String strSubtitle = "";
-				double dist = mRoute.getDistTotal();
-				if (dist < 1000) {
-					strSubtitle += ((int) dist + "m");
-				} else {
-					strSubtitle += ((dist / 1000) + "Km");
-				}
-
-				int dureeSecond = mRoute.getDureeTotal();
-				int heures = (dureeSecond / 3600);
-				int minutes = ((dureeSecond % 3600) / 60);
-				if (heures == 0) {
-					strSubtitle += " - ~" + (minutes + "min");
-				} else {
-					strSubtitle += " - ~" + (heures + "h" + minutes + "min");
-				}
-				getActionBar().setSubtitle(strSubtitle);
 				mSlidingMenu.toggleRightDrawer();
+				
+				
+				GettingRoute getRoute = new GettingRoute(
+						CreateModifyRoute.this, 
+						mRoute,
+						mListOverviewPolylinePoints,
+						mListMarkers,
+						mPolyline, 
+						mMap);
+
+				getRoute.execute();
 			}
 		});
 	}

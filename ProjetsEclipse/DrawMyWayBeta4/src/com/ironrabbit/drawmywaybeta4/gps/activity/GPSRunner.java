@@ -13,7 +13,6 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -58,6 +57,8 @@ public class GPSRunner extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_gps);
+		
+		
 		this.mUserPos = new UserPosition();
 		
 		thisactivity = this;
@@ -68,8 +69,14 @@ public class GPSRunner extends Activity {
 		//mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
 		mRoute = getIntent().getExtras().getParcelable("TRAJET");
+		
+		//On recupère la liste des steps
 		this.mListSteps=mRoute.getListSteps();
 		
+		/*
+		 * On récupère la liste des points à suivre.
+		 * A chaque nouveau point correspond une nouvelle instruction
+		 */
 		this.listPointsToFollow=new ArrayList<LatLng>();
 		for (int i = 0; i < mListSteps.size(); i++) {
 			listPointsToFollow.add(new LatLng(mListSteps.get(i).getStart_location()
@@ -79,6 +86,12 @@ public class GPSRunner extends Activity {
 						.getLat(), mListSteps.get(i).getEnd_location().getLng()));
 			}
 		}
+		
+		/*for(int i=0;i<this.mListSteps.size();i++){
+			Log.d("DEBUUUUUUUG", this.mListSteps.get(i).getHtml_instructions());
+		}*/
+		
+		//On dessine le trajet
 		drawRoute();
 	}
 	
@@ -91,26 +104,34 @@ public class GPSRunner extends Activity {
 		ArrayList<LatLng> listPointsOverview = mRoute.getPointsWhoDrawsPolylineLatLng();
 		setMarker(listPointsOverview.get(0), "Go !");
 		
-		CircleOptions circleOptions = new CircleOptions()
-	    .center(listPointsOverview.get(0))
-	    .radius(5);
+		//Zone de détection (5 mètres) du point de départ
+		CircleOptions circleOptions;
 		
-		mMap.addCircle(circleOptions);
+		for(int i=0;i<this.listPointsToFollow.size();i++){
+			setMarker(this.listPointsToFollow.get(i), "");
+			circleOptions= new CircleOptions()
+		    .center(this.listPointsToFollow.get(i))
+		    .radius(8);
+			mMap.addCircle(circleOptions);
+		}
 		
 		//CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(listPointsOverview.get(0), 15);
 		//mMap.animateCamera(cu);
 		//Log.d("DEBUUUUUG", listPointsOverview.get(0).toString());
 		
+		
+		//Traçage du trajet
 		PolylineOptions options = new PolylineOptions().geodesic(false)
 				.width(15).color(Color.argb(120, 0, 0, 221));
+		
 		for (int i = 0; i < listPointsOverview.size(); i++) {
-			options.add(listPointsOverview.get(i));
+			options.add(listPointsOverview.get(i)); 
 		}
 		mMap.addPolyline(options);
 		
 		
-		
-		setMarker(listPointsOverview.get(listPointsOverview.size() - 1), "Arrivee");
+		//On met le marker à l'arrivée
+		//setMarker(listPointsOverview.get(listPointsOverview.size() - 1), "Arrivee");
 	}
 	
 	public void setMarker(LatLng point, String str) {
@@ -169,56 +190,80 @@ public class GPSRunner extends Activity {
 	private class MyLocationListener implements LocationListener {
 
 		@Override
+		//Lorsque la position de mon utilisateur change...
 		public void onLocationChanged(Location location) {
-			mUserPos.setCurrentPos(location.getLatitude() , location.getLongitude());
-			mUserPos.addCurrentPosOnMap(mMap);
-			int indexCurrentPoint = mUserPos.getIndexPointToFollow();
 			int dist;
-			Step currentStep;
+			
+			//Index du point de la liste ListPointsToFollow vers lequel se diriger
+			int indexCurrentPoint = mUserPos.getIndexPointToFollow();
+			
+			//Layout affichant les instructions de direction
 			LinearLayout ll_DistInstr=(LinearLayout)findViewById(R.id.centralLinLay);
 			
+			//Je lui donne sa nouvelle position
+			mUserPos.setCurrentPos(location.getLatitude() , location.getLongitude());
+			
+			//J'ajoute sa nouvelle position sur la map
+			mUserPos.addCurrentPosOnMap(mMap);
+			
+			//Si l'utilisateur ne suis pas le trajet
 			if(!mUserPos.isOnRoute()){
+				
+				//Si mon layout est visible, le rendre invisible
 				if(ll_DistInstr.getVisibility()==View.VISIBLE){
 					ll_DistInstr.setVisibility(View.INVISIBLE);
 				}
+				
+				//Calculer la distance entre l'user et le point à suivre
 				dist = mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint));
-				if(dist<5){
+				
+				//Si cette distance est inférieur à 5m, je met à jour les informations
+				if(dist<8){
 					Toast.makeText(GPSRunner.this, "Départ !",Toast.LENGTH_SHORT).show();
 					mUserPos.setIsOnRoute(true);
 					mUserPos.setToNextPointToFollow();
 					displayInformations(mUserPos.getIndexPointToFollow());
+					checkForNextPoint(mUserPos.getIndexPointToFollow());
 				}
-			}else{
+				
+			}
+			//Si mon user est déjà sur le trajet, je fais une MaJ des infos.
+			//A corriger : seul la distance devrait être mise à jour.
+			else{
 				displayInformations(indexCurrentPoint);
+				checkForNextPoint(indexCurrentPoint);
 			}
 			
-			Log.d("DEBUUUUUG","P1="+mUserPos.getCurrentPos().toString());
+			//Log.d("DEBUUUUUG","P1="+mUserPos.getCurrentPos().toString());
 			//Log.d("DEBUUUUUG","P2="+listPointsOverview.get(0).toString());
 			//Log.d("DEBUUUUUG","DIST="+dist);
 		}
 		
 		public void displayInformations(int indexCurrentPoint){
+			
 			Step currentStep = mListSteps.get(indexCurrentPoint-1);
 			TextView tv_DistNextPoint = (TextView)findViewById(R.id.tv_distNextPoint);
 			TextView tv_Instructions = (TextView)findViewById(R.id.tv_instructions);
 			LinearLayout ll_DistInstr=(LinearLayout)findViewById(R.id.centralLinLay);
-			int dist;
 			
 			if(ll_DistInstr.getVisibility()==View.INVISIBLE){
 				ll_DistInstr.setVisibility(View.VISIBLE);
 			}
 			tv_DistNextPoint.setText(""+mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint)));
 			tv_Instructions.setText(Html.fromHtml(currentStep.getHtml_instructions()));
-			mUserPos.drawUserRoute(mMap);
+		}
+		
+		public void checkForNextPoint(int indexCurrentPoint){
+			int dist;
 			if(indexCurrentPoint<listPointsToFollow.size()){
 				dist = mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint++));
-				if(dist<5){
+				if(dist<8){
 					Toast.makeText(GPSRunner.this, "Next point !",Toast.LENGTH_SHORT).show();
 					mUserPos.setToNextPointToFollow();
 				}
 			}else{
 				dist = mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint));
-				if(dist<5){
+				if(dist<8){
 					Toast.makeText(GPSRunner.this, "Fini !",Toast.LENGTH_SHORT).show();
 					mUserPos.setIsOnRoute(false);
 				}

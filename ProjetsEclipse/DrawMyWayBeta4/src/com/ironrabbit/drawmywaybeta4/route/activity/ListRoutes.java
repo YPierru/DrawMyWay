@@ -176,6 +176,7 @@ public class ListRoutes extends Activity {
 							String value = input.getText().toString().trim();
 							Route newTrajet = new Route(value, false, false,
 									getCurrentDayTime(), mTypeRouteCurrent);
+							Log.d("DEBUUUUUG", mTypeRouteCurrent);
 							Intent toCreateTrajetActivity = new Intent(
 									ListRoutes.this, CreateModifyRoute.class);
 							toCreateTrajetActivity.putExtra("trajet",
