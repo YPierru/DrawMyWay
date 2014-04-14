@@ -7,12 +7,17 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -42,7 +47,7 @@ import com.ironrabbit.drawmywaybeta4.route.downloaded.Step;
  * 
  */
 
-public class GPSRunner extends Activity {
+public class GPSRunner extends Activity implements SensorEventListener {
 
 	private LocationManager mLocManag;
 	private MyLocationListener mLocList;
@@ -87,9 +92,9 @@ public class GPSRunner extends Activity {
 			}
 		}
 		
-		/*for(int i=0;i<this.mListSteps.size();i++){
-			Log.d("DEBUUUUUUUG", this.mListSteps.get(i).getHtml_instructions());
-		}*/
+		for(int i=0;i<this.mListSteps.size();i++){
+			Log.d("debug.showInstr", this.mListSteps.get(i).getHtml_instructions());
+		}
 		
 		//On dessine le trajet
 		drawRoute();
@@ -151,12 +156,12 @@ public class GPSRunner extends Activity {
 		mLocList = new MyLocationListener();
 		mLocManag = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
-		if (!mLocManag.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+		/*if (!mLocManag.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 			buildAlertMessageNoGps();
 		}else{
 			mLocManag.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 0,
 				mLocList);
-		}
+		}*/
 			//mLocManag.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5, 0,mLocList);
 	}
 
@@ -177,6 +182,7 @@ public class GPSRunner extends Activity {
 						GPSRunner.getInstance().finish();
 					}
 				});
+		
 		final AlertDialog alert = builder.create();
 		alert.show();
 	}
@@ -201,10 +207,10 @@ public class GPSRunner extends Activity {
 			LinearLayout ll_DistInstr=(LinearLayout)findViewById(R.id.centralLinLay);
 			
 			//Je lui donne sa nouvelle position
-			mUserPos.setCurrentPos(location.getLatitude() , location.getLongitude());
+			mUserPos.setCurrentPos(location.getLatitude() , location.getLongitude(), location.getBearing(),mMap);
 			
 			//J'ajoute sa nouvelle position sur la map
-			mUserPos.addCurrentPosOnMap(mMap);
+			//mUserPos.addCurrentPosOnMap(mMap);
 			
 			//Si l'utilisateur ne suis pas le trajet
 			if(!mUserPos.isOnRoute()){
@@ -301,5 +307,17 @@ public class GPSRunner extends Activity {
 					Toast.LENGTH_SHORT).show();
 		}
 
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		// TODO Auto-generated method stub
+		
 	}
 }

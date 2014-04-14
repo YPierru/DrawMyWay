@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -108,7 +109,7 @@ public class CreateModifyRoute extends SherlockActivity {
 
 		// Méthodes initialisant les comportements de l'écran
 		settingMapLongClickListener(false);
-		settingMapClickListener(false);
+		//settingMapClickListener(false);
 
 		mMap.setOnMarkerDragListener(new ActionDragMarker());
 
@@ -153,6 +154,7 @@ public class CreateModifyRoute extends SherlockActivity {
 					mRoute.getListMarkers().clear();
 					mRoute.getListMarkers()
 							.add(point.latitude, point.longitude);
+					settingMapClickListener(false);
 					// On active l'ajout de marker pour les jalons
 				}
 			});
@@ -171,7 +173,7 @@ public class CreateModifyRoute extends SherlockActivity {
 			Button btnR = (Button) findViewById(R.id.btn_correctionMode);
 			btnR.setTextColor(Color.RED);
 			mMap.setOnMapClickListener(new OnMapClickListener() {
-
+				
 				@Override
 				public void onMapClick(LatLng point) {
 					findViewById(R.id.btn_correctionMode).setEnabled(true);
@@ -215,6 +217,11 @@ public class CreateModifyRoute extends SherlockActivity {
 			}
 		});
 	}
+	
+	@Override
+	public void onBackPressed(){
+		actionIfUserWantsBack();
+	}
 
 	/*
 	 * Comportement lors du click sur le bouton "home"
@@ -222,44 +229,75 @@ public class CreateModifyRoute extends SherlockActivity {
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 
 		if (menuItem.getItemId() == android.R.id.home) {
-			if (mListMarkers.size() > 0) {
-				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-						CreateModifyRoute.this);
-				alertDialogBuilder.setTitle("Attention");
-				alertDialogBuilder
-						.setMessage(
-								"Vous allez perdre toutes vos modifications.")
-						.setCancelable(false)
-						.setPositiveButton("Ok",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										dialog.cancel();
-										onBackPressed();
-										CreateModifyRoute.getInstance()
-												.finish();
-									}
-								})
-						.setNegativeButton("Annuler",
-								new DialogInterface.OnClickListener() {
-									public void onClick(DialogInterface dialog,
-											int id) {
-										dialog.cancel();
-									}
-								});
-				AlertDialog alertDialog = alertDialogBuilder.create();
-				alertDialog.show();
-			} else {
-				onBackPressed();
-			}
+			actionIfUserWantsBack();
 		}
 		return true;
+	}
+	
+	public void actionIfUserWantsBack(){
+
+		if (mListMarkers.size() > 0) {
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+					CreateModifyRoute.this);
+			alertDialogBuilder.setTitle("Attention");
+			alertDialogBuilder
+					.setMessage(
+							"Vous allez perdre toutes vos modifications.")
+					.setCancelable(false)
+					.setPositiveButton("Ok",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+									onBackPressed();
+									CreateModifyRoute.getInstance()
+											.finish();
+								}
+							})
+					.setNegativeButton("Annuler",
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int id) {
+									dialog.cancel();
+								}
+							});
+			AlertDialog alertDialog = alertDialogBuilder.create();
+			alertDialog.show();
+		} else {
+			super.onBackPressed();
+		}
 	}
 
 	/*
 	 * Ajoute les items.
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
+		
+		MenuItem item_help = menu.add("Aide").setIcon(R.drawable.help);
+		item_help.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		item_help.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				AlertDialog.Builder alertDialog = new AlertDialog.Builder(
+						CreateModifyRoute.this);
+				alertDialog.setTitle("Aide");
+				alertDialog
+						.setMessage(
+								Html.fromHtml("<b>Appui long</b> : efface tout sur la carte et place un <u>point de départ</u>"
+										+ "<br/><b>Appui simple</b> : place un point par lequel <u>vous voulez passer</u>"))
+						.setCancelable(false)
+						.setPositiveButton("Ok",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog,
+											int id) {
+										dialog.cancel();
+									}
+								}).create();
+				alertDialog.show();
+				return false;
+			}
+		});
 
 		// Permet de faire apparaitre le menu droit.
 		MenuItem item_showSideMenu = menu.add("Menu droit").setIcon(
