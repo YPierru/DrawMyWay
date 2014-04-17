@@ -3,6 +3,7 @@ package com.ironrabbit.drawmywaybeta4.route.activity;
 import java.text.DateFormat;
 import java.util.Date;
 
+import net.simonvt.menudrawer.MenuDrawer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -37,6 +38,7 @@ public class ListRoutes extends Activity {
 
 	private static ListView mListView;
 	private SimpleSideDrawer mSlidingMenuRight, mSlidingMenuLeft;
+	private MenuDrawer mDrawer;
 	private static String mTypeRouteCurrent;// VOITURE ou COUREUR
 	private float x1, x2;// Points permettant de stocker l'abscisse de l'user
 	static final int MIN_DISTANCE = 100;
@@ -48,8 +50,7 @@ public class ListRoutes extends Activity {
 		getActionBar().setHomeButtonEnabled(true);
 
 		mSlidingMenuRight = new SimpleSideDrawer(this);
-		mSlidingMenuRight
-				.setRightBehindContentView(R.layout.side_menu_listroutes);
+		mSlidingMenuRight.setRightBehindContentView(R.layout.side_menu_listroutes);
 
 		mSlidingMenuLeft = new SimpleSideDrawer(this);
 		mSlidingMenuLeft.setLeftBehindContentView(R.layout.side_menu_typeroute);

@@ -156,12 +156,12 @@ public class GPSRunner extends Activity implements SensorEventListener {
 		mLocList = new MyLocationListener();
 		mLocManag = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
-		/*if (!mLocManag.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+		if (!mLocManag.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 			buildAlertMessageNoGps();
 		}else{
 			mLocManag.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 0,
 				mLocList);
-		}*/
+		}
 			//mLocManag.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5, 0,mLocList);
 	}
 
