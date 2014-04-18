@@ -84,7 +84,7 @@ public class UserPosition {
 					.anchor(0.0f, 1.0f).position(this.mCurrentPos));
 
 			CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(
-					this.mCurrentPos, 19);
+					this.mCurrentPos, 18);
 			map.animateCamera(cu);
 		} else {
 			this.mMyMarker.setPosition(this.mCurrentPos);
@@ -92,7 +92,7 @@ public class UserPosition {
 					.target(this.mCurrentPos)
 					.tilt(90)
 					.bearing(this.mBearing)
-					.zoom(19)
+					.zoom(18)
 					.build();
 			map.animateCamera(CameraUpdateFactory.newCameraPosition(cp));
 		}

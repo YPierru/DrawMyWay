@@ -77,7 +77,7 @@ public class CreateModifyRoute extends Activity {
 	private RadialMenuWidget mWheelMenu;
 	private LinearLayout mLLForRMW;
 	private MenuItem mItemWheelMenu;
-	private boolean isWheelEnable;
+	private boolean isWheelEnable,canBeDraw;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +94,7 @@ public class CreateModifyRoute extends Activity {
 
 		addContentView(mLLForRMW, params);
 		isWheelEnable = false;
+		canBeDraw=false;
 
 		// Initialisation du SSD. On lui affecte le layout pour le côté droit.
 		mSlidingMenu = new SimpleSideDrawer(this);
@@ -109,6 +110,7 @@ public class CreateModifyRoute extends Activity {
 				.getMap();
 		// mMap.setMyLocationEnabled(true);
 		if (mMode.equals("Modification")) {
+			settingMapClickListener(true);
 			ArrayList<LatLng> tmpListMarkers = mRoute.getListMarkersLatLng();
 			for (int i = 0; i < tmpListMarkers.size(); i++) {
 				if (i == 0) {
@@ -206,6 +208,7 @@ public class CreateModifyRoute extends Activity {
 					// listJalons.add(point);
 					mListMarkers.add(putMarker(point, "Jalon posé", true));
 					btn_dessiner.setEnabled(true);
+					canBeDraw=true;
 					mRoute.getListMarkers()
 							.add(point.latitude, point.longitude);
 				}
@@ -373,7 +376,9 @@ public class CreateModifyRoute extends Activity {
 							mWheelMenu.setTextSize(13);
 
 							mWheelMenu.setCenterCircle(new WheelMenu("Close", true, android.R.drawable.ic_menu_close_clear_cancel));
-							mWheelMenu.addMenuEntry(new WheelMenu("Dessiner", true, 0));
+							if(canBeDraw){
+								mWheelMenu.addMenuEntry(new WheelMenu("Dessiner", true, 0));
+							}
 							mWheelMenu.addMenuEntry(new WheelMenu("Terminer", true, 0));
 							mWheelMenu.addMenuEntry(new WheelMenu("Correction", true, 0));
 							mWheelMenu.addMenuEntry(new MapTypeMenu());
@@ -641,14 +646,15 @@ public class CreateModifyRoute extends Activity {
 							.show();
 				}
 			}else if(this.name.equals("Terminer")){
-				Log.d("DEBUUUUUUG","ICI");
-				RoutesCollection at = RoutesCollection.getInstance();
-				mRoute.setSave(true);
-				if (!at.replace(mRoute)) {
-					at.add(mRoute);
+				if(mListMarkers.size()>0){
+					RoutesCollection at = RoutesCollection.getInstance();
+					mRoute.setSave(true);
+					if (!at.replace(mRoute)) {
+						at.add(mRoute);
+					}
+					at.saveAllTrajet();
+					ListRoutes.updateDataList();
 				}
-				at.saveAllTrajet();
-				ListRoutes.updateDataList();
 				CreateModifyRoute.getInstance().finish();
 			}
 			

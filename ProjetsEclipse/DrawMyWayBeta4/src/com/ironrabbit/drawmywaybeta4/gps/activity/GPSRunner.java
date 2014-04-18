@@ -48,6 +48,8 @@ import com.ironrabbit.drawmywaybeta4.route.downloaded.Step;
  */
 
 public class GPSRunner extends Activity implements SensorEventListener {
+	
+	private static final int RADIUS_DETECTION=10;
 
 	private LocationManager mLocManag;
 	private MyLocationListener mLocList;
@@ -116,7 +118,7 @@ public class GPSRunner extends Activity implements SensorEventListener {
 			setMarker(this.listPointsToFollow.get(i), "");
 			circleOptions= new CircleOptions()
 		    .center(this.listPointsToFollow.get(i))
-		    .radius(8);
+		    .radius(RADIUS_DETECTION);
 			mMap.addCircle(circleOptions);
 		}
 		
@@ -224,7 +226,7 @@ public class GPSRunner extends Activity implements SensorEventListener {
 				dist = mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint));
 				
 				//Si cette distance est inférieur à 5m, je met à jour les informations
-				if(dist<8){
+				if(dist<RADIUS_DETECTION){
 					Toast.makeText(GPSRunner.this, "Départ !",Toast.LENGTH_SHORT).show();
 					mUserPos.setIsOnRoute(true);
 					mUserPos.setToNextPointToFollow();
@@ -263,13 +265,13 @@ public class GPSRunner extends Activity implements SensorEventListener {
 			int dist;
 			if(indexCurrentPoint<listPointsToFollow.size()){
 				dist = mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint++));
-				if(dist<8){
+				if(dist<RADIUS_DETECTION){
 					Toast.makeText(GPSRunner.this, "Next point !",Toast.LENGTH_SHORT).show();
 					mUserPos.setToNextPointToFollow();
 				}
 			}else{
 				dist = mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint));
-				if(dist<8){
+				if(dist<RADIUS_DETECTION){
 					Toast.makeText(GPSRunner.this, "Fini !",Toast.LENGTH_SHORT).show();
 					mUserPos.setIsOnRoute(false);
 				}

@@ -33,7 +33,7 @@ import com.ironrabbit.drawmywaybeta4.route.downloaded.Legs;
 public class GettingRoute extends AsyncTask<Void, Void, DirectionsResponse> {
 
 	private LatLng origin, destination;
-	private final String URL_PATTERN = "https://maps.googleapis.com/maps/api/directions/json?sensor=true&language=fr&mode=";
+	private final String URL_PATTERN = "https://maps.googleapis.com/maps/api/directions/json?sensor=true&language=fr&";
 	private DirectionsResponse myRoad;
 	private String mode;
 	private static ArrayList<LatLng> listWayPoints;// LIste des jalons
@@ -99,6 +99,7 @@ public class GettingRoute extends AsyncTask<Void, Void, DirectionsResponse> {
 					+ this.destination.latitude + ","
 					+ this.destination.longitude + wayPointsStr);
 			// Appel de l'API, parsing du JSON r????cup????r????
+			Log.d("DEBUUUUUUUG", url.toString());
 			InputStream is = url.openStream();
 			String strRoad = IOUtils.toString(is);
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();

@@ -2,6 +2,7 @@ package com.ironrabbit.drawmywaybeta4.route.activity;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 
 import net.simonvt.menudrawer.MenuDrawer;
 import android.app.Activity;
@@ -358,9 +359,10 @@ public class ListRoutes extends Activity {
 												mRoutesCollection.remove(tj);
 												mRoutesCollection
 														.saveAllTrajet();
-												RouteAdapter ta = (RouteAdapter) mListView
+												ListRoutes.updateDataList();
+												/*RouteAdapter ta = (RouteAdapter) mListView
 														.getAdapter();
-												ta.notifyDataSetChanged();
+												ta.notifyDataSetChanged();*/
 												mSlidingMenuRight
 														.toggleRightDrawer();
 											}
@@ -416,9 +418,10 @@ public class ListRoutes extends Activity {
 											int id) {
 										mRoutesCollection.remove(tj);
 										mRoutesCollection.saveAllTrajet();
-										RouteAdapter ta = (RouteAdapter) mListView
+										ListRoutes.updateDataList();
+										/*RouteAdapter ta = (RouteAdapter) mListView
 												.getAdapter();
-										ta.notifyDataSetChanged();
+										ta.notifyDataSetChanged();*/
 									}
 								});
 				AlertDialog alertDialog = alertDialogBuilder.create();
