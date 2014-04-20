@@ -41,20 +41,19 @@ public class GettingRoute extends AsyncTask<Void, Void, DirectionsResponse> {
 	private Route mRoute;
 	private ArrayList<LatLng> mListOverviewPolylinePoints;
 	private ArrayList<Marker> mListMarkers;
-	private Polyline mPolyline;
 	private CreateModifyRoute mMotherActivity;
 	private GoogleMap mMap;
 	
-	public GettingRoute(CreateModifyRoute cmr, Route r,ArrayList<LatLng> all,ArrayList<Marker> am,Polyline p, GoogleMap m) {
-		Log.d("DEBUUUUUG", "constructor");
+	public GettingRoute(CreateModifyRoute cmr, Route r,ArrayList<LatLng> all,ArrayList<Marker> am, GoogleMap m) {
 		this.mMotherActivity=cmr;
 		this.mProgDialog = new ProgressDialog(cmr);
 		this.mRoute=r;
 		this.mListOverviewPolylinePoints=all;
 		this.mListMarkers=am;
-		this.mPolyline=p;
 		this.mMap=m;
 	}
+	
+	
 
 	protected void onPreExecute() {
 		super.onPreExecute();
@@ -160,7 +159,7 @@ public class GettingRoute extends AsyncTask<Void, Void, DirectionsResponse> {
 			for (int i = 0; i < mListOverviewPolylinePoints.size(); i++) {
 				options.add(mListOverviewPolylinePoints.get(i));
 			}
-			mPolyline = mMap.addPolyline(options);
+			mMotherActivity.setPolyline(mMap.addPolyline(options));
 			mRoute.setPointsWhoDrawsPolylineLatLng(mListOverviewPolylinePoints);
 			mRoute.setValidate(true);
 

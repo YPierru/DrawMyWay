@@ -255,7 +255,6 @@ containing a value of this type.
         public static final int btn_renommer=0x7f080023;
         public static final int btn_routeRunner=0x7f08002f;
         public static final int btn_routeVoiture=0x7f08002e;
-        public static final int btn_slideMenuCM=0x7f08000f;
         public static final int btn_supp=0x7f080024;
         public static final int btn_voirmodif=0x7f080021;
         public static final int button1=0x7f080016;
@@ -268,6 +267,7 @@ containing a value of this type.
         public static final int imageView4=0x7f080018;
         public static final int imageView5=0x7f080019;
         public static final int imageView6=0x7f08001a;
+        public static final int linearLayoutForWheel=0x7f08000f;
         public static final int listView=0x7f080012;
         public static final int ll_TrajetItem=0x7f080006;
         public static final int mainLinearLayoutTest=0x7f080013;

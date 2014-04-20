@@ -93,7 +93,6 @@ int id btn_mapTerrain 0x7f08002c
 int id btn_renommer 0x7f080023
 int id btn_routeRunner 0x7f08002f
 int id btn_routeVoiture 0x7f08002e
-int id btn_slideMenuCM 0x7f08000f
 int id btn_supp 0x7f080024
 int id btn_voirmodif 0x7f080021
 int id button1 0x7f080016
@@ -106,6 +105,7 @@ int id imageView3 0x7f080017
 int id imageView4 0x7f080018
 int id imageView5 0x7f080019
 int id imageView6 0x7f08001a
+int id linearLayoutForWheel 0x7f08000f
 int id listView 0x7f080012
 int id ll_TrajetItem 0x7f080006
 int id mainLinearLayoutTest 0x7f080013

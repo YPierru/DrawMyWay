@@ -67,50 +67,51 @@ public class CreateModifyRoute extends Activity {
 	private ArrayList<Marker> mListMarkers;
 	private ArrayList<LatLng> mListOverviewPolylinePoints; // Liste des points
 															// overview_polyline
-	private Button btn_dessiner, btn_correctionmode, btn_finirTrajet;
-	private Point mPoint;
 	private String mMode;
 	private Route mRoute;
 	static CreateModifyRoute thisActivity;
-	private SimpleSideDrawer mSlidingMenu;// Slide menu à droite
-
 	private RadialMenuWidget mWheelMenu;
-	private LinearLayout mLLForRMW;
+	private LinearLayout mLinearLayourWheel;
 	private MenuItem mItemWheelMenu;
-	private boolean isWheelEnable,canBeDraw;
+	private boolean wheelEnable,canBeDraw,correctionEnable;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_map_create);
+		
+		//Instanciation/Récupération des objets
 		thisActivity = this;
-
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-
-		mLLForRMW = new LinearLayout(this);
-		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.MATCH_PARENT,
-				LinearLayout.LayoutParams.MATCH_PARENT);
-
-		addContentView(mLLForRMW, params);
-		isWheelEnable = false;
+		mLinearLayourWheel=(LinearLayout)findViewById(R.id.linearLayoutForWheel);
+		wheelEnable = false;
 		canBeDraw=false;
-
-		// Initialisation du SSD. On lui affecte le layout pour le côté droit.
-		mSlidingMenu = new SimpleSideDrawer(this);
-		mSlidingMenu.setRightBehindContentView(R.layout.side_menu_map);
-
-		// On recupère : le trajet ainsi que le "mode" :
-		// Modification : le trajet est "en cours"
-		// Création : on créer un nouveau trajet.
-		mRoute = getIntent().getExtras().getParcelable("trajet");
-		mMode = getIntent().getExtras().getString("MODE");
+		correctionEnable=false;
 		mListMarkers = new ArrayList<Marker>();
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
-		// mMap.setMyLocationEnabled(true);
+		mPolyline = null;
+		mRoute = getIntent().getExtras().getParcelable("trajet");
+
+		//Modification de la action bar
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setTitle(mRoute.getName());
+		
+		//Action si montrajet reçu est en cours
+		traitementsSiTrajetEnCours();
+
+
+		// Initialisation des listener
+		settingMapLongClickListenerNormal();
+		mMap.setOnMarkerDragListener(new ActionDragMarker());
+		
+
+	}
+
+	private void traitementsSiTrajetEnCours(){
+		mMode = getIntent().getExtras().getString("MODE");
+		
 		if (mMode.equals("Modification")) {
-			settingMapClickListener(true);
+			settingMapClickListenerNomal();
 			ArrayList<LatLng> tmpListMarkers = mRoute.getListMarkersLatLng();
 			for (int i = 0; i < tmpListMarkers.size(); i++) {
 				if (i == 0) {
@@ -125,31 +126,8 @@ public class CreateModifyRoute extends Activity {
 					tmpListMarkers.get(tmpListMarkers.size() - 1), 15);
 			mMap.animateCamera(cu, 600, null);
 		}
-
-		btn_dessiner = (Button) findViewById(R.id.btn_dessiner);
-		btn_correctionmode = (Button) findViewById(R.id.btn_correctionMode);
-		btn_finirTrajet = (Button) findViewById(R.id.btn_finirTrajet);
-
-		// Initialisation des objets
-		mPolyline = null;
-
-		// map.setMyLocationEnabled(true);
-
-		// Méthodes initialisant les comportements de l'écran
-		settingMapLongClickListener(false);
-		// settingMapClickListener(false);
-
-		mMap.setOnMarkerDragListener(new ActionDragMarker());
-
-		mPoint = new Point();
-		getWindowManager().getDefaultDisplay().getSize(mPoint);
-		Button btn = (Button) findViewById(R.id.btn_slideMenuCM);
-		btn.setOnTouchListener(new ActionOnTouchForSlide());
-
-		getActionBar().setTitle(mRoute.getName());
-
 	}
-
+	
 	public static CreateModifyRoute getInstance() {
 		return thisActivity;
 	}
@@ -158,65 +136,58 @@ public class CreateModifyRoute extends Activity {
 	 * Comportement lors d'un long click sur la map, selon le mode courant
 	 * (CorrectionMode ou pas)
 	 */
-	private void settingMapLongClickListener(boolean isCorrectionMode) {
-		if (!isCorrectionMode) {
-			mMap.setOnMapLongClickListener(new OnMapLongClickListener() {
+	private void settingMapLongClickListenerNormal() {
+		mMap.setOnMapLongClickListener(new OnMapLongClickListener() {
 
-				@Override
-				public void onMapLongClick(LatLng point) {
-					// On efface tout sur la map ainsi que dans les listes
-					// concern??es (longClick=nouveau trajet)
-					mMap.clear();
-					// listJalons.clear();
-					mListMarkers.clear();
+			@Override
+			public void onMapLongClick(LatLng point) {
+				// On efface tout sur la map ainsi que dans les listes
+				// concern??es (longClick=nouveau trajet)
+				mMap.clear();
+				mListMarkers.clear();
 
-					// On positionne la cam??ra sur le point click??
-					CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(point,
-							16);
-					mMap.animateCamera(cu, 600, null);
+				// On positionne la cam??ra sur le point click??
+				CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(point,
+						16);
+				mMap.animateCamera(cu, 600, null);
 
-					/*
-					 * On ajoute le jalon en LatLng.
-					 */
-					mListMarkers.add(putMarker(point, "Départ", true));
-					mRoute.getListMarkers().clear();
-					mRoute.getListMarkers()
-							.add(point.latitude, point.longitude);
-					settingMapClickListener(false);
-					// On active l'ajout de marker pour les jalons
-				}
-			});
-		} else {
-			mMap.setOnMapLongClickListener(null);
-		}
+				
+				//On ajoute le jalon en LatLng.
+				mListMarkers.add(putMarker(point, "Départ", true));
+				mRoute.getListMarkers().clear();
+				mRoute.getListMarkers().add(point.latitude, point.longitude);
+				
+				//On initialise le listener pour le click simple
+				settingMapClickListenerNomal();
+			}
+		});
 	}
 
 	/*
 	 * Comportement lors d'un click court (click simple), selon le mode courant
 	 * (CorrectionMode ou pas)
 	 */
-	private void settingMapClickListener(boolean isCorrectionMode) {
+	private void settingMapClickListenerNomal() {
+		mMap.setOnMapClickListener(new OnMapClickListener() {
 
-		if (!isCorrectionMode) {
-			Button btnR = (Button) findViewById(R.id.btn_correctionMode);
-			btnR.setTextColor(Color.RED);
-			mMap.setOnMapClickListener(new OnMapClickListener() {
-
-				@Override
-				public void onMapClick(LatLng point) {
-					findViewById(R.id.btn_correctionMode).setEnabled(true);
-					// listJalons.add(point);
-					mListMarkers.add(putMarker(point, "Jalon posé", true));
-					btn_dessiner.setEnabled(true);
-					canBeDraw=true;
-					mRoute.getListMarkers()
-							.add(point.latitude, point.longitude);
-				}
-			});
-		} else {
-			mMap.setOnMapClickListener(null);
-		}
+			@Override
+			public void onMapClick(LatLng point) {
+				mListMarkers.add(putMarker(point, "Jalon posé", true));
+				canBeDraw=true;
+				mRoute.getListMarkers().add(point.latitude, point.longitude);
+			}
+		});
 	}
+	
+	//Supprime de façon propre le listener du click simple
+	private void settingMapClickListenerCorrectionMode(){
+		mMap.setOnMapClickListener(new OnMapClickListener() {
+			
+			@Override
+			public void onMapClick(LatLng arg0) {}
+		});
+	}
+	
 
 	/*
 	 * Ajout un marker sur la carte
@@ -234,22 +205,14 @@ public class CreateModifyRoute extends Activity {
 		return tmp;
 	}
 
-	public void btnLongClickToast(Button btn, CharSequence cs) {
-		final CharSequence chs = cs;
-		btn.setOnLongClickListener(new OnLongClickListener() {
-
-			@Override
-			public boolean onLongClick(View v) {
-				Toast.makeText(getApplicationContext(), chs, Toast.LENGTH_SHORT)
-						.show();
-				return false;
-			}
-		});
-	}
-
+	
 	@Override
 	public void onBackPressed() {
 		actionIfUserWantsBack();
+	}
+	
+	public void setPolyline(Polyline p){
+		this.mPolyline=p;
 	}
 
 	/*
@@ -326,71 +289,44 @@ public class CreateModifyRoute extends Activity {
 			}
 		});
 
-		// Permet de faire apparaitre le menu droit.
-		/*
-		 * MenuItem item_showSideMenu = menu.add("Menu droit").setIcon(
-		 * R.drawable.sidemenu);
-		 * item_showSideMenu.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-		 * item_showSideMenu .setOnMenuItemClickListener(new
-		 * OnMenuItemClickListener() {
-		 * 
-		 * @Override public boolean onMenuItemClick(MenuItem item) {
-		 * mSlidingMenu.toggleRightDrawer();
-		 * 
-		 * behaviorButtonDraw(); behaviorButtonCorrectionMode();
-		 * behaviorButtonFinishRoute();
-		 * behaviorButtonsMapType(R.id.btn_mapNormal,
-		 * GoogleMap.MAP_TYPE_NORMAL);
-		 * behaviorButtonsMapType(R.id.btn_mapHybride,
-		 * GoogleMap.MAP_TYPE_HYBRID);
-		 * behaviorButtonsMapType(R.id.btn_mapSatellite,
-		 * GoogleMap.MAP_TYPE_SATELLITE);
-		 * behaviorButtonsMapType(R.id.btn_mapTerrain,
-		 * GoogleMap.MAP_TYPE_TERRAIN);
-		 * 
-		 * return false; } });
-		 */
-
-		// Permet de faire apparaitre le menu droit.
+		// Permet de faire apparaitre la roue
 		mItemWheelMenu = menu.add("Menu wheel").setIcon(R.drawable.sidemenu);
 		mItemWheelMenu.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-		mItemWheelMenu
-				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+		mItemWheelMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
 
-						// Log.d("DEBUUUUUG",
-						// "ISDAMODUFKINWHEELENABLE ? => "+isWheelEnable);
-
-						if (!isWheelEnable) {
-							isWheelEnable = true;
+						if (!wheelEnable) {
+							
+							//Création de la wheel
+							wheelEnable = true;
 							mWheelMenu = new RadialMenuWidget(getBaseContext());
-							// PieMenu.setAnimationSpeed(0L);
-							int xLayoutSize = mLLForRMW.getHeight();
-							int yLayoutSize = mLLForRMW.getWidth();
+							int xLayoutSize = mLinearLayourWheel.getHeight();
+							int yLayoutSize = mLinearLayourWheel.getWidth();
 							mWheelMenu.setSourceLocation(xLayoutSize,
 									yLayoutSize);
-							//PieMenu.setCenterLocation(xLayoutSize,yLayoutSize);
 							mWheelMenu.setIconSize(15, 30);
 							mWheelMenu.setTextSize(13);
 
+							//Initialisation selon les états des flags
 							mWheelMenu.setCenterCircle(new WheelMenu("Close", true, android.R.drawable.ic_menu_close_clear_cancel));
 							if(canBeDraw){
 								mWheelMenu.addMenuEntry(new WheelMenu("Dessiner", true, 0));
 							}
 							mWheelMenu.addMenuEntry(new WheelMenu("Terminer", true, 0));
-							mWheelMenu.addMenuEntry(new WheelMenu("Correction", true, 0));
+							if(mListMarkers.size()>1 || correctionEnable){
+								mWheelMenu.addMenuEntry(new WheelMenu("Correction", true, 0));
+							}
 							mWheelMenu.addMenuEntry(new MapTypeMenu());
-							// mWheelMenu.addMenuEntry(new CircleOptions());
-							// mWheelMenu.addMenuEntry(new Menu2());
-							// mWheelMenu.addMenuEntry(new Menu3());
 
-							mLLForRMW.addView(mWheelMenu);
-						} else {
+							mLinearLayourWheel.addView(mWheelMenu);
+						} 
+						//Suppression
+						else {
 							((LinearLayout) mWheelMenu.getParent())
 									.removeView(mWheelMenu);
-							isWheelEnable = false;
+							wheelEnable = false;
 						}
 
 						return false;
@@ -398,132 +334,6 @@ public class CreateModifyRoute extends Activity {
 				});
 
 		return true;
-	}
-
-	public void behaviorButtonDraw() {
-		btn_dessiner.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (btn_correctionmode.getTextColors().getDefaultColor() == Color.GREEN) {
-					btn_correctionmode.performClick();
-				}
-
-				if (mPolyline != null) {
-					mPolyline.remove();
-				}
-
-				mSlidingMenu.toggleRightDrawer();
-
-				GettingRoute getRoute = new GettingRoute(
-						CreateModifyRoute.this, mRoute,
-						mListOverviewPolylinePoints, mListMarkers, mPolyline,
-						mMap);
-
-				getRoute.execute();
-			}
-		});
-	}
-
-	public void behaviorButtonCorrectionMode() {
-		btn_correctionmode.setTextColor(Color.RED);
-		btn_correctionmode.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (btn_correctionmode.getTextColors().getDefaultColor() == Color.RED) {
-					btn_correctionmode.setTextColor(Color.GREEN);
-					if (mPolyline != null) {
-						mPolyline.remove();
-					}
-					settingMapClickListener(true);
-					settingMapLongClickListener(true);
-					mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
-
-						@Override
-						public boolean onMarkerClick(Marker marker) {
-							marker.hideInfoWindow();
-							for (int i = 0; i < mListMarkers.size(); i++) {
-								if (mListMarkers.get(i).getId()
-										.equals(marker.getId())) {
-									mListMarkers.remove(i);
-									mRoute.setListMarkersMk(mListMarkers);
-									break;
-								}
-							}
-							marker.remove();
-							return false;
-						}
-					});
-					Toast.makeText(getApplicationContext(),
-							"Mode correction activé", Toast.LENGTH_SHORT)
-							.show();
-				} else {
-					btn_correctionmode.setTextColor(Color.RED);
-					settingMapLongClickListener(false);
-					settingMapClickListener(false);
-					Toast.makeText(getApplicationContext(),
-							"Mode correction désactiv??", Toast.LENGTH_SHORT)
-							.show();
-				}
-				mSlidingMenu.toggleRightDrawer();
-			}
-		});
-	}
-
-	public void behaviorButtonFinishRoute() {
-		btn_finirTrajet = (Button) findViewById(R.id.btn_finirTrajet);
-		btn_finirTrajet.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				RoutesCollection at = RoutesCollection.getInstance();
-				mRoute.setSave(true);
-				if (!at.replace(mRoute)) {
-					at.add(mRoute);
-				}
-				at.saveAllTrajet();
-				ListRoutes.updateDataList();
-				CreateModifyRoute.getInstance().finish();
-			}
-		});
-	}
-
-	public void behaviorButtonsMapType(int btnId, final int mapType) {
-		Button btn = (Button) findViewById(btnId);
-		btn.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				mMap.setMapType(mapType);
-				mSlidingMenu.toggleRightDrawer();
-			}
-		});
-	}
-
-	private class ActionOnTouchForSlide implements OnTouchListener {
-
-		@Override
-		public boolean onTouch(View v, MotionEvent event) {
-			switch (event.getAction()) {
-			case MotionEvent.ACTION_DOWN:
-				mSlidingMenu.toggleRightDrawer();
-
-				behaviorButtonDraw();
-				behaviorButtonCorrectionMode();
-				behaviorButtonFinishRoute();
-				behaviorButtonsMapType(R.id.btn_mapNormal,
-						GoogleMap.MAP_TYPE_NORMAL);
-				behaviorButtonsMapType(R.id.btn_mapHybride,
-						GoogleMap.MAP_TYPE_HYBRID);
-				behaviorButtonsMapType(R.id.btn_mapSatellite,
-						GoogleMap.MAP_TYPE_SATELLITE);
-				behaviorButtonsMapType(R.id.btn_mapTerrain,
-						GoogleMap.MAP_TYPE_TERRAIN);
-				break;
-			}
-			return false;
-		}
 	}
 
 	/*
@@ -588,8 +398,6 @@ public class CreateModifyRoute extends Activity {
 
 		public void menuActiviated() {
 			
-			//Log.d("DEBUUUG", "yoooo !");
-			
 			if(this.name.equals("Normal")){
 				mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 			}else if(this.name.equals("Hybride")){
@@ -599,68 +407,95 @@ public class CreateModifyRoute extends Activity {
 			}else if(this.name.equals("Terrain")){
 				mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
 			}else if(this.name.equals("Dessiner")){
-				if (mPolyline != null) {
-					mPolyline.remove();
-				}
-
-				GettingRoute getRoute = new GettingRoute(
-						CreateModifyRoute.this, mRoute,
-						mListOverviewPolylinePoints, mListMarkers, mPolyline,
-						mMap);
-
-				getRoute.execute();
+				actionDraw();
 			}else if(this.name.equals("Correction")){
-				if (btn_correctionmode.getTextColors().getDefaultColor() == Color.RED) {
-					btn_correctionmode.setTextColor(Color.GREEN);
-					if (mPolyline != null) {
-						mPolyline.remove();
-					}
-					settingMapClickListener(true);
-					settingMapLongClickListener(true);
-					mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
-
-						@Override
-						public boolean onMarkerClick(Marker marker) {
-							marker.hideInfoWindow();
-							for (int i = 0; i < mListMarkers.size(); i++) {
-								if (mListMarkers.get(i).getId()
-										.equals(marker.getId())) {
-									mListMarkers.remove(i);
-									mRoute.setListMarkersMk(mListMarkers);
-									break;
-								}
-							}
-							marker.remove();
-							return false;
-						}
-					});
-					Toast.makeText(getApplicationContext(),
-							"Mode correction activé", Toast.LENGTH_SHORT)
-							.show();
-				} else {
-					btn_correctionmode.setTextColor(Color.RED);
-					settingMapLongClickListener(false);
-					settingMapClickListener(false);
-					Toast.makeText(getApplicationContext(),
-							"Mode correction désactiv??", Toast.LENGTH_SHORT)
-							.show();
-				}
+				actionCorrection();
 			}else if(this.name.equals("Terminer")){
-				if(mListMarkers.size()>0){
-					RoutesCollection at = RoutesCollection.getInstance();
-					mRoute.setSave(true);
-					if (!at.replace(mRoute)) {
-						at.add(mRoute);
-					}
-					at.saveAllTrajet();
-					ListRoutes.updateDataList();
-				}
-				CreateModifyRoute.getInstance().finish();
+				actionFinish();
 			}
+			
 			
 			if(this.closeWheelWhenTouch){
 				((LinearLayout) mWheelMenu.getParent()).removeView(mWheelMenu);
-				isWheelEnable = false;
+				wheelEnable = false;
+			}
+		}
+		
+		public void actionDraw(){
+			if (mPolyline != null) {
+				mPolyline.remove();
+			}
+			
+			if(correctionEnable){
+				correctionEnable=false;
+				settingMapClickListenerNomal();
+			}
+
+			GettingRoute getRoute = new GettingRoute(
+					CreateModifyRoute.this, mRoute,
+					mListOverviewPolylinePoints, mListMarkers,
+					mMap);
+
+			getRoute.execute();
+		}
+		
+		public void actionFinish(){
+			if(mListMarkers.size()>0){
+				RoutesCollection at = RoutesCollection.getInstance();
+				mRoute.setSave(true);
+				if (!at.replace(mRoute)) {
+					at.add(mRoute);
+				}
+				at.saveAllTrajet();
+				ListRoutes.updateDataList();
+			}
+			CreateModifyRoute.getInstance().finish();
+		}
+		
+		public void actionCorrection(){
+			if (!correctionEnable) {
+
+				correctionEnable=true;
+				mRoute.setValidate(false);
+				if (mPolyline != null) {
+					mPolyline.remove();
+				}
+				settingMapClickListenerCorrectionMode();
+				mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
+		
+					@Override
+					public boolean onMarkerClick(Marker marker) {
+						marker.hideInfoWindow();
+						for (int i = 0; i < mListMarkers.size(); i++) {
+							if (mListMarkers.get(i).getId().equals(marker.getId())) {
+								if(i==0){
+									Toast.makeText(getApplicationContext(),
+										"Pour supprimer le point de départ, faites un appui long sur une autre zone", Toast.LENGTH_SHORT)
+										.show();
+								}else{
+									mListMarkers.remove(i);
+									mRoute.setListMarkersMk(mListMarkers);
+									marker.remove();
+								}
+								break;
+							}
+						}
+						
+						if(mListMarkers.size()==0){
+							canBeDraw=false;
+						}
+						return false;
+					}
+				});
+				Toast.makeText(getApplicationContext(),
+						"Mode correction activé", Toast.LENGTH_SHORT)
+						.show();
+			} else {
+				correctionEnable=false;
+				settingMapClickListenerNomal();
+				Toast.makeText(getApplicationContext(),
+						"Mode correction désactivé", Toast.LENGTH_SHORT)
+						.show();
 			}
 		}
 	}
@@ -688,9 +523,7 @@ public class CreateModifyRoute extends Activity {
 			return children;
 		}
 
-		public void menuActiviated() {
-			// System.out.println( "New Test Menu Activated");
-		}
+		public void menuActiviated() {}
 	}
 
 	

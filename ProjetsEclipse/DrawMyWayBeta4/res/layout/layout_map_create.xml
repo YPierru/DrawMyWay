@@ -5,17 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/linearLayoutForWheel"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical" >
-
-        <Button
-            android:id="@+id/btn_slideMenuCM"
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:background="@android:color/transparent" />
-    </RelativeLayout>
+        android:layout_height="match_parent" 
+        android:orientation="vertical"/>
 
 </fragment>
