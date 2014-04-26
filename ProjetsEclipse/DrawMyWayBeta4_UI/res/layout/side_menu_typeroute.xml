@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="260dp"
+    android:layout_height="match_parent"
+    android:background="#545454"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tv_typeRoute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/android"
+        android:gravity="center_horizontal"
+        android:text="Type de trajet"
+        android:textColor="#ecede8"
+        android:textSize="19sp" />
+
+    <Button
+        android:id="@+id/btn_routeVoiture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Voiture"
+        android:textColor="#ecede8"
+        android:textSize="19sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btn_routeRunner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Coureur"
+        android:textColor="#ecede8"
+        android:textSize="19sp"
+        android:textStyle="bold" />
+
+</LinearLayout>
