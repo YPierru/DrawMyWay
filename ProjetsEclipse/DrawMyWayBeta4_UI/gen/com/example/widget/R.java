@@ -8,45 +8,45 @@ package com.example.widget;
 
 public final class R {
 	public static final class dimen {
-		public static final int activity_horizontal_margin = 0x7f040000;
-		public static final int activity_vertical_margin = 0x7f040001;
+		public static final int activity_horizontal_margin = 0x7f05002e;
+		public static final int activity_vertical_margin = 0x7f05002f;
 	}
 	public static final class drawable {
-		public static final int blue_circle = 0x7f020003;
-		public static final int border = 0x7f020004;
-		public static final int green_circle = 0x7f020021;
-		public static final int ic_launcher = 0x7f020023;
-		public static final int icon = 0x7f020028;
-		public static final int light_blue_circle = 0x7f02002a;
-		public static final int map_bg = 0x7f02002c;
-		public static final int red_circle = 0x7f020030;
-		public static final int yellow_circle = 0x7f020034;
+		public static final int blue_circle = 0x7f020005;
+		public static final int border = 0x7f020006;
+		public static final int green_circle = 0x7f02002e;
+		public static final int ic_launcher = 0x7f020030;
+		public static final int icon = 0x7f02003c;
+		public static final int light_blue_circle = 0x7f02003e;
+		public static final int map_bg = 0x7f020040;
+		public static final int red_circle = 0x7f020046;
+		public static final int yellow_circle = 0x7f020050;
 	}
 	public static final class id {
-		public static final int action_settings = 0x7f080030;
-		public static final int button1 = 0x7f080016;
-		public static final int imageView1 = 0x7f080015;
-		public static final int imageView3 = 0x7f080017;
-		public static final int imageView4 = 0x7f080018;
-		public static final int imageView5 = 0x7f080019;
-		public static final int imageView6 = 0x7f08001a;
-		public static final int mainLinearLayoutTest = 0x7f080013;
-		public static final int relativeLayoutTest = 0x7f080014;
-		public static final int textView1 = 0x7f08001b;
+		public static final int action_settings = 0x7f0a0050;
+		public static final int button1 = 0x7f0a0036;
+		public static final int imageView1 = 0x7f0a0035;
+		public static final int imageView3 = 0x7f0a0037;
+		public static final int imageView4 = 0x7f0a0038;
+		public static final int imageView5 = 0x7f0a0039;
+		public static final int imageView6 = 0x7f0a003a;
+		public static final int mainLinearLayoutTest = 0x7f0a0033;
+		public static final int relativeLayoutTest = 0x7f0a0034;
+		public static final int textView1 = 0x7f0a003b;
 	}
 	public static final class layout {
-		public static final int main = 0x7f030006;
+		public static final int main = 0x7f030018;
 	}
 	public static final class menu {
-		public static final int main = 0x7f0a0001;
+		public static final int main = 0x7f0b0001;
 	}
 	public static final class string {
-		public static final int action_settings = 0x7f050002;
-		public static final int app_name = 0x7f050000;
-		public static final int hello_world = 0x7f050001;
+		public static final int action_settings = 0x7f070003;
+		public static final int app_name = 0x7f070000;
+		public static final int hello_world = 0x7f070002;
 	}
 	public static final class style {
-		public static final int AppBaseTheme = 0x7f060000;
-		public static final int AppTheme = 0x7f060001;
+		public static final int AppBaseTheme = 0x7f09001d;
+		public static final int AppTheme = 0x7f09001e;
 	}
 }

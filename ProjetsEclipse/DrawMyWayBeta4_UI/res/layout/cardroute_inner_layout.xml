@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/tv_cardroute_innerlayout_kilometrage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#909090"
+            android:textSize="12sp"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/tv_cardroute_innerlayout_duree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#909090"
+            android:textSize="12sp"
+            android:textStyle="italic" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="9dip"
+        android:background="@drawable/rounded_shape_depart"
+        android:orientation="horizontal" >
+
+        <!--
+            <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/depart" />
+        -->
+
+        <TextView
+            android:id="@+id/tv_cardroute_innerlayout_addrdepart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="#515151"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="9dip"
+        android:background="@drawable/rounded_shape_arrivee"
+        android:orientation="horizontal" >
+
+        <!--
+            <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrivee" />
+        -->
+
+        <TextView
+            android:id="@+id/tv_cardroute_innerlayout_addrarrivee"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="#515151"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+</LinearLayout>
