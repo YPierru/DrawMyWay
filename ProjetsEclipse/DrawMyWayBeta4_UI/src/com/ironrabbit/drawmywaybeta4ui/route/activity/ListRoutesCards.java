@@ -1,6 +1,7 @@
 package com.ironrabbit.drawmywaybeta4ui.route.activity;
 
 import it.gmariotti.cardslib.library.internal.Card;
+import it.gmariotti.cardslib.library.internal.Card.OnUndoSwipeListListener;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.view.CardListView;
 
@@ -15,6 +16,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,11 +28,13 @@ import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.ironrabbit.drawmyway.R;
 import com.ironrabbit.drawmywaybeta4ui.route.Route;
 import com.ironrabbit.drawmywaybeta4ui.route.RoutesCollection;
 import com.ironrabbit.drawmywaybeta4ui.route.cards.CardRoute;
+import com.ironrabbit.drawmywayui.R;
 import com.navdrawer.SimpleSideDrawer;
+import com.nhaarman.listviewanimations.swinginadapters.AnimationAdapter;
+import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingLeftInAnimationAdapter;
 
 public class ListRoutesCards extends Activity {
 	
@@ -64,7 +68,6 @@ public class ListRoutesCards extends Activity {
 		mSlidingMenuLeft.setLeftBehindContentView(R.layout.side_menu_typeroute);
 		
 		mCardListView.setOnTouchListener(new ActionOnTouchEvent());
-		
 
 	}
 	
@@ -78,18 +81,53 @@ public class ListRoutesCards extends Activity {
 			listRoutes = mRoutesCollection.getListRoutesCoureur();
 			getActionBar().setTitle("Vos trajets piétons");
 		}
-		ArrayList<Card> listCardRoute = new ArrayList<Card>();
 		
+		ArrayList<Card> listCardRoute = new ArrayList<Card>();
 		for(int i=0;i<listRoutes.size();i++){
 			Card card = new CardRoute(getApplicationContext(), listRoutes.get(i));
-			card.setType(2);
-			card.setSwipeable(true);
+			card.setOnUndoSwipeListListener(new OnUndoSwipeListListener() {
+				
+				@Override
+				public void onUndoSwipe(Card card) {
+					Log.d("DEBUUU","YOLOOOOOOO");
+					if(mTypeRouteCurrent.equals("VOITURE")){
+						populateCards(true);
+					}else{
+						populateCards(false);
+					}
+				}
+			});
 			listCardRoute.add(card);
 		}
-		
-		CardArrayAdapter cardArrayAdapter = new CardArrayAdapter(getApplicationContext(), listCardRoute);
+		CardArrayAdapter cardArrayAdapter = new CardArrayAdapter(this, listCardRoute);
+		cardArrayAdapter.setEnableUndo(true);
 		mCardListView = (CardListView)findViewById(R.id.myList);
-		mCardListView.setAdapter(cardArrayAdapter);
+		AnimationAdapter animCardArrayAdapter = new SwingLeftInAnimationAdapter(cardArrayAdapter);
+	    animCardArrayAdapter.setAbsListView(mCardListView);
+	    mCardListView.setExternalAdapter(animCardArrayAdapter,cardArrayAdapter);
+		//mCardListView.setAdapter(cardArrayAdapter);
+		
+		if(listRoutes.size()==0){
+			final AlertDialog.Builder alert = new AlertDialog.Builder(
+					ListRoutesCards.this).setTitle("Aucun trajet !");
+			alert.setMessage(Html.fromHtml("Vous n'avez <b>aucun trajets</b>, commencez par en créer un !"));
+			alert.setCancelable(true);
+			alert.setPositiveButton("Créer mon trajet",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							dialogCreateNewRoute();
+						}
+					});
+			alert.setNegativeButton("Plus tard", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+			});
+			alert.show();
+		}
+		
 	}
 	
 	@Override
@@ -129,13 +167,13 @@ public class ListRoutesCards extends Activity {
 	
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuItem item_NouveauTrajet = menu.add("Créer un trajet").setIcon(
-				R.drawable.plus);
+				R.drawable.ic_action_new);
 		item_NouveauTrajet.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		item_NouveauTrajet
 				.setOnMenuItemClickListener(new ActionOnMenuItemClick());
 
-		MenuItem item_deleteAll = menu.add("tout virer").setIcon(
-				R.drawable.android);
+		MenuItem item_deleteAll = menu.add("Tout supprimer").setIcon(
+				R.drawable.ic_action_discard);
 		item_deleteAll.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		item_deleteAll
 				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -144,6 +182,8 @@ public class ListRoutesCards extends Activity {
 					public boolean onMenuItemClick(MenuItem item) {
 						RoutesCollection mRoutesCollection = RoutesCollection.getInstance();
 						mRoutesCollection.deleteFile();
+						//populateCards(true);
+						//populateCards(false);
 						return false;
 					}
 				});
@@ -159,42 +199,56 @@ public class ListRoutesCards extends Activity {
 		return shortDateFormat.format(aujourdhui);
 	}
 	
-	public static void updateDataList() {
-		/*
-		 * TODO
-		 */
+	public static String getRouteType(){
+		return mTypeRouteCurrent;
+	}
+	
+	public static void setRouteType(String t){
+		mTypeRouteCurrent=t;
+	}
+	
+	public static void updateDataList(String typeRoute) {
+		
 	}
 	
 	public void onResume(){
 		super.onResume();
-		populateCards(true);
+		if(mTypeRouteCurrent.equals("VOITURE")){
+			populateCards(true);
+		}else{
+			populateCards(false);
+		}
+		
+	}
+	
+	public void dialogCreateNewRoute(){
+		final AlertDialog.Builder alert = new AlertDialog.Builder(
+				ListRoutesCards.this).setTitle("Saisir le nom du trajet");
+		final EditText input = new EditText(getApplicationContext());
+		input.setHint("Nom du trajet");
+		input.setTextColor(Color.BLACK);
+		alert.setView(input);
+		alert.setPositiveButton("Ok",
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog,
+							int whichButton) {
+						String value = input.getText().toString().trim();
+						Route newTrajet = new Route(value, false, false,
+								getCurrentDayTime(), mTypeRouteCurrent);
+						Intent toCreateTrajetActivity = new Intent(
+								ListRoutesCards.this, CreateRoute.class);
+						toCreateTrajetActivity.putExtra("trajet",
+								(Parcelable) newTrajet);
+						toCreateTrajetActivity.putExtra("MODE", "Cr??ation");
+						startActivity(toCreateTrajetActivity);
+					}
+				});
+		alert.show();
 	}
 	
 	private class ActionOnMenuItemClick implements OnMenuItemClickListener {
 		public boolean onMenuItemClick(MenuItem item) {
-			final AlertDialog.Builder alert = new AlertDialog.Builder(
-					ListRoutesCards.this).setTitle("Saisir le nom du trajet");
-			final EditText input = new EditText(getApplicationContext());
-			input.setHint("Nom du trajet");
-			input.setTextColor(Color.BLACK);
-			alert.setView(input);
-			alert.setPositiveButton("Ok",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							String value = input.getText().toString().trim();
-							Route newTrajet = new Route(value, false, false,
-									getCurrentDayTime(), mTypeRouteCurrent);
-							//Log.d("DEBUUUUUG", mTypeRouteCurrent);
-							Intent toCreateTrajetActivity = new Intent(
-									ListRoutesCards.this, CreateModifyRoute.class);
-							toCreateTrajetActivity.putExtra("trajet",
-									(Parcelable) newTrajet);
-							toCreateTrajetActivity.putExtra("MODE", "Cr??ation");
-							startActivity(toCreateTrajetActivity);
-						}
-					});
-			alert.show();
+			dialogCreateNewRoute();
 			return true;
 		}
 	}

@@ -2,9 +2,7 @@ package com.ironrabbit.drawmywaybeta4ui.route.activity;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.List;
 
-import net.simonvt.menudrawer.MenuDrawer;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -28,18 +26,18 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.ironrabbit.drawmyway.R;
 import com.ironrabbit.drawmywaybeta4ui.gps.activity.GPSRunner;
 import com.ironrabbit.drawmywaybeta4ui.route.Route;
 import com.ironrabbit.drawmywaybeta4ui.route.RouteAdapter;
 import com.ironrabbit.drawmywaybeta4ui.route.RoutesCollection;
+import com.ironrabbit.drawmywayui.R;
 import com.navdrawer.SimpleSideDrawer;
 
 public class ListRoutes extends Activity {
 
 	private static ListView mListView;
 	private SimpleSideDrawer mSlidingMenuRight, mSlidingMenuLeft;
-	private MenuDrawer mDrawer;
+	//private MenuDrawer mDrawer;
 	private static String mTypeRouteCurrent;// VOITURE ou COUREUR
 	private float x1, x2;// Points permettant de stocker l'abscisse de l'user
 	static final int MIN_DISTANCE = 100;
@@ -180,7 +178,7 @@ public class ListRoutes extends Activity {
 									getCurrentDayTime(), mTypeRouteCurrent);
 							//Log.d("DEBUUUUUG", mTypeRouteCurrent);
 							Intent toCreateTrajetActivity = new Intent(
-									ListRoutes.this, CreateModifyRoute.class);
+									ListRoutes.this, CreateRoute.class);
 							toCreateTrajetActivity.putExtra("trajet",
 									(Parcelable) newTrajet);
 							toCreateTrajetActivity.putExtra("MODE", "Cr??ation");
@@ -397,7 +395,7 @@ public class ListRoutes extends Activity {
 											int id) {
 										Intent toFinishTrajet = new Intent(
 												ListRoutes.this,
-												CreateModifyRoute.class);
+												CreateRoute.class);
 										toFinishTrajet.putExtra("trajet",
 												(Parcelable) tj);
 										toFinishTrajet.putExtra("MODE",

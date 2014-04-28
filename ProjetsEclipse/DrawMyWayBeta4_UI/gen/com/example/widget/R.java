@@ -15,27 +15,27 @@ public final class R {
 		public static final int blue_circle = 0x7f020005;
 		public static final int border = 0x7f020006;
 		public static final int green_circle = 0x7f02002e;
-		public static final int ic_launcher = 0x7f020030;
-		public static final int icon = 0x7f02003c;
-		public static final int light_blue_circle = 0x7f02003e;
-		public static final int map_bg = 0x7f020040;
-		public static final int red_circle = 0x7f020046;
-		public static final int yellow_circle = 0x7f020050;
+		public static final int ic_launcher = 0x7f020032;
+		public static final int icon = 0x7f02003e;
+		public static final int light_blue_circle = 0x7f020040;
+		public static final int map_bg = 0x7f020042;
+		public static final int red_circle = 0x7f020048;
+		public static final int yellow_circle = 0x7f020052;
 	}
 	public static final class id {
-		public static final int action_settings = 0x7f0a0050;
-		public static final int button1 = 0x7f0a0036;
-		public static final int imageView1 = 0x7f0a0035;
-		public static final int imageView3 = 0x7f0a0037;
-		public static final int imageView4 = 0x7f0a0038;
-		public static final int imageView5 = 0x7f0a0039;
-		public static final int imageView6 = 0x7f0a003a;
-		public static final int mainLinearLayoutTest = 0x7f0a0033;
-		public static final int relativeLayoutTest = 0x7f0a0034;
-		public static final int textView1 = 0x7f0a003b;
+		public static final int action_settings = 0x7f0a0051;
+		public static final int button1 = 0x7f0a0037;
+		public static final int imageView1 = 0x7f0a0036;
+		public static final int imageView3 = 0x7f0a0038;
+		public static final int imageView4 = 0x7f0a0039;
+		public static final int imageView5 = 0x7f0a003a;
+		public static final int imageView6 = 0x7f0a003b;
+		public static final int mainLinearLayoutTest = 0x7f0a0034;
+		public static final int relativeLayoutTest = 0x7f0a0035;
+		public static final int textView1 = 0x7f0a003c;
 	}
 	public static final class layout {
-		public static final int main = 0x7f030018;
+		public static final int main = 0x7f030019;
 	}
 	public static final class menu {
 		public static final int main = 0x7f0b0001;

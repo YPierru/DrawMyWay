@@ -16,8 +16,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.ironrabbit.drawmyway.R;
 import com.ironrabbit.drawmywaybeta4ui.route.Route;
+import com.ironrabbit.drawmywayui.R;
 
 public class SeeRoute extends Activity {
 

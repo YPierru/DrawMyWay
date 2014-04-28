@@ -2,9 +2,6 @@ package com.ironrabbit.drawmywaybeta4ui.gps;
 
 import java.util.ArrayList;
 
-import android.graphics.Color;
-import android.util.Log;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -14,8 +11,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
-import com.ironrabbit.drawmyway.R;
+import com.ironrabbit.drawmywayui.R;
 
 public class UserPosition {
 

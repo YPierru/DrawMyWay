@@ -3,14 +3,13 @@ package com.ironrabbit.drawmywaybeta4ui.route;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.ironrabbit.drawmyway.R;
+import com.ironrabbit.drawmywayui.R;
 
 
 public class RouteAdapter extends BaseAdapter {

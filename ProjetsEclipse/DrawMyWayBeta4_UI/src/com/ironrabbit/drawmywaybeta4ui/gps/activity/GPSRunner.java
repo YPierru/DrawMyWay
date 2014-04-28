@@ -10,7 +10,6 @@ import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -30,10 +29,10 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.ironrabbit.drawmyway.R;
 import com.ironrabbit.drawmywaybeta4ui.gps.UserPosition;
 import com.ironrabbit.drawmywaybeta4ui.route.Route;
 import com.ironrabbit.drawmywaybeta4ui.route.downloaded.Step;
+import com.ironrabbit.drawmywayui.R;
 
 
 /*

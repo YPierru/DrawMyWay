@@ -23,7 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ironrabbit.drawmywaybeta4ui.Decoder;
 import com.ironrabbit.drawmywaybeta4ui.route.Route;
-import com.ironrabbit.drawmywaybeta4ui.route.activity.CreateModifyRoute;
+import com.ironrabbit.drawmywaybeta4ui.route.activity.CreateRoute;
 import com.ironrabbit.drawmywaybeta4ui.route.downloaded.DirectionsResponse;
 import com.ironrabbit.drawmywaybeta4ui.route.downloaded.Legs;
 
@@ -41,10 +41,10 @@ public class GettingRoute extends AsyncTask<Void, Void, DirectionsResponse> {
 	private Route mRoute;
 	private ArrayList<LatLng> mListOverviewPolylinePoints;
 	private ArrayList<Marker> mListMarkers;
-	private CreateModifyRoute mMotherActivity;
+	private CreateRoute mMotherActivity;
 	private GoogleMap mMap;
 	
-	public GettingRoute(CreateModifyRoute cmr, Route r,ArrayList<LatLng> all,ArrayList<Marker> am, GoogleMap m) {
+	public GettingRoute(CreateRoute cmr, Route r,ArrayList<LatLng> all,ArrayList<Marker> am, GoogleMap m) {
 		this.mMotherActivity=cmr;
 		this.mProgDialog = new ProgressDialog(cmr);
 		this.mRoute=r;
