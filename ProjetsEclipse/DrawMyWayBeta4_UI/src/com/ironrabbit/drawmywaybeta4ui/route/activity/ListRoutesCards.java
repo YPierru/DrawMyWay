@@ -1,7 +1,6 @@
 package com.ironrabbit.drawmywaybeta4ui.route.activity;
 
 import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.internal.Card.OnUndoSwipeListListener;
 import it.gmariotti.cardslib.library.internal.CardArrayAdapter;
 import it.gmariotti.cardslib.library.view.CardListView;
 
@@ -28,6 +27,8 @@ import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.darvds.ribbonmenu.RibbonMenuView;
+import com.darvds.ribbonmenu.iRibbonMenuCallback;
 import com.ironrabbit.drawmywaybeta4ui.route.Route;
 import com.ironrabbit.drawmywaybeta4ui.route.RoutesCollection;
 import com.ironrabbit.drawmywaybeta4ui.route.cards.CardRoute;
@@ -36,7 +37,10 @@ import com.navdrawer.SimpleSideDrawer;
 import com.nhaarman.listviewanimations.swinginadapters.AnimationAdapter;
 import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingLeftInAnimationAdapter;
 
-public class ListRoutesCards extends Activity {
+public class ListRoutesCards extends Activity{
+	
+	private final static String VOITURE_ROUTE="VOITURE";
+	private final static String COUREUR_ROUTE="COUREUR";
 	
 	private static String mTypeRouteCurrent;// VOITURE ou COUREUR
 	private float x1, x2;// Points permettant de stocker l'abscisse de l'user
@@ -49,32 +53,44 @@ public class ListRoutesCards extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_trajet_display_cards);
 		getActionBar().setHomeButtonEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		mTypeRouteCurrent=getLastRouteTypeCreated();
 		
-		try {
+		/*try {
 			mTypeRouteCurrent = getIntent().getExtras().getString("TYPEROUTE");
 		} catch (NullPointerException npe) {
-			mTypeRouteCurrent = "VOITURE";
-		}
+			mTypeRouteCurrent = VOITURE_ROUTE;
+		}*/
 		
 		mCardListView = (CardListView)findViewById(R.id.myList);
 		
-		if(mTypeRouteCurrent.equals("VOITURE")){
-			populateCards(true);
-		}else{
-			populateCards(false);
-		}
+		populateCards();
 		
 		mSlidingMenuLeft = new SimpleSideDrawer(this);
 		mSlidingMenuLeft.setLeftBehindContentView(R.layout.side_menu_typeroute);
 		
-		mCardListView.setOnTouchListener(new ActionOnTouchEvent());
+		//mCardListView.setOnTouchListener(new ActionOnTouchEvent());
 
 	}
 	
-	private void populateCards(boolean voitureType){
+	private String getLastRouteTypeCreated(){
+		RoutesCollection mRoutesCollection = RoutesCollection.getInstance();
+		if(mRoutesCollection.size()>0){
+			Route lastRoute = mRoutesCollection.get(mRoutesCollection.size()-1);
+			if(lastRoute.getTypeRoute().equals(VOITURE_ROUTE)){
+				return VOITURE_ROUTE;
+			}else{
+				return COUREUR_ROUTE;
+			}
+		}else{
+			return VOITURE_ROUTE;
+		}
+	}
+	
+	private void populateCards(){
 		RoutesCollection mRoutesCollection = RoutesCollection.getInstance();
 		ArrayList<Route> listRoutes;
-		if(voitureType){
+		if(mTypeRouteCurrent.equals(VOITURE_ROUTE)){
 			listRoutes = mRoutesCollection.getListRoutesVoiture();
 			getActionBar().setTitle("Vos trajets voiture");
 		}else{
@@ -85,18 +101,6 @@ public class ListRoutesCards extends Activity {
 		ArrayList<Card> listCardRoute = new ArrayList<Card>();
 		for(int i=0;i<listRoutes.size();i++){
 			Card card = new CardRoute(getApplicationContext(), listRoutes.get(i));
-			card.setOnUndoSwipeListListener(new OnUndoSwipeListListener() {
-				
-				@Override
-				public void onUndoSwipe(Card card) {
-					Log.d("DEBUUU","YOLOOOOOOO");
-					if(mTypeRouteCurrent.equals("VOITURE")){
-						populateCards(true);
-					}else{
-						populateCards(false);
-					}
-				}
-			});
 			listCardRoute.add(card);
 		}
 		CardArrayAdapter cardArrayAdapter = new CardArrayAdapter(this, listCardRoute);
@@ -147,8 +151,8 @@ public class ListRoutesCards extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				mTypeRouteCurrent = "VOITURE";
-				populateCards(true);
+				mTypeRouteCurrent = VOITURE_ROUTE;
+				populateCards();
 				mSlidingMenuLeft.toggleLeftDrawer();
 			}
 		});
@@ -158,8 +162,8 @@ public class ListRoutesCards extends Activity {
 
 			@Override
 			public void onClick(View v) {
-				mTypeRouteCurrent = "COUREUR";
-				populateCards(false);
+				mTypeRouteCurrent = COUREUR_ROUTE;
+				populateCards();
 				mSlidingMenuLeft.toggleLeftDrawer();
 			}
 		});
@@ -170,7 +174,14 @@ public class ListRoutesCards extends Activity {
 				R.drawable.ic_action_new);
 		item_NouveauTrajet.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		item_NouveauTrajet
-				.setOnMenuItemClickListener(new ActionOnMenuItemClick());
+				.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+					
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						dialogCreateNewRoute();
+						return false;
+					}
+				});
 
 		MenuItem item_deleteAll = menu.add("Tout supprimer").setIcon(
 				R.drawable.ic_action_discard);
@@ -182,8 +193,7 @@ public class ListRoutesCards extends Activity {
 					public boolean onMenuItemClick(MenuItem item) {
 						RoutesCollection mRoutesCollection = RoutesCollection.getInstance();
 						mRoutesCollection.deleteFile();
-						//populateCards(true);
-						//populateCards(false);
+						populateCards();
 						return false;
 					}
 				});
@@ -208,17 +218,16 @@ public class ListRoutesCards extends Activity {
 	}
 	
 	public static void updateDataList(String typeRoute) {
-		
 	}
 	
-	public void onResume(){
+	/*public void onResume(){
 		super.onResume();
-		if(mTypeRouteCurrent.equals("VOITURE")){
-			populateCards(true);
-		}else{
-			populateCards(false);
-		}
-		
+		populateCards();
+	}*/
+	
+	public void onRestart(){
+		super.onRestart();
+		populateCards();
 	}
 	
 	public void dialogCreateNewRoute(){
@@ -246,14 +255,7 @@ public class ListRoutesCards extends Activity {
 		alert.show();
 	}
 	
-	private class ActionOnMenuItemClick implements OnMenuItemClickListener {
-		public boolean onMenuItemClick(MenuItem item) {
-			dialogCreateNewRoute();
-			return true;
-		}
-	}
-	
-	private class ActionOnTouchEvent implements OnTouchListener {
+	/*private class ActionOnTouchEvent implements OnTouchListener {
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
 			switch (event.getAction()) {
@@ -276,6 +278,6 @@ public class ListRoutesCards extends Activity {
 			}
 			return false;
 		}
-	}
+	}*/
 
 }

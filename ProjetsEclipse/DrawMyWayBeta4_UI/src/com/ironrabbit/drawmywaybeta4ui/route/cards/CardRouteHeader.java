@@ -13,6 +13,9 @@ import android.widget.TextView;
 
 import com.ironrabbit.drawmywaybeta4ui.gps.activity.GPSRunner;
 import com.ironrabbit.drawmywaybeta4ui.route.Route;
+import com.ironrabbit.drawmywaybeta4ui.route.activity.CreateRoute;
+import com.ironrabbit.drawmywaybeta4ui.route.activity.ListRoutes;
+import com.ironrabbit.drawmywaybeta4ui.route.activity.ListRoutesCards;
 import com.ironrabbit.drawmywaybeta4ui.route.activity.SeeRoute;
 import com.ironrabbit.drawmywayui.R;
 
@@ -32,39 +35,54 @@ public class CardRouteHeader extends CardHeader {
 	private void init(){
 		//setButtonExpandVisible(true);
 		setTitle(this.mRoute.getName());
-		setPopupMenu(R.menu.popupmain, new CardHeader.OnClickCardHeaderPopupMenuListener() {
-            @Override
-            public void onMenuItemClick(BaseCard card, MenuItem item) {
-            	switch(item.getItemId()){
-            		case R.id.item_voir:
-            			Intent toSeeRoute = new Intent(context,
-								SeeRoute.class);
-						toSeeRoute.putExtra("trajet", (Parcelable) mRoute);
-						toSeeRoute.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						context.startActivity(toSeeRoute);
-            		break;
-            		
-            		case R.id.item_gps:
-						Intent toGPSRunner = new Intent(context,
-								GPSRunner.class);
-						toGPSRunner.putExtra("TRAJET", (Parcelable) mRoute);
-						toGPSRunner.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						context.startActivity(toGPSRunner);
-            		break;
-            	}
-            }
-        });
+		if(this.mRoute.isValidate()){
+			setPopupMenu(R.menu.cardeheader_menu_routevalidate, new CardHeader.OnClickCardHeaderPopupMenuListener() {
+	            @Override
+	            public void onMenuItemClick(BaseCard card, MenuItem item) {
+	            	switch(item.getItemId()){
+	            		case R.id.item_voir:
+	            			Intent toSeeRoute = new Intent(context,
+									SeeRoute.class);
+							toSeeRoute.putExtra("trajet", (Parcelable) mRoute);
+							toSeeRoute.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+							context.startActivity(toSeeRoute);
+	            		break;
+	            		
+	            		case R.id.item_gps:
+							Intent toGPSRunner = new Intent(context,
+									GPSRunner.class);
+							toGPSRunner.putExtra("TRAJET", (Parcelable) mRoute);
+							toGPSRunner.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+							context.startActivity(toGPSRunner);
+	            		break;
+	            	}
+	            }
+	        });
+		}else{
+			setPopupMenu(R.menu.cardeheader_menu_routeunvalidate, new CardHeader.OnClickCardHeaderPopupMenuListener() {
+	            @Override
+	            public void onMenuItemClick(BaseCard card, MenuItem item) {
+	            	
+	            	Intent toFinishTrajet = new Intent(context,CreateRoute.class);
+					toFinishTrajet.putExtra("trajet",(Parcelable) mRoute);
+					toFinishTrajet.putExtra("MODE","Modification");
+					toFinishTrajet.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					context.startActivity(toFinishTrajet);
+	            }
+	        });
+		}
 	}
 
 	@Override
 	public void setupInnerViewElements(ViewGroup parent, View view) {
 		super.setupInnerViewElements(parent, view);
 		String mStatus;
+		String mDate = this.mRoute.getDateCreation();
+
+		TextView tvSubDate = (TextView)view.findViewById(R.id.tv_cardroute_headerlayout_subtitle_date);
+		tvSubDate.setText(" - "+mDate);
 		if(this.mRoute.isValidate()){
 			mStatus="Terminé";
-			String mDate = this.mRoute.getDateCreation();
-			TextView tvSubDate = (TextView)view.findViewById(R.id.tv_cardroute_headerlayout_subtitle_date);
-			tvSubDate.setText(" - "+mDate);
 		}else{
 			mStatus="En cours";
 		}
@@ -76,7 +94,6 @@ public class CardRouteHeader extends CardHeader {
 			tvSubtitleStatus.setTextColor(Color.parseColor("#55bc00"));
 		}
 		tvSubtitleStatus.setText(mStatus);
-		
 		
 	}
 

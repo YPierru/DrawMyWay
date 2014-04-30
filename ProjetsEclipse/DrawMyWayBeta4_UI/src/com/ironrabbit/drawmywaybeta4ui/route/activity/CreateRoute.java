@@ -1,18 +1,43 @@
 package com.ironrabbit.drawmywaybeta4ui.route.activity;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.Html;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.example.widget.RadialMenuWidget;
@@ -30,6 +55,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+import com.ironrabbit.drawmywaybeta4ui.PlaceJSONParser;
 import com.ironrabbit.drawmywaybeta4ui.asyncTasks.GettingRoute;
 import com.ironrabbit.drawmywaybeta4ui.route.Route;
 import com.ironrabbit.drawmywaybeta4ui.route.RoutesCollection;
@@ -50,8 +76,9 @@ public class CreateRoute extends Activity {
 	static CreateRoute thisActivity;
 	private RadialMenuWidget mWheelMenu;
 	private LinearLayout mLinearLayourWheel;
-	private MenuItem mItemWheelMenu;
-	private boolean wheelEnable,canBeDraw,correctionEnable;
+	private AutoCompleteTextView atvPlaces;
+	private MenuItem itemWheelMenu, itemSearch, itemHelp;
+	private boolean wheelEnable,canBeDraw,correctionEnable, onSearch;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +89,13 @@ public class CreateRoute extends Activity {
 		thisActivity = this;
 		mLinearLayourWheel=(LinearLayout)findViewById(R.id.linearLayoutForWheel);
 		wheelEnable = false;
+		onSearch=false;
 		canBeDraw=false;
 		correctionEnable=false;
 		mListMarkers = new ArrayList<Marker>();
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
+		//mMap.setMyLocationEnabled(true);
 		mPolyline = null;
 		mRoute = getIntent().getExtras().getParcelable("trajet");
 
@@ -91,13 +120,18 @@ public class CreateRoute extends Activity {
 		if (mMode.equals("Modification")) {
 			settingMapClickListenerNomal();
 			ArrayList<LatLng> tmpListMarkers = mRoute.getListMarkersLatLng();
+			if(tmpListMarkers.size()==0){
+				canBeDraw=false;
+			}else{
+				canBeDraw=true;
+			}
 			for (int i = 0; i < tmpListMarkers.size(); i++) {
 				if (i == 0) {
-					mListMarkers.add(putMarker(tmpListMarkers.get(i), "D??part",
+					mListMarkers.add(putMarker(tmpListMarkers.get(i), "Départ",
 							true));
 				} else {
 					mListMarkers
-							.add(putMarker(tmpListMarkers.get(i), "", true));
+							.add(putMarker(tmpListMarkers.get(i), "Point de passage", true));
 				}
 			}
 			CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(
@@ -199,7 +233,11 @@ public class CreateRoute extends Activity {
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 
 		if (menuItem.getItemId() == android.R.id.home) {
-			actionIfUserWantsBack();
+			if(onSearch){
+				
+			}else{
+				actionIfUserWantsBack();
+			}
 		}
 		return true;
 	}
@@ -240,10 +278,22 @@ public class CreateRoute extends Activity {
 	 * Ajoute les items.
 	 */
 	public boolean onCreateOptionsMenu(Menu menu) {
+		
+		itemSearch = menu.add("Recherche").setIcon(R.drawable.ic_action_search);
+		itemSearch.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		itemSearch.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
-		MenuItem item_help = menu.add("Aide").setIcon(R.drawable.help);
-		item_help.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-		item_help.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				openSearchBar();
+				return true;
+
+			}
+		});
+
+		itemHelp = menu.add("Aide").setIcon(R.drawable.ic_action_help);
+		itemHelp.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		itemHelp.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
@@ -252,8 +302,15 @@ public class CreateRoute extends Activity {
 				alertDialog.setTitle("Aide");
 				alertDialog
 						.setMessage(
-								Html.fromHtml("<b>Appui long</b> : efface tout sur la carte et place un <u>point de d??part</u>"
-										+ "<br/><b>Appui simple</b> : place un point par lequel <u>vous voulez passer</u>"))
+								Html.fromHtml("<b>Appui long</b> : efface tout sur la carte et place un <u>point de départ</u>"
+										+ "<br/><b>Appui simple</b> : place un point par lequel <u>vous voulez passer</u>"
+										+ "<br />Le <b>point d'interrogation</b> : lance une barre de recherche pour trouvez une adresse, un lieu..."
+										+ "<br />La <b>roue</b> : lance le menu. Vous pourrez : "
+										+ "<br /><u><em>Dessiner</em></u> votre trajet (si vous avez au moins 2 points)"
+										+ "<br /><u><em>Terminer</em></u> : si vous avez un trajet, le sauvegarde, puis quitte"
+										+ "<br /><u><em>Changer type carte</em></u> : changer le type de la carte (normal, hybride, terrain, satellite)"
+										+ "<br /><u><em>Corriger</em></u> : active un mode particulier. Si vous avez un trajet dessiné, l'efface. "
+										+ "Vous pouvez supprimer un point en cliquant dessus. Pour quitter ce mode, cliquer sur dessiner ou terminer"))
 						.setCancelable(false)
 						.setPositiveButton("Ok",
 								new DialogInterface.OnClickListener() {
@@ -268,9 +325,9 @@ public class CreateRoute extends Activity {
 		});
 
 		// Permet de faire apparaitre la roue
-		mItemWheelMenu = menu.add("Menu wheel").setIcon(R.drawable.sidemenu);
-		mItemWheelMenu.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-		mItemWheelMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+		itemWheelMenu = menu.add("Menu wheel").setIcon(R.drawable.sidemenu);
+		itemWheelMenu.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		itemWheelMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
 					@Override
 					public boolean onMenuItemClick(MenuItem item) {
@@ -313,196 +370,501 @@ public class CreateRoute extends Activity {
 
 		return true;
 	}
+	
+	
+public void openSearchBar() {
 
-	/*
-	 * Lorsqu'un marker est deplac??, on actualise la liste des marker du trajet
-	 */
-	private class ActionDragMarker implements OnMarkerDragListener {
+		
+		onSearch = true;
+		itemHelp.setVisible(false);
+		itemWheelMenu.setVisible(false);
+		itemSearch.setVisible(false);
 
-		@Override
-		public void onMarkerDrag(Marker arg0) {
-			// TODO Auto-generated method stub
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayShowCustomEnabled(true);
+		actionBar.setDisplayShowTitleEnabled(false);
+		actionBar.setIcon(R.drawable.ic_action_search);
 
-		}
+		LayoutInflater inflator = (LayoutInflater) this
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View v = inflator.inflate(R.layout.actionbar_search, null);
 
-		@Override
-		public void onMarkerDragEnd(Marker arg0) {
-			mRoute.setListMarkersMk(mListMarkers);
-		}
+		actionBar.setCustomView(v);
 
-		@Override
-		public void onMarkerDragStart(Marker arg0) {
-			// TODO Auto-generated method stub
+		// On r��cup��re l'autocompletetextview
+		atvPlaces = (AutoCompleteTextView) findViewById(R.id.actv_search_places);
+		
+		showKeyboard();
+		
+		// Permet de d��clencher une action �� chaque caract��re tap��
+		atvPlaces.addTextChangedListener(new TextWatcher() {
 
-		}
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				// Lorsque le texte change on part chercher les r��sultats
+				PlacesTask placesTask = new PlacesTask();
+				placesTask.execute(s.toString());
+			}
 
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+			}
+
+			@Override
+			public void afterTextChanged(Editable s) {
+				// TODO Auto-generated method stub
+			}
+		});
 	}
 
-	/*
-	 * Ci-dessous les menu de la roue
-	 */
+	public void closeSearchBar() {
 
-	public class WheelMenu implements RadialMenuEntry {
-		
-		private String name;
-		private boolean closeWheelWhenTouch;
-		private int idIcon;
+		closeKeyboard();
+		onSearch = false;
+		itemSearch.setVisible(true);
+		itemHelp.setVisible(true);
+		itemWheelMenu.setVisible(true);
 
-		public WheelMenu(String n, boolean c,int i){
-			this.name=n;
-			this.closeWheelWhenTouch=c;
-			this.idIcon=i;
-		}
-		
-		public String getName() {
-			return getLabel();
-		}
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayShowCustomEnabled(false);
+		actionBar.setDisplayShowTitleEnabled(true);
+		actionBar.setIcon(R.drawable.gps);
+	}
+	
+	public void showKeyboard(){
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.showSoftInput(atvPlaces, InputMethodManager.SHOW_IMPLICIT);
+	}
+	
+	public void closeKeyboard(){
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(atvPlaces.getWindowToken(), 0);
+	}
+	
+	// Telecharge des donnees en json depuis une url passee en param
+		private String downloadUrl(String strUrl) throws IOException {
+			String data = "";
+			InputStream iStream = null;
+			HttpURLConnection urlConnection = null;
+			try {
+				URL url = new URL(strUrl);
 
-		public String getLabel() {
-			if(this.name.equals("Close")){
-				return null;
-			}else{
-				return this.name;
-			}
-		}
+				// Creating an http connection to communicate with url
+				urlConnection = (HttpURLConnection) url.openConnection();
 
-		public int getIcon() {
-			return this.idIcon;
-		}
+				// Connecting to url
+				urlConnection.connect();
 
-		public List<RadialMenuEntry> getChildren() {
-			return null;
-		}
+				// Reading data from url
+				iStream = urlConnection.getInputStream();
 
-		public void menuActiviated() {
-			
-			if(this.name.equals("Normal")){
-				mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-			}else if(this.name.equals("Hybride")){
-				mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-			}else if(this.name.equals("Satellite")){
-				mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-			}else if(this.name.equals("Terrain")){
-				mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-			}else if(this.name.equals("Dessiner")){
-				actionDraw();
-			}else if(this.name.equals("Correction")){
-				actionCorrection();
-			}else if(this.name.equals("Terminer")){
-				actionFinish();
-			}
-			
-			
-			if(this.closeWheelWhenTouch){
-				((LinearLayout) mWheelMenu.getParent()).removeView(mWheelMenu);
-				wheelEnable = false;
-			}
-		}
-		
-		public void actionDraw(){
-			if (mPolyline != null) {
-				mPolyline.remove();
-			}
-			
-			if(correctionEnable){
-				correctionEnable=false;
-				settingMapClickListenerNomal();
-			}
+				BufferedReader br = new BufferedReader(new InputStreamReader(
+						iStream));
 
-			GettingRoute getRoute = new GettingRoute(
-					CreateRoute.this, mRoute,
-					mListOverviewPolylinePoints, mListMarkers,
-					mMap);
+				StringBuilder sb = new StringBuilder();
 
-			getRoute.execute();
-		}
-		
-		public void actionFinish(){
-			if(mListMarkers.size()>0){
-				RoutesCollection at = RoutesCollection.getInstance();
-				mRoute.setSave(true);
-				if (!at.replace(mRoute)) {
-					at.add(mRoute);
+				String line = "";
+				while ((line = br.readLine()) != null) {
+					sb.append(line);
 				}
-				at.saveAllTrajet();
-				//ListRoutesCards.updateDataList();
-			}
-			CreateRoute.getInstance().finish();
-		}
-		
-		public void actionCorrection(){
-			if (!correctionEnable) {
 
-				correctionEnable=true;
-				mRoute.setValidate(false);
+				data = sb.toString();
+
+				br.close();
+
+			} catch (Exception e) {
+				Log.d("Exception while downloading url", e.toString());
+			} finally {
+				iStream.close();
+				urlConnection.disconnect();
+			}
+			return data;
+		}
+
+		/*
+		 * Ci-dessous sont liste les differentes classes privees : -
+		 * ActionDragMarker, utilise lorsqu'on deplace un marker - WheelMenu et
+		 * MapTypeMenu, permettant de creer la roue - Les differentes AsyncTasks
+		 * utilisees pour la recherche de lieux
+		 */
+
+		/*
+		 * Lorsqu'un marker est deplacé, on actualise la liste des marker du trajet
+		 */
+		private class ActionDragMarker implements OnMarkerDragListener {
+
+			@Override
+			public void onMarkerDrag(Marker arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onMarkerDragEnd(Marker arg0) {
+				mRoute.setListMarkersMk(mListMarkers);
+			}
+
+			@Override
+			public void onMarkerDragStart(Marker arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+		}
+
+		/*
+		 * Ci-dessous les menu de la roue
+		 */
+
+		public class WheelMenu implements RadialMenuEntry {
+
+			private String name;
+			private boolean closeWheelWhenTouch;
+			private int idIcon;
+
+			public WheelMenu(String n, boolean c, int i) {
+				this.name = n;
+				this.closeWheelWhenTouch = c;
+				this.idIcon = i;
+			}
+
+			public String getName() {
+				return getLabel();
+			}
+
+			public String getLabel() {
+				if (this.name.equals("Close")) {
+					return null;
+				} else {
+					return this.name;
+				}
+			}
+
+			public int getIcon() {
+				return this.idIcon;
+			}
+
+			public List<RadialMenuEntry> getChildren() {
+				return null;
+			}
+
+			public void menuActiviated() {
+
+				if (this.name.equals("Normal")) {
+					mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+				} else if (this.name.equals("Hybride")) {
+					mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+				} else if (this.name.equals("Satellite")) {
+					mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+				} else if (this.name.equals("Terrain")) {
+					mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+				} else if (this.name.equals("Dessiner")) {
+					actionDraw();
+				} else if (this.name.equals("Correction")) {
+					actionCorrection();
+				} else if (this.name.equals("Terminer")) {
+					actionFinish();
+				}
+
+				if (this.closeWheelWhenTouch) {
+					((LinearLayout) mWheelMenu.getParent()).removeView(mWheelMenu);
+					wheelEnable = false;
+				}
+			}
+
+			public void actionDraw() {
 				if (mPolyline != null) {
 					mPolyline.remove();
 				}
-				settingMapClickListenerCorrectionMode();
-				mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
-		
-					@Override
-					public boolean onMarkerClick(Marker marker) {
-						marker.hideInfoWindow();
-						for (int i = 0; i < mListMarkers.size(); i++) {
-							if (mListMarkers.get(i).getId().equals(marker.getId())) {
-								if(i==0){
-									Toast.makeText(getApplicationContext(),
-										"Pour supprimer le point de d??part, faites un appui long sur une autre zone", Toast.LENGTH_SHORT)
-										.show();
-								}else{
-									mListMarkers.remove(i);
-									mRoute.setListMarkersMk(mListMarkers);
-									marker.remove();
-								}
-								break;
-							}
-						}
-						
-						if(mListMarkers.size()==0){
-							canBeDraw=false;
-						}
-						return false;
+
+				if (correctionEnable) {
+					correctionEnable = false;
+					settingMapClickListenerNomal();
+				}
+
+				GettingRoute getRoute = new GettingRoute(CreateRoute.this,
+						mRoute, mListOverviewPolylinePoints, mListMarkers, mMap);
+
+				getRoute.execute();
+			}
+
+			public void actionFinish() {
+				if (mListMarkers.size() > 0) {
+					RoutesCollection at = RoutesCollection.getInstance();
+					mRoute.setSave(true);
+					if (!at.replace(mRoute)) {
+						at.add(mRoute);
 					}
-				});
-				Toast.makeText(getApplicationContext(),
-						"Mode correction activ??", Toast.LENGTH_SHORT)
-						.show();
-			} else {
-				correctionEnable=false;
-				settingMapClickListenerNomal();
-				Toast.makeText(getApplicationContext(),
-						"Mode correction d??sactiv??", Toast.LENGTH_SHORT)
-						.show();
+					at.saveAllTrajet();
+				}
+				CreateRoute.getInstance().finish();
+			}
+
+			public void actionCorrection() {
+				if (!correctionEnable) {
+
+					correctionEnable = true;
+					mRoute.setValidate(false);
+					if (mPolyline != null) {
+						mPolyline.remove();
+					}
+					settingMapClickListenerCorrectionMode();
+					mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
+
+						@Override
+						public boolean onMarkerClick(Marker marker) {
+							marker.hideInfoWindow();
+							for (int i = 0; i < mListMarkers.size(); i++) {
+								if (mListMarkers.get(i).getId()
+										.equals(marker.getId())) {
+									if (i == 0) {
+										Toast.makeText(
+												getApplicationContext(),
+												"Pour supprimer le point de départ, faites un appui long sur une autre zone",
+												Toast.LENGTH_SHORT).show();
+									} else {
+										mListMarkers.remove(i);
+										mRoute.setListMarkersMk(mListMarkers);
+										marker.remove();
+									}
+									break;
+								}
+							}
+
+							if (mListMarkers.size() == 0) {
+								canBeDraw = false;
+							}
+							return false;
+						}
+					});
+					Toast.makeText(getApplicationContext(),
+							"Mode correction activé", Toast.LENGTH_SHORT).show();
+				} else {
+					correctionEnable = false;
+					settingMapClickListenerNomal();
+					Toast.makeText(getApplicationContext(),
+							"Mode correction désactivé", Toast.LENGTH_SHORT).show();
+				}
 			}
 		}
-	}
 
-	public class MapTypeMenu implements RadialMenuEntry {
-		public String getName() {
-			return "NewTestMenu";
+		public class MapTypeMenu implements RadialMenuEntry {
+			public String getName() {
+				return "NewTestMenu";
+			}
+
+			public String getLabel() {
+				return "Changer\ncarte";
+			}
+
+			public int getIcon() {
+				return 0;
+			}
+
+			private List<RadialMenuEntry> children = new ArrayList<RadialMenuEntry>(
+					Arrays.asList(new WheelMenu("Normal", true, 0), new WheelMenu(
+							"Hybride", true, 0),
+							new WheelMenu("Satellite", true, 0), new WheelMenu(
+									"Terrain", true, 0)));
+
+			public List<RadialMenuEntry> getChildren() {
+				return children;
+			}
+
+			public void menuActiviated() {
+			}
 		}
 
-		public String getLabel() {
-			return "Changer\ncarte";
+		// Fetches all places from GooglePlaces AutoComplete Web Service
+		private class PlacesTask extends AsyncTask<String, Void, String> {
+
+			@Override
+			protected String doInBackground(String... place) {
+
+				// For storing data from web service
+				String data = "";
+
+				// Obtain browser key from https://code.google.com/apis/console
+				String key = "key=AIzaSyB4m_X5XwwnhYenzLhIexv-glVWu-j_Egs";
+
+				String input = "";
+
+				try {
+					input = "input=" + URLEncoder.encode(place[0], "utf-8");
+				} catch (UnsupportedEncodingException e1) {
+					e1.printStackTrace();
+				}
+
+				// place type to be searched
+				String types = "types=geocode";
+
+				// Sensor enabled
+				String sensor = "sensor=false";
+
+				String components = "components=country:fr";
+
+				// Building the parameters to the web service
+				String parameters = input + "&" + types + "&" + components + "&"
+						+ sensor + "&" + key;
+
+				// Output format
+				String output = "json";
+
+				// Building the url to the web service
+				String url = "https://maps.googleapis.com/maps/api/place/autocomplete/"
+						+ output + "?" + parameters;
+
+				try {
+					// Fetching the data from we service
+					data = downloadUrl(url);
+				} catch (Exception e) {
+					Log.d("Background Task", e.toString());
+				}
+
+				return data;
+			}
+
+			@Override
+			// Une fois les places t��l��charg��s => �� la fin
+			protected void onPostExecute(String result) {
+				super.onPostExecute(result);
+
+				// Creating ParserTask
+				ParserTask parserTask = new ParserTask();
+
+				// Starting Parsing the JSON string returned by Web Service
+				parserTask.execute(result);
+			}
 		}
 
-		public int getIcon() {
-			return 0;
+		/** A class to parse the Google Places in JSON format */
+		private class ParserTask extends
+				AsyncTask<String, Integer, List<HashMap<String, String>>> {
+
+			JSONObject jObject;
+
+			@Override
+			protected List<HashMap<String, String>> doInBackground(
+					String... jsonData) {
+
+				List<HashMap<String, String>> places = null;
+
+				PlaceJSONParser placeJsonParser = new PlaceJSONParser();
+
+				try {
+					jObject = new JSONObject(jsonData[0]);
+
+					// Getting the parsed data as a List construct
+					places = placeJsonParser.parse(jObject);
+
+				} catch (Exception e) {
+					Log.d("Exception", e.toString());
+				}
+				return places;
+			}
+
+			@Override
+			protected void onPostExecute(List<HashMap<String, String>> result) {
+
+				String[] from = new String[] { "description" };
+				int[] to = new int[] { android.R.id.text1 };
+				final List<HashMap<String, String>> finalResults = result;
+
+				// Creating a SimpleAdapter for the AutoCompleteTextView
+				SimpleAdapter adapter = new SimpleAdapter(getBaseContext(), result,
+						android.R.layout.simple_list_item_1, from, to);
+
+				// Setting the adapter
+				atvPlaces.setAdapter(adapter);
+				atvPlaces.showDropDown();
+				atvPlaces.setOnItemClickListener(new OnItemClickListener() {
+
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) {
+
+						
+						String ref = finalResults.get(position).get("reference");
+						ParserUrlTask parserUrlTask = new ParserUrlTask();
+						parserUrlTask.execute(ref.toString());
+						closeSearchBar();
+					}
+
+				});
+			}
 		}
 
-		private List<RadialMenuEntry> children = new ArrayList<RadialMenuEntry>(
-				Arrays.asList(new WheelMenu("Normal",true,0), 
-							new WheelMenu("Hybride",true,0),
-							new WheelMenu("Satellite",true,0), 
-							new WheelMenu("Terrain",true,0)));
+		private class ParserUrlTask extends AsyncTask<String, Void, String> {
 
-		public List<RadialMenuEntry> getChildren() {
-			return children;
+			@Override
+			protected String doInBackground(String... place) {
+				String data = "";
+
+				// Obtain browser key from https://code.google.com/apis/console
+				String key = "key=AIzaSyB4m_X5XwwnhYenzLhIexv-glVWu-j_Egs";
+
+				String reference = "";
+
+				try {
+					reference = "reference=" + URLEncoder.encode(place[0], "utf-8");
+				} catch (UnsupportedEncodingException e1) {
+					e1.printStackTrace();
+				}
+
+				// place type to be searched
+
+				// Sensor enabled
+				String sensor = "sensor=true";
+
+				// Building the parameters to the web service
+				String parameters = reference + "&" + sensor + "&" + key;
+
+				// Output format
+				String output = "json";
+
+				// Building the url to the web service
+				String url = "https://maps.googleapis.com/maps/api/place/details/"
+						+ output + "?" + parameters;
+
+				try {
+					// Fetching the data from we service
+					data = downloadUrl(url);
+				} catch (Exception e) {
+					Log.d("Background Task", e.toString());
+				}
+				return data;
+
+			}
+
+			@Override
+			// Une fois les places t��l��charg��s => �� la fin
+			protected void onPostExecute(String result) {
+
+				super.onPostExecute(result);
+				try {
+					JSONObject locations = new JSONObject(result)
+							.getJSONObject("result").getJSONObject("geometry")
+							.getJSONObject("location");
+					double lat = Double.parseDouble(locations.getString("lat"));
+					double lng = Double.parseDouble(locations.getString("lng"));
+
+					// Log.d("DEBU", lat);
+					// Log.d("DEBU", lng);
+
+					// Toast.makeText(getApplicationContext(),
+					// adrAdress+"\n"+lat+" - "+lng, Toast.LENGTH_SHORT).show();
+					CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 15);
+					mMap.animateCamera(cu, 600, null);
+
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
 		}
-
-		public void menuActiviated() {}
-	}
 
 	
 }

@@ -1,7 +1,9 @@
 package com.ironrabbit.drawmywaybeta4ui.route;
 
 import java.io.Serializable;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.os.Parcel;
@@ -133,6 +135,10 @@ public class Route implements Parcelable,Serializable {
 	}
 
 	public void setSave(boolean s) {
+
+		Date aujourdhui = new Date();
+		DateFormat shortDateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+		this.dateCreation=shortDateFormat.format(aujourdhui);
 		this.save = s;
 	}
 
