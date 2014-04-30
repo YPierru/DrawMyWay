@@ -25,7 +25,7 @@ public class RoutesCollection extends ArrayList<Route> implements Serializable {
 
 	private static RoutesCollection INSTANCE;//Singleton
 
-	private static final String FILE_NAME = ".routescollection.dmw";
+	private static final String FILE_NAME = ".routescollection.dmwui";
 	private static final String FILE_PATH = Environment
 			.getExternalStorageDirectory().getAbsolutePath() + "/";
 

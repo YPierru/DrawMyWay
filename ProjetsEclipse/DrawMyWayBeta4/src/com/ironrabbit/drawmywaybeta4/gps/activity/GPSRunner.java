@@ -259,6 +259,7 @@ public class GPSRunner extends Activity implements SensorEventListener {
 			}
 			tv_DistNextPoint.setText(""+mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint)));
 			tv_Instructions.setText(Html.fromHtml(currentStep.getHtml_instructions()));
+			
 		}
 		
 		public void checkForNextPoint(int indexCurrentPoint){

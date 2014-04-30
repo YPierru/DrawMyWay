@@ -592,6 +592,7 @@ public void openSearchBar() {
 			}
 
 			public void actionFinish() {
+				Log.d("DEBUUUUUUG", "listMarker "+mListMarkers.size());
 				if (mListMarkers.size() > 0) {
 					RoutesCollection at = RoutesCollection.getInstance();
 					mRoute.setSave(true);

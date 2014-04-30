@@ -3,11 +3,13 @@ package com.ironrabbit.drawmywaybeta4ui.route.cards;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.ironrabbit.drawmywaybeta4ui.route.Route;
+import com.ironrabbit.drawmywaybeta4ui.route.RoutesCollection;
 import com.ironrabbit.drawmywayui.R;
 
 public class CardRoute extends Card {
@@ -28,22 +30,18 @@ public class CardRoute extends Card {
 	private void init() {
 		setSwipeable(true);
 		setType(2);
-
-		/*
-		 * setOnSwipeListener(new OnSwipeListener() {
-		 * 
-		 * @Override public void onSwipe(Card card) { // TODO Auto-generated
-		 * method stub
-		 * 
-		 * } });
-		 * 
-		 * setOnUndoSwipeListListener(new OnUndoSwipeListListener() {
-		 * 
-		 * @Override public void onUndoSwipe(Card card) { // TODO Auto-generated
-		 * method stub
-		 * 
-		 * } });
-		 */
+		
+		setOnSwipeListener(new OnSwipeListener() {
+			
+			@Override
+			public void onSwipe(Card card) {
+				// TODO Auto-generated method stub
+				Log.d("DEBUUUUUUUUG", "SO MUCH KIKOO");
+				RoutesCollection mRoutesCollection = RoutesCollection.getInstance();
+				mRoutesCollection.remove(mRoute);
+				mRoutesCollection.saveAllTrajet();
+			}
+		});
 
 		CardHeader cardRouteHeader = new CardRouteHeader(this.context,
 				R.layout.cardroute_header_layout, this.mRoute);
