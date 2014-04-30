@@ -165,7 +165,7 @@ public class CreateRoute extends Activity {
 
 				
 				//On ajoute le jalon en LatLng.
-				mListMarkers.add(putMarker(point, "D??part", true));
+				mListMarkers.add(putMarker(point, "Départ", true));
 				mRoute.getListMarkers().clear();
 				mRoute.getListMarkers().add(point.latitude, point.longitude);
 				
@@ -184,7 +184,7 @@ public class CreateRoute extends Activity {
 
 			@Override
 			public void onMapClick(LatLng point) {
-				mListMarkers.add(putMarker(point, "Jalon pos??", true));
+				mListMarkers.add(putMarker(point, "Point de passage", true));
 				canBeDraw=true;
 				mRoute.getListMarkers().add(point.latitude, point.longitude);
 			}
@@ -325,7 +325,7 @@ public class CreateRoute extends Activity {
 		});
 
 		// Permet de faire apparaitre la roue
-		itemWheelMenu = menu.add("Menu wheel").setIcon(R.drawable.sidemenu);
+		itemWheelMenu = menu.add("Menu wheel").setIcon(R.drawable.ic_action_wheel);
 		itemWheelMenu.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		itemWheelMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
