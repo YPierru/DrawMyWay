@@ -43,7 +43,7 @@ public class SeeRoute extends Activity {
 				.getPointsWhoDrawsPolylineLatLng();
 		setMarker(listPoints.get(0), "D??part");
 		PolylineOptions options = new PolylineOptions().geodesic(false)
-				.width(15).color(Color.argb(120, 0, 0, 221));
+				.width(10).color(Color.argb(120, 0, 180, 0));
 		for (int i = 0; i < listPoints.size(); i++) {
 			options.add(listPoints.get(i));
 		}

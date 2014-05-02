@@ -36,8 +36,7 @@ public class CardRoute extends Card {
 			@Override
 			public void onSwipe(Card card) {
 				// TODO Auto-generated method stub
-				Log.d("DEBUUUUUUUUG", "SO MUCH KIKOO");
-				RoutesCollection mRoutesCollection = RoutesCollection.getInstance();
+				RoutesCollection mRoutesCollection = RoutesCollection.getInstance();				
 				mRoutesCollection.remove(mRoute);
 				mRoutesCollection.saveAllTrajet();
 			}

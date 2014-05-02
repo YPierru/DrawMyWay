@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.ironrabbit.drawmywaybeta4ui.Constantes;
 import com.ironrabbit.drawmywaybeta4ui.gps.UserPosition;
 import com.ironrabbit.drawmywaybeta4ui.route.Route;
 import com.ironrabbit.drawmywaybeta4ui.route.downloaded.Step;
@@ -48,8 +49,6 @@ import com.ironrabbit.drawmywayui.R;
 
 public class GPSRunner extends Activity implements SensorEventListener {
 	
-	private static final int RADIUS_DETECTION=10;
-
 	private LocationManager mLocManag;
 	private MyLocationListener mLocList;
 	static GPSRunner thisactivity;
@@ -117,7 +116,7 @@ public class GPSRunner extends Activity implements SensorEventListener {
 			setMarker(this.listPointsToFollow.get(i), "");
 			circleOptions= new CircleOptions()
 		    .center(this.listPointsToFollow.get(i))
-		    .radius(RADIUS_DETECTION);
+		    .radius(Constantes.RADIUS_DETECTION);
 			mMap.addCircle(circleOptions);
 		}
 		
@@ -128,7 +127,7 @@ public class GPSRunner extends Activity implements SensorEventListener {
 		
 		//Tra??age du trajet
 		PolylineOptions options = new PolylineOptions().geodesic(false)
-				.width(15).color(Color.argb(120, 0, 0, 221));
+				.width(Constantes.WIDTH_POLYLINE).color(Constantes.COLOR_POLYLINE);
 		
 		for (int i = 0; i < listPointsOverview.size(); i++) {
 			options.add(listPointsOverview.get(i)); 
@@ -160,7 +159,7 @@ public class GPSRunner extends Activity implements SensorEventListener {
 		if (!mLocManag.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 			buildAlertMessageNoGps();
 		}else{
-			mLocManag.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 0,
+			mLocManag.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constantes.MIN_TIME_GPS_REQUEST_MS, Constantes.MIN_DIST_GPS_REQUEST_M,
 				mLocList);
 		}
 			//mLocManag.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5, 0,mLocList);
@@ -225,8 +224,8 @@ public class GPSRunner extends Activity implements SensorEventListener {
 				dist = mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint));
 				
 				//Si cette distance est inf??rieur ?? 5m, je met ?? jour les informations
-				if(dist<RADIUS_DETECTION){
-					Toast.makeText(GPSRunner.this, "D??part !",Toast.LENGTH_SHORT).show();
+				if(dist<Constantes.RADIUS_DETECTION){
+					Toast.makeText(GPSRunner.this, "Départ",Toast.LENGTH_SHORT).show();
 					mUserPos.setIsOnRoute(true);
 					mUserPos.setToNextPointToFollow();
 					displayInformations(mUserPos.getIndexPointToFollow());
@@ -264,13 +263,13 @@ public class GPSRunner extends Activity implements SensorEventListener {
 			int dist;
 			if(indexCurrentPoint<listPointsToFollow.size()){
 				dist = mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint++));
-				if(dist<RADIUS_DETECTION){
+				if(dist<Constantes.RADIUS_DETECTION){
 					Toast.makeText(GPSRunner.this, "Next point !",Toast.LENGTH_SHORT).show();
 					mUserPos.setToNextPointToFollow();
 				}
 			}else{
 				dist = mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint));
-				if(dist<RADIUS_DETECTION){
+				if(dist<Constantes.RADIUS_DETECTION){
 					Toast.makeText(GPSRunner.this, "Fini !",Toast.LENGTH_SHORT).show();
 					mUserPos.setIsOnRoute(false);
 				}

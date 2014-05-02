@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ironrabbit.drawmywaybeta4ui.Constantes;
 import com.ironrabbit.drawmywaybeta4ui.Decoder;
 import com.ironrabbit.drawmywaybeta4ui.route.Route;
 import com.ironrabbit.drawmywaybeta4ui.route.activity.CreateRoute;
@@ -98,7 +99,7 @@ public class GettingRoute extends AsyncTask<Void, Void, DirectionsResponse> {
 					+ this.destination.latitude + ","
 					+ this.destination.longitude + wayPointsStr);
 			// Appel de l'API, parsing du JSON r????cup????r????
-			Log.d("DEBUUUUUUUG", url.toString());
+			//Log.d("DEBUUUUUUUG", url.toString());
 			InputStream is = url.openStream();
 			String strRoad = IOUtils.toString(is);
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -155,7 +156,7 @@ public class GettingRoute extends AsyncTask<Void, Void, DirectionsResponse> {
 
 			// Log.d("DEBUUUUUUG","LT = "+tmpPoints.size()+" LMB = "+listMarkersBad.size());
 			PolylineOptions options = new PolylineOptions().geodesic(false)
-					.width(15).color(Color.argb(120, 0, 0, 221));
+					.width(Constantes.WIDTH_POLYLINE).color(Constantes.COLOR_POLYLINE);
 			for (int i = 0; i < mListOverviewPolylinePoints.size(); i++) {
 				options.add(mListOverviewPolylinePoints.get(i));
 			}

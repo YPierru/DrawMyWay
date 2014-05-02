@@ -11,6 +11,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+import com.ironrabbit.drawmywaybeta4ui.Constantes;
 import com.ironrabbit.drawmywayui.R;
 
 public class UserPosition {
@@ -80,15 +81,15 @@ public class UserPosition {
 					.anchor(0.0f, 1.0f).position(this.mCurrentPos));
 
 			CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(
-					this.mCurrentPos, 18);
+					this.mCurrentPos, Constantes.ZOOM_GPS);
 			map.animateCamera(cu);
 		} else {
 			this.mMyMarker.setPosition(this.mCurrentPos);
 			CameraPosition cp = new CameraPosition.Builder()
 					.target(this.mCurrentPos)
-					.tilt(90)
+					.tilt(Constantes.USER_GPS_TILT)
 					.bearing(this.mBearing)
-					.zoom(18)
+					.zoom(Constantes.ZOOM_GPS)
 					.build();
 			map.animateCamera(CameraUpdateFactory.newCameraPosition(cp));
 		}
@@ -110,7 +111,6 @@ public class UserPosition {
 		double lat2 = p.latitude;
 		double lng2 = p.longitude;
 
-		double earthRadius = 3958.75;
 		double dLat = Math.toRadians(lat2 - lat1);
 		double dLng = Math.toRadians(lng2 - lng1);
 		double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
@@ -118,11 +118,9 @@ public class UserPosition {
 				* Math.cos(Math.toRadians(lat2)) * Math.sin(dLng / 2)
 				* Math.sin(dLng / 2);
 		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-		double dist = earthRadius * c;
+		double dist = Constantes.EARTH_RADIUS * c;
 
-		int meterConversion = 1609;
-
-		return (int) (dist * meterConversion);
+		return (int) (dist * Constantes.METER_CONVERSION);
 	}
 
 }

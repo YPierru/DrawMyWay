@@ -356,9 +356,10 @@ public class ListRoutes extends Activity {
 											public void onClick(
 													DialogInterface dialog,
 													int id) {
+												Log.d("DEBUUUUG", ""+mRoutesCollection.size());
 												mRoutesCollection.remove(tj);
-												mRoutesCollection
-														.saveAllTrajet();
+												Log.d("DEBUUUUG", ""+mRoutesCollection.size());
+												mRoutesCollection.saveAllTrajet();
 												ListRoutes.updateDataList();
 												/*RouteAdapter ta = (RouteAdapter) mListView
 														.getAdapter();

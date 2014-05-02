@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +14,8 @@ import android.widget.TextView;
 
 import com.ironrabbit.drawmywaybeta4ui.gps.activity.GPSRunner;
 import com.ironrabbit.drawmywaybeta4ui.route.Route;
+import com.ironrabbit.drawmywaybeta4ui.route.RoutesCollection;
 import com.ironrabbit.drawmywaybeta4ui.route.activity.CreateRoute;
-import com.ironrabbit.drawmywaybeta4ui.route.activity.ListRoutes;
-import com.ironrabbit.drawmywaybeta4ui.route.activity.ListRoutesCards;
 import com.ironrabbit.drawmywaybeta4ui.route.activity.SeeRoute;
 import com.ironrabbit.drawmywayui.R;
 

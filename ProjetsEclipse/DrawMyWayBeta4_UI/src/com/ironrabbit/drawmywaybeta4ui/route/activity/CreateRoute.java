@@ -21,8 +21,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -55,8 +57,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+import com.ironrabbit.drawmywaybeta4ui.Constantes;
 import com.ironrabbit.drawmywaybeta4ui.PlaceJSONParser;
 import com.ironrabbit.drawmywaybeta4ui.asyncTasks.GettingRoute;
+import com.ironrabbit.drawmywaybeta4ui.gps.activity.GPSRunner;
 import com.ironrabbit.drawmywaybeta4ui.route.Route;
 import com.ironrabbit.drawmywaybeta4ui.route.RoutesCollection;
 import com.ironrabbit.drawmywayui.R;
@@ -93,8 +97,7 @@ public class CreateRoute extends Activity {
 		canBeDraw=false;
 		correctionEnable=false;
 		mListMarkers = new ArrayList<Marker>();
-		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
-				.getMap();
+		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
 		//mMap.setMyLocationEnabled(true);
 		mPolyline = null;
 		mRoute = getIntent().getExtras().getParcelable("trajet");
@@ -135,8 +138,8 @@ public class CreateRoute extends Activity {
 				}
 			}
 			CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(
-					tmpListMarkers.get(tmpListMarkers.size() - 1), 15);
-			mMap.animateCamera(cu, 600, null);
+					tmpListMarkers.get(tmpListMarkers.size() - 1), Constantes.ZOOM_GENERAL);
+			mMap.animateCamera(cu, Constantes.ZOOM_SPEED_MS, null);
 		}
 	}
 	
@@ -159,9 +162,8 @@ public class CreateRoute extends Activity {
 				mListMarkers.clear();
 
 				// On positionne la cam??ra sur le point click??
-				CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(point,
-						16);
-				mMap.animateCamera(cu, 600, null);
+				CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(point,Constantes.ZOOM_NEW_ROUTE);
+				mMap.animateCamera(cu, Constantes.ZOOM_SPEED_MS, null);
 
 				
 				//On ajoute le jalon en LatLng.
@@ -307,7 +309,7 @@ public class CreateRoute extends Activity {
 										+ "<br />Le <b>point d'interrogation</b> : lance une barre de recherche pour trouvez une adresse, un lieu..."
 										+ "<br />La <b>roue</b> : lance le menu. Vous pourrez : "
 										+ "<br /><u><em>Dessiner</em></u> votre trajet (si vous avez au moins 2 points)"
-										+ "<br /><u><em>Terminer</em></u> : si vous avez un trajet, le sauvegarde, puis quitte"
+										+ "<br /><u><em>Sauvegarder</em></u> : si vous avez un trajet, le sauvegarde, vous pourrez ensuite soit lancer le <u>GPS</u> soit <u>quitter</u>"
 										+ "<br /><u><em>Changer type carte</em></u> : changer le type de la carte (normal, hybride, terrain, satellite)"
 										+ "<br /><u><em>Corriger</em></u> : active un mode particulier. Si vous avez un trajet dessiné, l'efface. "
 										+ "Vous pouvez supprimer un point en cliquant dessus. Pour quitter ce mode, cliquer sur dessiner ou terminer"))
@@ -342,14 +344,14 @@ public class CreateRoute extends Activity {
 							mWheelMenu.setSourceLocation(xLayoutSize,
 									yLayoutSize);
 							mWheelMenu.setIconSize(15, 30);
-							mWheelMenu.setTextSize(13);
+							mWheelMenu.setTextSize(Constantes.TEXT_SIZE_WHEEL);
 
-							//Initialisation selon les ??tats des flags
+							//Initialisation selon les etats des flags
 							mWheelMenu.setCenterCircle(new WheelMenu("Close", true, android.R.drawable.ic_menu_close_clear_cancel));
+							mWheelMenu.addMenuEntry(new SaveMenu());
 							if(canBeDraw){
 								mWheelMenu.addMenuEntry(new WheelMenu("Dessiner", true, 0));
 							}
-							mWheelMenu.addMenuEntry(new WheelMenu("Terminer", true, 0));
 							if(mListMarkers.size()>1 || correctionEnable){
 								mWheelMenu.addMenuEntry(new WheelMenu("Correction", true, 0));
 							}
@@ -372,7 +374,7 @@ public class CreateRoute extends Activity {
 	}
 	
 	
-public void openSearchBar() {
+	public void openSearchBar() {
 
 		
 		onSearch = true;
@@ -391,7 +393,7 @@ public void openSearchBar() {
 
 		actionBar.setCustomView(v);
 
-		// On r��cup��re l'autocompletetextview
+		// On récupère l'autocompletetextview
 		atvPlaces = (AutoCompleteTextView) findViewById(R.id.actv_search_places);
 		
 		showKeyboard();
@@ -483,6 +485,82 @@ public void openSearchBar() {
 			}
 			return data;
 		}
+		
+		public void actionDraw() {
+			if (mPolyline != null) {
+				mPolyline.remove();
+			}
+
+			if (correctionEnable) {
+				correctionEnable = false;
+				settingMapClickListenerNomal();
+			}
+
+			GettingRoute getRoute = new GettingRoute(CreateRoute.this,
+					mRoute, mListOverviewPolylinePoints, mListMarkers, mMap);
+
+			getRoute.execute();
+		}
+
+		public void actionSave() {
+			//Log.d("DEBUUUUUUG", "listMarker "+mListMarkers.size());
+			if (mListMarkers.size() > 0) {
+				RoutesCollection at = RoutesCollection.getInstance();
+				mRoute.setSave(true);
+				if (!at.replace(mRoute)) {
+					at.add(mRoute);
+				}
+				at.saveAllTrajet();
+			}
+			//CreateRoute.getInstance().finish();
+		}
+
+		public void actionCorrection() {
+			if (!correctionEnable) {
+
+				correctionEnable = true;
+				mRoute.setValidate(false);
+				if (mPolyline != null) {
+					mPolyline.remove();
+				}
+				settingMapClickListenerCorrectionMode();
+				mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
+
+					@Override
+					public boolean onMarkerClick(Marker marker) {
+						marker.hideInfoWindow();
+						for (int i = 0; i < mListMarkers.size(); i++) {
+							if (mListMarkers.get(i).getId()
+									.equals(marker.getId())) {
+								if (i == 0) {
+									Toast.makeText(
+											getApplicationContext(),
+											"Pour supprimer le point de départ, faites un appui long sur une autre zone",
+											Toast.LENGTH_SHORT).show();
+								} else {
+									mListMarkers.remove(i);
+									mRoute.setListMarkersMk(mListMarkers);
+									marker.remove();
+								}
+								break;
+							}
+						}
+
+						if (mListMarkers.size() == 0) {
+							canBeDraw = false;
+						}
+						return false;
+					}
+				});
+				Toast.makeText(getApplicationContext(),
+						"Mode correction activé", Toast.LENGTH_SHORT).show();
+			} else {
+				correctionEnable = false;
+				settingMapClickListenerNomal();
+				Toast.makeText(getApplicationContext(),
+						"Mode correction désactivé", Toast.LENGTH_SHORT).show();
+			}
+		}
 
 		/*
 		 * Ci-dessous sont liste les differentes classes privees : -
@@ -565,8 +643,17 @@ public void openSearchBar() {
 					actionDraw();
 				} else if (this.name.equals("Correction")) {
 					actionCorrection();
-				} else if (this.name.equals("Terminer")) {
-					actionFinish();
+				} else if (this.name.equals("Quitter")) {
+					CreateRoute.getInstance().finish();
+				} else if (this.name.equals("GPS")){
+					if(mRoute.isValidate()){
+						Intent toGPSRunner = new Intent(getApplicationContext(),GPSRunner.class);
+						toGPSRunner.putExtra("TRAJET", (Parcelable) mRoute);
+						toGPSRunner.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						getApplicationContext().startActivity(toGPSRunner);
+					}else{
+						Toast.makeText(getApplicationContext(),"Dessinez votre trajet pour lancer le GPS", Toast.LENGTH_SHORT).show();
+					}
 				}
 
 				if (this.closeWheelWhenTouch) {
@@ -575,81 +662,7 @@ public void openSearchBar() {
 				}
 			}
 
-			public void actionDraw() {
-				if (mPolyline != null) {
-					mPolyline.remove();
-				}
-
-				if (correctionEnable) {
-					correctionEnable = false;
-					settingMapClickListenerNomal();
-				}
-
-				GettingRoute getRoute = new GettingRoute(CreateRoute.this,
-						mRoute, mListOverviewPolylinePoints, mListMarkers, mMap);
-
-				getRoute.execute();
-			}
-
-			public void actionFinish() {
-				Log.d("DEBUUUUUUG", "listMarker "+mListMarkers.size());
-				if (mListMarkers.size() > 0) {
-					RoutesCollection at = RoutesCollection.getInstance();
-					mRoute.setSave(true);
-					if (!at.replace(mRoute)) {
-						at.add(mRoute);
-					}
-					at.saveAllTrajet();
-				}
-				CreateRoute.getInstance().finish();
-			}
-
-			public void actionCorrection() {
-				if (!correctionEnable) {
-
-					correctionEnable = true;
-					mRoute.setValidate(false);
-					if (mPolyline != null) {
-						mPolyline.remove();
-					}
-					settingMapClickListenerCorrectionMode();
-					mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
-
-						@Override
-						public boolean onMarkerClick(Marker marker) {
-							marker.hideInfoWindow();
-							for (int i = 0; i < mListMarkers.size(); i++) {
-								if (mListMarkers.get(i).getId()
-										.equals(marker.getId())) {
-									if (i == 0) {
-										Toast.makeText(
-												getApplicationContext(),
-												"Pour supprimer le point de départ, faites un appui long sur une autre zone",
-												Toast.LENGTH_SHORT).show();
-									} else {
-										mListMarkers.remove(i);
-										mRoute.setListMarkersMk(mListMarkers);
-										marker.remove();
-									}
-									break;
-								}
-							}
-
-							if (mListMarkers.size() == 0) {
-								canBeDraw = false;
-							}
-							return false;
-						}
-					});
-					Toast.makeText(getApplicationContext(),
-							"Mode correction activé", Toast.LENGTH_SHORT).show();
-				} else {
-					correctionEnable = false;
-					settingMapClickListenerNomal();
-					Toast.makeText(getApplicationContext(),
-							"Mode correction désactivé", Toast.LENGTH_SHORT).show();
-				}
-			}
+			
 		}
 
 		public class MapTypeMenu implements RadialMenuEntry {
@@ -676,6 +689,34 @@ public void openSearchBar() {
 			}
 
 			public void menuActiviated() {
+			}
+		}
+		
+		public class SaveMenu implements RadialMenuEntry {
+		
+			public String getName() {
+				return "NewTestMenu";
+			}
+	
+			public String getLabel() {
+				return "Sauvegarder";
+			}
+	
+			public int getIcon() {
+				return 0;
+			}
+	
+			private List<RadialMenuEntry> children = new ArrayList<RadialMenuEntry>(
+					Arrays.asList(new WheelMenu("Quitter", true, 0), new WheelMenu(
+							"GPS", true, 0)));
+	
+			public List<RadialMenuEntry> getChildren() {
+				return children;
+			}
+	
+			public void menuActiviated() {
+				actionSave();
+				Toast.makeText(getApplicationContext(),mRoute.getName()+" sauvegardé", Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -804,7 +845,7 @@ public void openSearchBar() {
 				String data = "";
 
 				// Obtain browser key from https://code.google.com/apis/console
-				String key = "key=AIzaSyB4m_X5XwwnhYenzLhIexv-glVWu-j_Egs";
+				String key = "key="+Constantes.API_KEY;
 
 				String reference = "";
 
@@ -856,8 +897,8 @@ public void openSearchBar() {
 
 					// Toast.makeText(getApplicationContext(),
 					// adrAdress+"\n"+lat+" - "+lng, Toast.LENGTH_SHORT).show();
-					CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), 15);
-					mMap.animateCamera(cu, 600, null);
+					CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lng), Constantes.ZOOM_GENERAL);
+					mMap.animateCamera(cu, Constantes.ZOOM_SPEED_MS, null);
 
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
@@ -865,7 +906,5 @@ public void openSearchBar() {
 				}
 
 			}
-		}
-
-	
+		}	
 }

@@ -9,7 +9,9 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import android.os.Environment;
+import android.util.Log;
+
+import com.ironrabbit.drawmywaybeta4ui.Constantes;
 
 /*
  * Singleton Classe fille d'ArrayList<Trajet>, permet de manipuler la liste de tous les trajets sauvegard??es
@@ -24,10 +26,6 @@ public class RoutesCollection extends ArrayList<Route> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static RoutesCollection INSTANCE;//Singleton
-
-	private static final String FILE_NAME = ".routescollection.dmwui";
-	private static final String FILE_PATH = Environment
-			.getExternalStorageDirectory().getAbsolutePath() + "/";
 
 	//R??cup??ration de l'instance
 	public static RoutesCollection getInstance() {
@@ -44,18 +42,8 @@ public class RoutesCollection extends ArrayList<Route> implements Serializable {
 	}
 
 	public static void delete(){
-		File f = new File(FILE_PATH+FILE_NAME);
+		File f = new File(Constantes.PATH_FILE_ROUTES+Constantes.NAME_FILE_ROUTES);
 		f.delete();
-	}
-	
-	public boolean isPresent(Route t) {
-		for (int i = 0; i < this.size(); i++) {
-			if (this.get(i).getIdHash() == t.getIdHash()) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 	
 	public boolean nameExists(String n){
@@ -100,10 +88,14 @@ public class RoutesCollection extends ArrayList<Route> implements Serializable {
 		return listRouteCoureur;
 	}
 
-	public void remove(Route t) {
-		if (isPresent(t)) {
-			super.remove(t);
+	public boolean remove(Route t) {
+		for(int i=0;i<this.size();i++){
+			if(this.get(i).getIdHash()==t.getIdHash()){
+				this.remove(i);
+				return true;
+			}
 		}
+		return false;
 	}
 
 	public Route getByHashId(int id) {
@@ -130,7 +122,7 @@ public class RoutesCollection extends ArrayList<Route> implements Serializable {
 
 	public void saveAllTrajet() {
 
-		File f = new File(FILE_PATH + FILE_NAME);
+		File f = new File(Constantes.PATH_FILE_ROUTES+Constantes.NAME_FILE_ROUTES);
 
 		try {
 			ObjectOutputStream ooStream = new ObjectOutputStream(
@@ -145,7 +137,7 @@ public class RoutesCollection extends ArrayList<Route> implements Serializable {
 
 	public static RoutesCollection loadAllTrajet() {
 
-		File f = new File(FILE_PATH + FILE_NAME);
+		File f = new File(Constantes.PATH_FILE_ROUTES+Constantes.NAME_FILE_ROUTES);
 		RoutesCollection at = null;
 		try {
 			ObjectInputStream oiStream = new ObjectInputStream(
@@ -161,7 +153,7 @@ public class RoutesCollection extends ArrayList<Route> implements Serializable {
 	}
 
 	public void deleteFile() {
-		File f = new File(FILE_PATH + FILE_NAME);
+		File f = new File(Constantes.PATH_FILE_ROUTES+Constantes.NAME_FILE_ROUTES);
 		if (f.exists()) {
 			f.delete();
 		}
