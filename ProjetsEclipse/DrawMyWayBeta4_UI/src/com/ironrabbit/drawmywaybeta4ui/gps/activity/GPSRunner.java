@@ -92,9 +92,9 @@ public class GPSRunner extends Activity implements SensorEventListener {
 			}
 		}
 		
-		for(int i=0;i<this.mListSteps.size();i++){
+		/*for(int i=0;i<this.mListSteps.size();i++){
 			Log.d("debug.showInstr", this.mListSteps.get(i).getHtml_instructions());
-		}
+		}*/
 		
 		//On dessine le trajet
 		drawRoute();
@@ -107,7 +107,7 @@ public class GPSRunner extends Activity implements SensorEventListener {
 	private void drawRoute(){
 		//Departure
 		ArrayList<LatLng> listPointsOverview = mRoute.getPointsWhoDrawsPolylineLatLng();
-		setMarker(listPointsOverview.get(0), "Go !");
+		setMarker(listPointsOverview.get(0), "Départ");
 		
 		//Zone de d??tection (5 m??tres) du point de d??part
 		CircleOptions circleOptions;
@@ -143,7 +143,7 @@ public class GPSRunner extends Activity implements SensorEventListener {
 		mMap.addMarker(
 				new MarkerOptions()
 						.icon(BitmapDescriptorFactory
-								.fromResource(R.drawable.icon_green))
+								.fromResource(R.drawable.ic_marker_princ))
 						.anchor(0.0f, 1.0f) // Anchors the
 											// marker on the
 											// bottom left

@@ -16,11 +16,11 @@ public final class R {
 		public static final int border = 0x7f020006;
 		public static final int green_circle = 0x7f02002f;
 		public static final int ic_launcher = 0x7f020037;
-		public static final int icon = 0x7f020044;
-		public static final int light_blue_circle = 0x7f020046;
-		public static final int map_bg = 0x7f020048;
-		public static final int red_circle = 0x7f02004e;
-		public static final int yellow_circle = 0x7f020058;
+		public static final int icon = 0x7f020046;
+		public static final int light_blue_circle = 0x7f020048;
+		public static final int map_bg = 0x7f02004a;
+		public static final int red_circle = 0x7f020050;
+		public static final int yellow_circle = 0x7f02005a;
 	}
 	public static final class id {
 		public static final int action_settings = 0x7f0a0057;

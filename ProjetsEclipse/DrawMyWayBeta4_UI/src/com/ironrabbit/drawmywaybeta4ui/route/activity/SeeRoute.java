@@ -41,14 +41,14 @@ public class SeeRoute extends Activity {
 	private void drawRoute() {
 		ArrayList<LatLng> listPoints = mRoute
 				.getPointsWhoDrawsPolylineLatLng();
-		setMarker(listPoints.get(0), "D??part");
+		setMarker(listPoints.get(0), "Départ");
 		PolylineOptions options = new PolylineOptions().geodesic(false)
 				.width(10).color(Color.argb(120, 0, 180, 0));
 		for (int i = 0; i < listPoints.size(); i++) {
 			options.add(listPoints.get(i));
 		}
 		mMap.addPolyline(options);
-		setMarker(listPoints.get(listPoints.size() - 1), "Arriv??e");
+		setMarker(listPoints.get(listPoints.size() - 1), "Arrivée");
 		CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(listPoints.get(0),
 				15);
 		mMap.animateCamera(cu, 600, null);
@@ -77,7 +77,7 @@ public class SeeRoute extends Activity {
 	private Marker setMarker(LatLng p, String str) {
 		Marker tmp = mMap.addMarker(new MarkerOptions()
 				.icon(BitmapDescriptorFactory
-						.fromResource(R.drawable.icon_green))
+						.fromResource(R.drawable.ic_marker_princ))
 				.anchor(0.0f, 1.0f) // Anchors the
 									// marker on the
 									// bottom left

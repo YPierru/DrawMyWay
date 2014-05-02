@@ -11,7 +11,7 @@ public final class Constantes {
 	public static final int ZOOM_SPEED_MS=600;
 	
 	public static final int USER_GPS_TILT=90;
-	public static final int RADIUS_DETECTION=10;
+	public static final int RADIUS_DETECTION=500;
 	public static final int MIN_TIME_GPS_REQUEST_MS=5;
 	public static final int MIN_DIST_GPS_REQUEST_M=0;
 	

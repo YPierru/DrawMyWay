@@ -131,10 +131,10 @@ public class CreateRoute extends Activity {
 			for (int i = 0; i < tmpListMarkers.size(); i++) {
 				if (i == 0) {
 					mListMarkers.add(putMarker(tmpListMarkers.get(i), "Départ",
-							true));
+							true, true));
 				} else {
 					mListMarkers
-							.add(putMarker(tmpListMarkers.get(i), "Point de passage", true));
+							.add(putMarker(tmpListMarkers.get(i), "NO", true, false));
 				}
 			}
 			CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(
@@ -167,7 +167,7 @@ public class CreateRoute extends Activity {
 
 				
 				//On ajoute le jalon en LatLng.
-				mListMarkers.add(putMarker(point, "Départ", true));
+				mListMarkers.add(putMarker(point, "Départ", true, false));
 				mRoute.getListMarkers().clear();
 				mRoute.getListMarkers().add(point.latitude, point.longitude);
 				
@@ -186,7 +186,7 @@ public class CreateRoute extends Activity {
 
 			@Override
 			public void onMapClick(LatLng point) {
-				mListMarkers.add(putMarker(point, "Point de passage", true));
+				mListMarkers.add(putMarker(point, "NO", true, true));
 				canBeDraw=true;
 				mRoute.getListMarkers().add(point.latitude, point.longitude);
 			}
@@ -206,14 +206,24 @@ public class CreateRoute extends Activity {
 	/*
 	 * Ajout un marker sur la carte
 	 */
-	private Marker putMarker(LatLng p, String str, boolean isDrag) {
+	private Marker putMarker(LatLng p, String str, boolean isDrag, boolean isInter) {
+		int idIcMarker;
+		if(isInter){
+			idIcMarker=R.drawable.ic_marker_inter;
+		}else{
+			idIcMarker=R.drawable.ic_marker_princ;
+		}
+		
 		Marker tmp = mMap.addMarker(new MarkerOptions()
 				.icon(BitmapDescriptorFactory
-						.fromResource(R.drawable.icon_green))
+						.fromResource(idIcMarker))
 				.anchor(0.0f, 1.0f) // Anchors the
 									// marker on the
 									// bottom left
-				.position(p).title(str));
+				.position(p));
+		if(!str.equals("NO")){
+			tmp.setTitle(str);
+		}
 		tmp.setDraggable(isDrag);
 		tmp.showInfoWindow();
 		return tmp;
