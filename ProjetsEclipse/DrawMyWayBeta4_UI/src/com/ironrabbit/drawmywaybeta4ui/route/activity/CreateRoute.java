@@ -100,7 +100,7 @@ public class CreateRoute extends Activity {
 		correctionEnable=false;
 		mListMarkers = new ArrayList<Marker>();
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-		nsamMap.setMyLocationEnabled(true);
+		mMap.setMyLocationEnabled(true);
 		mPolyline = null;
 		mRoute = getIntent().getExtras().getParcelable("trajet");
 
