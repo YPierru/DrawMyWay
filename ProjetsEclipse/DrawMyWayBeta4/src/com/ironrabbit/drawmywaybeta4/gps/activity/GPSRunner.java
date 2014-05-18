@@ -1,6 +1,7 @@
 package com.ironrabbit.drawmywaybeta4.gps.activity;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -10,12 +11,12 @@ import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
@@ -47,7 +48,7 @@ import com.ironrabbit.drawmywaybeta4.route.downloaded.Step;
  * 
  */
 
-public class GPSRunner extends Activity implements SensorEventListener {
+public class GPSRunner extends Activity implements SensorEventListener,TextToSpeech.OnInitListener {
 	
 	private static final int RADIUS_DETECTION=10;
 
@@ -59,6 +60,9 @@ public class GPSRunner extends Activity implements SensorEventListener {
 	private ArrayList<Step> mListSteps;
 	private GoogleMap mMap;
 	private UserPosition mUserPos;
+	private TextToSpeech textToSpeech;
+	private int compteurAffichage=0;
+	private boolean speak1000=false,speak500=false,speak200=false,speak50=false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +80,8 @@ public class GPSRunner extends Activity implements SensorEventListener {
 		//mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
 		mRoute = getIntent().getExtras().getParcelable("TRAJET");
-		
+
+		this.textToSpeech = new TextToSpeech(this, this);
 		//On recupère la liste des steps
 		this.mListSteps=mRoute.getListSteps();
 		
@@ -102,8 +107,26 @@ public class GPSRunner extends Activity implements SensorEventListener {
 		drawRoute();
 	}
 	
+	public void onInit(int status) {
+		if (status == TextToSpeech.SUCCESS) {
+			int result = textToSpeech.setLanguage(Locale.FRANCE);
+			if (result == TextToSpeech.LANG_MISSING_DATA
+					|| result == TextToSpeech.LANG_NOT_SUPPORTED) {
+				Log.e("error", "This Language is not supported");
+			}
+		} else {
+			Log.e("error", "Initilization Failed!");
+		}
+	}
+	
 	public static GPSRunner getInstance(){
 		return thisactivity;
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		textToSpeech.shutdown();
 	}
 	
 	private void drawRoute(){
@@ -200,83 +223,102 @@ public class GPSRunner extends Activity implements SensorEventListener {
 		@Override
 		//Lorsque la position de mon utilisateur change...
 		public void onLocationChanged(Location location) {
-			int dist;
 			
-			//Index du point de la liste ListPointsToFollow vers lequel se diriger
 			int indexCurrentPoint = mUserPos.getIndexPointToFollow();
-			
-			//Layout affichant les instructions de direction
-			LinearLayout ll_DistInstr=(LinearLayout)findViewById(R.id.centralLinLay);
-			
-			//Je lui donne sa nouvelle position
 			mUserPos.setCurrentPos(location.getLatitude() , location.getLongitude(), location.getBearing(),mMap);
-			
-			//J'ajoute sa nouvelle position sur la map
-			//mUserPos.addCurrentPosOnMap(mMap);
-			
-			//Si l'utilisateur ne suis pas le trajet
+			int dist=formatDist(mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint)));
+			Step currentStep=mListSteps.get(indexCurrentPoint);
+			Step nextStep=null;
+			if(indexCurrentPoint<listPointsToFollow.size()){
+				nextStep=mListSteps.get(indexCurrentPoint+1);
+			}
+
 			if(!mUserPos.isOnRoute()){
 				
-				//Si mon layout est visible, le rendre invisible
-				if(ll_DistInstr.getVisibility()==View.VISIBLE){
-					ll_DistInstr.setVisibility(View.INVISIBLE);
-				}
-				
-				//Calculer la distance entre l'user et le point à suivre
-				dist = mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint));
-				
-				//Si cette distance est inférieur à 5m, je met à jour les informations
-				if(dist<RADIUS_DETECTION){
-					Toast.makeText(GPSRunner.this, "Départ !",Toast.LENGTH_SHORT).show();
+				if(dist<RADIUS_DETECTION && compteurAffichage==0){
+					compteurAffichage++;
+					//Toast.makeText(GPSRunner.this, "Départ",Toast.LENGTH_SHORT).show();
+					
+					String text=Html.fromHtml(currentStep.getHtml_instructions()).toString()+". puis, "+Html.fromHtml(nextStep.getHtml_instructions()).toString();
+					textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+					showLayout();
+					displayInstructions(nextStep);
 					mUserPos.setIsOnRoute(true);
 					mUserPos.setToNextPointToFollow();
-					displayInformations(mUserPos.getIndexPointToFollow());
-					checkForNextPoint(mUserPos.getIndexPointToFollow());
 				}
 				
 			}
-			//Si mon user est déjà sur le trajet, je fais une MaJ des infos.
-			//A corriger : seul la distance devrait être mise à jour.
+
 			else{
-				displayInformations(indexCurrentPoint);
-				checkForNextPoint(indexCurrentPoint);
+				displayDist(dist);
+				if(500<dist && dist<=1000 && !speak1000){
+					speak1000=true;
+					textToSpeech.speak("Dans "+dist+" mètres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
+				}
+				if(200<dist && dist<=500 && !speak500){
+					speak500=true;
+					textToSpeech.speak("Dans "+dist+" mètres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
+				}
+				if(50<dist && dist<=200 && !speak200){
+					speak200=true;
+					textToSpeech.speak("Dans "+dist+" mètres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
+				}
+				if(dist<=50 && !speak50){
+					speak50=true;
+					textToSpeech.speak("Dans "+dist+" mètres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
+				}
+				if(dist<RADIUS_DETECTION){
+					speak1000=false;
+					speak200=false;
+					speak50=false;
+					speak500=false;
+					if(indexCurrentPoint<listPointsToFollow.size()){
+						mUserPos.setToNextPointToFollow();
+						displayInstructions(nextStep);
+						textToSpeech.speak(Html.fromHtml(currentStep.getHtml_instructions()).toString()+" puis, dans "+dist+" mètres "+Html.fromHtml(mListSteps.get(indexCurrentPoint+1).getHtml_instructions()).toString(), TextToSpeech.QUEUE_FLUSH, null);
+					}else{
+						mUserPos.setIsOnRoute(false);
+						/*
+						 * Quitter ?
+						 */
+					}
+				}
 			}
-			
-			//Log.d("DEBUUUUUG","P1="+mUserPos.getCurrentPos().toString());
-			//Log.d("DEBUUUUUG","P2="+listPointsOverview.get(0).toString());
-			//Log.d("DEBUUUUUG","DIST="+dist);
+
 		}
-		
-		public void displayInformations(int indexCurrentPoint){
-			
-			Step currentStep = mListSteps.get(indexCurrentPoint-1);
+		public void displayDist(int dist){
 			TextView tv_DistNextPoint = (TextView)findViewById(R.id.tv_distNextPoint);
-			TextView tv_Instructions = (TextView)findViewById(R.id.tv_instructions);
-			LinearLayout ll_DistInstr=(LinearLayout)findViewById(R.id.centralLinLay);
-			
-			if(ll_DistInstr.getVisibility()==View.INVISIBLE){
-				ll_DistInstr.setVisibility(View.VISIBLE);
-			}
-			tv_DistNextPoint.setText(""+mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint)));
-			tv_Instructions.setText(Html.fromHtml(currentStep.getHtml_instructions()));
-			
+			tv_DistNextPoint.setText(dist+"m");
 		}
 		
-		public void checkForNextPoint(int indexCurrentPoint){
-			int dist;
-			if(indexCurrentPoint<listPointsToFollow.size()){
-				dist = mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint++));
-				if(dist<RADIUS_DETECTION){
-					Toast.makeText(GPSRunner.this, "Next point !",Toast.LENGTH_SHORT).show();
-					mUserPos.setToNextPointToFollow();
-				}
-			}else{
-				dist = mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint));
-				if(dist<RADIUS_DETECTION){
-					Toast.makeText(GPSRunner.this, "Fini !",Toast.LENGTH_SHORT).show();
-					mUserPos.setIsOnRoute(false);
-				}
+		public void displayInstructions(Step cStep){
+			TextView tv_Instructions = (TextView)findViewById(R.id.tv_instructions);
+			tv_Instructions.setText(Html.fromHtml(cStep.getHtml_instructions()));
+		}
+		
+		public void showLayout(){
+			LinearLayout ll_DistInstr=(LinearLayout)findViewById(R.id.centralLinLay);
+			ll_DistInstr.setVisibility(View.VISIBLE);
+		}
+		
+		public int formatDist(int d){
+			int lastDigit=d%10;
+			
+			switch(lastDigit){
+				case 1: case 2: case 3:
+					d=d-lastDigit;
+				break;
+				
+				case 4: case 6:
+					d=d-lastDigit+5;
+				break;
+				
+				case 7: case 8 : case 9:
+					d=d-lastDigit+10;
+				break;
 			}
+			
+			return d;
 		}
 
 		@Override

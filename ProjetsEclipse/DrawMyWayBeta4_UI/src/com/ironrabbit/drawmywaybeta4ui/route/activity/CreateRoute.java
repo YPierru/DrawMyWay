@@ -22,6 +22,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -98,7 +100,7 @@ public class CreateRoute extends Activity {
 		correctionEnable=false;
 		mListMarkers = new ArrayList<Marker>();
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
-		//mMap.setMyLocationEnabled(true);
+		nsamMap.setMyLocationEnabled(true);
 		mPolyline = null;
 		mRoute = getIntent().getExtras().getParcelable("trajet");
 
@@ -245,9 +247,7 @@ public class CreateRoute extends Activity {
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 
 		if (menuItem.getItemId() == android.R.id.home) {
-			if(onSearch){
-				
-			}else{
+			if(!onSearch){
 				actionIfUserWantsBack();
 			}
 		}
@@ -297,7 +297,25 @@ public class CreateRoute extends Activity {
 
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
-				openSearchBar();
+				if(isNetworkAvailable()){
+					openSearchBar();
+				}else{
+					AlertDialog.Builder alertDialog = new AlertDialog.Builder(
+							CreateRoute.this);
+					alertDialog.setTitle("Il faut une connexion internet");
+					alertDialog
+							.setMessage(
+									Html.fromHtml("Vous devez être connecté à internet pour utiliser cette fonctionnalité."))
+							.setCancelable(true)
+							.setPositiveButton("Ok",
+									new DialogInterface.OnClickListener() {
+										public void onClick(DialogInterface dialog,
+												int id) {
+											dialog.cancel();
+										}
+									}).create();
+					alertDialog.show();
+				}
 				return true;
 
 			}
@@ -383,6 +401,12 @@ public class CreateRoute extends Activity {
 		return true;
 	}
 	
+	private boolean isNetworkAvailable() {
+	    ConnectivityManager connectivityManager 
+	          = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+	    NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+	    return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+	}
 	
 	public void openSearchBar() {
 
