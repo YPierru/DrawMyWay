@@ -1,15 +1,15 @@
 package com.ironrabbit.drawmywaybeta4ui.gps.activity;
 
+import it.gmariotti.cardslib.library.internal.Card;
+import it.gmariotti.cardslib.library.view.CardView;
+
 import java.util.ArrayList;
 import java.util.Locale;
-
-import org.jsoup.Jsoup;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,9 +17,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
-import android.opengl.Visibility;
 import android.os.Bundle;
-import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.text.Html;
 import android.util.Log;
@@ -28,11 +26,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.internal.s;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -66,7 +62,7 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 	private GoogleMap mMap;
 	private UserPosition mUserPos;
 	private int compteurAffichage=0;
-	private boolean speak1000=false,speak500=false,speak200=false,speak50=false;
+	private boolean mustSpeak1000=true,mustSpeak500=true,mustSpeak200=true,mustSpeak50=true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -78,11 +74,14 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 		
 		thisactivity = this;
 		getActionBar().hide();
+		Card card = new Card(getApplicationContext());
+		CardView cv = (CardView)findViewById(R.id.carddemo);
+		cv.setCard(card);
 
 		mMap = ((MapFragment) getFragmentManager()
 				.findFragmentById(R.id.mapGPS)).getMap();
 		//mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-
+		mMap.getUiSettings().setZoomControlsEnabled(false);
 		mRoute = getIntent().getExtras().getParcelable("TRAJET");
 		
 		this.textToSpeech = new TextToSpeech(this, this);
@@ -143,7 +142,7 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 		setMarker(listPointsOverview.get(0), "Départ");
 		
 		//Zone de d??tection (5 m??tres) du point de d??part
-		CircleOptions circleOptions;
+		/*CircleOptions circleOptions;
 		
 		for(int i=0;i<this.listPointsToFollow.size();i++){
 			setMarker(this.listPointsToFollow.get(i), "");
@@ -151,7 +150,7 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 		    .center(this.listPointsToFollow.get(i))
 		    .radius(Constantes.RADIUS_DETECTION);
 			mMap.addCircle(circleOptions);
-		}
+		}*/
 		
 		//CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(listPointsOverview.get(0), 15);
 		//mMap.animateCamera(cu);
@@ -160,7 +159,7 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 		
 		//Tra??age du trajet
 		PolylineOptions options = new PolylineOptions().geodesic(false)
-				.width(Constantes.WIDTH_POLYLINE).color(Constantes.COLOR_POLYLINE);
+				.width(Constantes.WIDTH_POLYLINE_GPS).color(Constantes.COLOR_POLYLINE_GPS);
 		
 		for (int i = 0; i < listPointsOverview.size(); i++) {
 			options.add(listPointsOverview.get(i)); 
@@ -169,7 +168,7 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 		
 		
 		//On met le marker ?? l'arriv??e
-		//setMarker(listPointsOverview.get(listPointsOverview.size() - 1), "Arrivee");
+		setMarker(listPointsOverview.get(listPointsOverview.size() - 1), "Arrivée");
 	}
 	
 	public void setMarker(LatLng point, String str) {
@@ -189,13 +188,13 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 		mLocList = new MyLocationListener();
 		mLocManag = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
-		if (!mLocManag.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+		/*if (!mLocManag.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 			buildAlertMessageNoGps();
 		}else{
 			mLocManag.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constantes.MIN_TIME_GPS_REQUEST_MS, Constantes.MIN_DIST_GPS_REQUEST_M,
 				mLocList);
-		}
-			//mLocManag.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5, 0,mLocList);
+		}*/
+			mLocManag.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5, 0,mLocList);
 	}
 
 	private void buildAlertMessageNoGps() {
@@ -259,54 +258,63 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 
 			else{
 				displayDist(dist);
-				if(500<dist && dist<=1000 && !speak1000){
-					speak1000=true;
+				if(500<dist && dist<=1000 && mustSpeak1000){
+					mustSpeak1000=false;
 					textToSpeech.speak("Dans "+dist+" mètres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
 				}
-				if(200<dist && dist<=500 && !speak500){
-					speak500=true;
+				if(200<dist && dist<=500 && mustSpeak500){
+					mustSpeak500=false;
 					textToSpeech.speak("Dans "+dist+" mètres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
 				}
-				if(50<dist && dist<=200 && !speak200){
-					speak200=true;
+				if(50<dist && dist<=200 && mustSpeak200){
+					mustSpeak200=false;
 					textToSpeech.speak("Dans "+dist+" mètres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
 				}
-				if(dist<=50 && !speak50){
-					speak50=true;
+				if(dist<=50 && mustSpeak50){
+					
+					mustSpeak50=false;
 					textToSpeech.speak("Dans "+dist+" mètres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
 				}
 				if(dist<Constantes.RADIUS_DETECTION){
-					speak1000=false;
-					speak200=false;
-					speak50=false;
-					speak500=false;
+					mustSpeak1000=true;
+					mustSpeak200=true;
+					mustSpeak50=true;
+					mustSpeak500=true;
 					if(indexCurrentPoint<listPointsToFollow.size()){
 						mUserPos.setToNextPointToFollow();
 						displayInstructions(nextStep);
+						dist=formatDist(mUserPos.distanceBetween(listPointsToFollow.get(indexCurrentPoint+1)));
 						textToSpeech.speak(Html.fromHtml(currentStep.getHtml_instructions()).toString()+" puis, dans "+dist+" mètres "+Html.fromHtml(mListSteps.get(indexCurrentPoint+1).getHtml_instructions()).toString(), TextToSpeech.QUEUE_FLUSH, null);
+						if(dist>500 && dist <=1000){
+							mustSpeak1000=false;
+						}else if(dist>200 && dist <=500){
+							mustSpeak500=false;
+						}else if(dist>50 && dist <=200){
+							mustSpeak200=false;
+						}else if(dist<=50){
+							mustSpeak50=false;
+						}
 					}else{
 						mUserPos.setIsOnRoute(false);
-						/*
-						 * Quitter ?
-						 */
+						textToSpeech.speak("Vous êtes arrivés", TextToSpeech.QUEUE_FLUSH, null);
 					}
 				}
 			}
 
 		}
 		public void displayDist(int dist){
-			TextView tv_DistNextPoint = (TextView)findViewById(R.id.tv_distNextPoint);
-			tv_DistNextPoint.setText(dist+"m");
+			//TextView tv_DistNextPoint = (TextView)findViewById(R.id.tv_distNextPoint);
+			//tv_DistNextPoint.setText(dist+"m");
 		}
 		
 		public void displayInstructions(Step cStep){
-			TextView tv_Instructions = (TextView)findViewById(R.id.tv_instructions);
-			tv_Instructions.setText(Html.fromHtml(cStep.getHtml_instructions()));
+			//TextView tv_Instructions = (TextView)findViewById(R.id.tv_instructions);
+			//tv_Instructions.setText(Html.fromHtml(cStep.getHtml_instructions()));
 		}
 		
 		public void showLayout(){
-			LinearLayout ll_DistInstr=(LinearLayout)findViewById(R.id.centralLinLay);
-			ll_DistInstr.setVisibility(View.VISIBLE);
+			//LinearLayout ll_DistInstr=(LinearLayout)findViewById(R.id.centralLinLay);
+			//ll_DistInstr.setVisibility(View.VISIBLE);
 		}
 		
 		public int formatDist(int d){

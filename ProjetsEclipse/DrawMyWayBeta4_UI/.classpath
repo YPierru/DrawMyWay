@@ -20,8 +20,8 @@
 			<attribute name="javadoc_location" value="jar:file:/home/yanpierru/Téléchargements/jsoup-1.7.3-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="libs/simple-side-drawer2.jar"/>
 	<classpathentry kind="lib" path="libs/com.haarman.listviewanimations-2.6.0.jar"/>
+	<classpathentry kind="lib" path="libs/radialmenu-lib.jar"/>
 	<classpathentry kind="lib" path="libs/nineoldandroids-2.4.0.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>

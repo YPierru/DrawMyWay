@@ -11,7 +11,7 @@ public final class Constantes {
 	public static final int ZOOM_SPEED_MS=600;
 	
 	public static final int USER_GPS_TILT=90;
-	public static final int RADIUS_DETECTION=10;
+	public static final int RADIUS_DETECTION=17000;
 	public static final int MIN_TIME_GPS_REQUEST_MS=5;
 	public static final int MIN_DIST_GPS_REQUEST_M=0;
 	
@@ -24,6 +24,8 @@ public final class Constantes {
 	
 	public static final int WIDTH_POLYLINE=10;
 	public static final int COLOR_POLYLINE=Color.argb(120, 0, 180, 0);
+	public static final int WIDTH_POLYLINE_GPS=12;
+	public static final int COLOR_POLYLINE_GPS=Color.argb(200, 0, 120, 0);
 	
 	public static final double EARTH_RADIUS=3958.75;
 	public static final int METER_CONVERSION=1609;
