@@ -1,8 +1,6 @@
 package com.ironrabbit.drawmywaybeta4ui.gps.activity;
 
-import it.gmariotti.cardslib.library.internal.Card;
-import it.gmariotti.cardslib.library.view.CardView;
-
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -22,7 +20,7 @@ import android.speech.tts.TextToSpeech;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +59,8 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 	private ArrayList<Step> mListSteps;
 	private GoogleMap mMap;
 	private UserPosition mUserPos;
+	private int totalDistance=0;
+	private int totalDuration=0;
 	private int compteurAffichage=0;
 	private boolean mustSpeak1000=true,mustSpeak500=true,mustSpeak200=true,mustSpeak50=true;
 
@@ -74,9 +74,6 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 		
 		thisactivity = this;
 		getActionBar().hide();
-		Card card = new Card(getApplicationContext());
-		CardView cv = (CardView)findViewById(R.id.carddemo);
-		cv.setCard(card);
 
 		mMap = ((MapFragment) getFragmentManager()
 				.findFragmentById(R.id.mapGPS)).getMap();
@@ -88,6 +85,11 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 		
 		//On recup??re la liste des steps
 		this.mListSteps=mRoute.getListSteps();
+		
+		for(int i=0;i<mListSteps.size();i++){
+			totalDistance+=mListSteps.get(i).getDistance().getValue();
+			totalDuration+=mListSteps.get(i).getDuration().getValue();
+		}
 		
 		/*
 		 * On r??cup??re la liste des points ?? suivre.
@@ -102,11 +104,12 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 						.getLat(), mListSteps.get(i).getEnd_location().getLng()));
 			}
 		}
-		
-		/*for(int i=0;i<this.mListSteps.size();i++){
-			Log.d("debug.showInstr", this.mListSteps.get(i).getHtml_instructions());
+		String str;
+		for(int i=0;i<this.mListSteps.size();i++){
+			str= this.mListSteps.get(i).getHtml_instructions().split("<div")[0];
+			Log.d("debug.showInstr", str);
 		}
-		for(int i=0;i<this.listPointsToFollow.size();i++){
+		/*for(int i=0;i<this.listPointsToFollow.size();i++){
 			Log.d("PTFL", this.listPointsToFollow.get(i).toString());
 		}*/
 		
@@ -250,6 +253,7 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 					textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
 					showLayout();
 					displayInstructions(nextStep);
+					displayInfoFinish();
 					mUserPos.setIsOnRoute(true);
 					mUserPos.setToNextPointToFollow();
 				}
@@ -300,21 +304,32 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 					}
 				}
 			}
-
 		}
+		
+		public void displayInfoFinish(){
+			TextView tv_gpsfinish = (TextView)findViewById(R.id.tv_gps_finish);
+			
+		}
+		
 		public void displayDist(int dist){
-			//TextView tv_DistNextPoint = (TextView)findViewById(R.id.tv_distNextPoint);
-			//tv_DistNextPoint.setText(dist+"m");
+			TextView tv_DistNextPoint = (TextView)findViewById(R.id.tv_gps_kmnextpoint);
+			if(dist>1000){
+				double distKm=dist/(float)1000;
+		        DecimalFormat format = new DecimalFormat("#.#");
+				tv_DistNextPoint.setText(format.format(distKm)+"km");
+			}else{
+				tv_DistNextPoint.setText(dist+"m");
+			}
 		}
 		
 		public void displayInstructions(Step cStep){
-			//TextView tv_Instructions = (TextView)findViewById(R.id.tv_instructions);
-			//tv_Instructions.setText(Html.fromHtml(cStep.getHtml_instructions()));
+			TextView tv_Instructions = (TextView)findViewById(R.id.tv_gps_htmlInstructions);
+			tv_Instructions.setText(Html.fromHtml(cStep.getHtml_instructions().split("<div ")[0]));
 		}
 		
 		public void showLayout(){
-			//LinearLayout ll_DistInstr=(LinearLayout)findViewById(R.id.centralLinLay);
-			//ll_DistInstr.setVisibility(View.VISIBLE);
+			RelativeLayout rl = (RelativeLayout)findViewById(R.id.rl_gps);
+			rl.setVisibility(View.VISIBLE);
 		}
 		
 		public int formatDist(int d){

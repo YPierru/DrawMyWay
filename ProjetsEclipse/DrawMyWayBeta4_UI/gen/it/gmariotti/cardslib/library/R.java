@@ -120,10 +120,10 @@ public final class R {
 		public static final int card_thumb_and_content_layout = 0x7f0a0013;
 		public static final int card_thumbnail_image = 0x7f0a000c;
 		public static final int card_thumbnail_layout = 0x7f0a0014;
-		public static final int list_cardId = 0x7f0a002a;
-		public static final int list_card_undobar = 0x7f0a002b;
-		public static final int list_card_undobar_button = 0x7f0a002d;
-		public static final int list_card_undobar_message = 0x7f0a002c;
+		public static final int list_cardId = 0x7f0a002d;
+		public static final int list_card_undobar = 0x7f0a002e;
+		public static final int list_card_undobar_button = 0x7f0a0030;
+		public static final int list_card_undobar_message = 0x7f0a002f;
 		public static final int undobar = 0x7f0a0015;
 		public static final int undobar_button = 0x7f0a0017;
 		public static final int undobar_message = 0x7f0a0016;
