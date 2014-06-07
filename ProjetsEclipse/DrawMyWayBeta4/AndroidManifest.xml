@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.ironrabbit.drawmyway"
+    package="com.ironrabbit.waybeta4"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -13,10 +13,10 @@
         android:required="true" />
 
     <permission
-        android:name="com.example.drawmywaybeta4.permission.MAPS_RECEIVE"
+        android:name="com.ironrabbit.waybeta4.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="com.example.drawmywaybeta4.permission.MAPS_RECEIVE" />
+    <uses-permission android:name="com.ironrabbit.waybeta4.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -43,20 +43,20 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name="com.ironrabbit.drawmywaybeta4.route.activity.CreateModifyRoute"
+            android:name="com.ironrabbit.waybeta4.route.activity.CreateModifyRoute"
             android:label="@string/app_name"
             android:noHistory="false" >
         </activity>
         <activity
-            android:name="com.ironrabbit.drawmywaybeta4.gps.activity.GPSRunner_ex"
+            android:name="com.ironrabbit.waybeta4.gps.activity.GPSRunner_ex"
             android:label="@string/title_activity_gpsrunner" >
         </activity>
         <activity
-            android:name="com.ironrabbit.drawmywaybeta4.route.activity.SeeRoute"
+            android:name="com.ironrabbit.waybeta4.route.activity.SeeRoute"
             android:label="@string/title_activity_seeroute" >
         </activity>
         <activity
-            android:name="com.ironrabbit.drawmywaybeta4.route.activity.ListRoutes"
+            android:name="com.ironrabbit.waybeta4.route.activity.ListRoutes"
             android:label="@string/title_activity_welcome" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -65,16 +65,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="comcom.ironrabbit.drawmywaybeta4.route.activity.SeeRoute"
-            android:label="@string/title_activity_see_trajet"
-            android:noHistory="true" >
-        </activity>
-        <activity
-            android:name="com.ironrabbit.drawmywaybeta4.route.RouteAdapter"
+            android:name="com.ironrabbit.waybeta4.route.RouteAdapter"
             android:label="@string/title_activity_route_adapter" >
         </activity>
         <activity
-            android:name="com.ironrabbit.drawmywaybeta4.gps.activity.GPSRunner"
+            android:name="com.ironrabbit.waybeta4.gps.activity.GPSRunner"
             android:label="@string/title_activity_gpsrunner" >
         </activity>
     </application>
