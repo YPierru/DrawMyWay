@@ -32,11 +32,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.ironrabbit.waybeta4.Chrono;
 import com.ironrabbit.waybeta4.Constantes;
 import com.ironrabbit.waybeta4.R;
 import com.ironrabbit.waybeta4.gps.UserPosition;
 import com.ironrabbit.waybeta4.route.Route;
-import com.ironrabbit.waybeta4.route.activity.CreateRoute;
 import com.ironrabbit.waybeta4.route.downloaded.Step;
 
 
@@ -66,6 +66,7 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 	private int totalDuration=0;
 	private int compteurAffichage=0;
 	private boolean mustSpeak1000=true,mustSpeak500=true,mustSpeak200=true,mustSpeak50=true;
+	private Chrono mChrono;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +75,7 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 		
 		
 		this.mUserPos = new UserPosition();
-		
+		mChrono=new Chrono();
 		thisactivity = this;
 		getActionBar().hide();
 
@@ -274,6 +275,10 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 		public int distStep;
 		public int restDist;
 		public int distUserNextPoint;
+		public int secondsChrono;
+		public int deltaChrono;
+		public int stepDuration;
+		public boolean imlate=false;
 
 		@Override
 		//Lorsque la position de mon utilisateur change...
@@ -288,6 +293,16 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 				nextStep=mListSteps.get(indexCurrentPoint+1);
 			}
 
+			if(mChrono.isStart()){
+				stepDuration=mListSteps.get(indexCurrentPoint).getDuration().getValue();
+				secondsChrono=(int)mChrono.getSeconds();
+				if(secondsChrono>=stepDuration){
+					imlate=true;
+					deltaChrono=secondsChrono-stepDuration;
+				}
+				
+			}
+			
 			if(!mUserPos.isOnRoute()){
 				
 				if(distUserNextPoint<Constantes.RADIUS_DETECTION && compteurAffichage==0){
@@ -296,12 +311,12 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 					
 					String text=Html.fromHtml(currentStep.getHtml_instructions()).toString()+". puis, "+Html.fromHtml(nextStep.getHtml_instructions()).toString();
 					textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+					mChrono.start();
 					showLayout();
 					displayInstructions(nextStep);
 					mUserPos.setIsOnRoute(true);
 					mUserPos.setToNextPointToFollow();
-				}
-				
+				}	
 			}
 
 			else{
@@ -337,6 +352,16 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 					mustSpeak200=true;
 					mustSpeak50=true;
 					mustSpeak500=true;
+					mChrono.stop();
+					secondsChrono=(int)mChrono.getSeconds();
+					if(secondsChrono>=stepDuration){
+						imlate=true;
+						deltaChrono=secondsChrono-stepDuration;
+					}else{
+						imlate=false;
+						deltaChrono=stepDuration-secondsChrono;
+					}
+					mChrono.start();
 					if(indexCurrentPoint<listPointsToFollow.size()-1){
 						mUserPos.setToNextPointToFollow();
 						totalDistance=totalDistance-distStep;
@@ -386,14 +411,23 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 			//String distToFinish=convertMeterToKm(restDist);
 			int[] hoursMinutesToFinish=formatDuration(totalDuration);
 			int[] hoursMinutesDay=getHoursMinutesDay();
+			int[] hoursMinutesDelta=formatDuration(deltaChrono);
 			int hourFinish=hoursMinutesDay[0]+hoursMinutesToFinish[0];
-			String hourDayToFinish;
+			int minuteFinish=hoursMinutesDay[1]+hoursMinutesToFinish[1];
+			
+			if(imlate){
+				hourFinish+=hoursMinutesDelta[0];
+				minuteFinish+=hoursMinutesDelta[1];
+			}else{
+				hourFinish-=hoursMinutesDelta[0];
+				minuteFinish-=hoursMinutesDelta[1];
+			}
 			/*
 			 * TODO
 			 * Faire en sorte d'avoir l'heure qui passe ?? 00h si
 			 * par exemple il est 23h30 et trajet > 30 min
 			 */
-			tv_gpsfinish.setText(convertMeterToKm(restDist));
+			tv_gpsfinish.setText(convertMeterToKm(restDist)+" | "+hourFinish+"h"+minuteFinish);
 		}
 		
 		public void displayDist(int dist){

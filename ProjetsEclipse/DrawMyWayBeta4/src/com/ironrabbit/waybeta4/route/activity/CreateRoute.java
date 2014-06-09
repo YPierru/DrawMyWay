@@ -95,6 +95,7 @@ public class CreateRoute extends Activity {
 		mListMarkers = new ArrayList<Marker>();
 		mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map))
 				.getMap();
+		mMap.setMyLocationEnabled(true);
 		mPolyline = null;
 		mRoute = getIntent().getExtras().getParcelable("trajet");
 
