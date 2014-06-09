@@ -61,8 +61,7 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 	private ArrayList<Step> mListSteps;
 	private GoogleMap mMap;
 	private UserPosition mUserPos;
-	private int restDistance=0;
-	private int totalD=0;
+	private int totalDistance=0;
 	private int totalDuration=0;
 	private int compteurAffichage=0;
 	private boolean mustSpeak1000=true,mustSpeak500=true,mustSpeak200=true,mustSpeak50=true;
@@ -90,11 +89,10 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 		this.mListSteps=mRoute.getListSteps();
 		
 		for(int i=0;i<mListSteps.size();i++){
-			restDistance+=mListSteps.get(i).getDistance().getValue();
-			//Log.d("DEBUUUUG", "step #"+(i+1)+" : "+mListSteps.get(i).getDistance().getValue()+" m??tres");
+			totalDistance+=mListSteps.get(i).getDistance().getValue();
+			//Log.d("DEBUUUUG", "step #"+(i+1)+" : "+mListSteps.get(i).getDistance().getValue()+" mètres");
 			totalDuration+=mListSteps.get(i).getDuration().getValue();
 		}
-		totalD=restDistance;
 		
 		/*
 		 * On r??cup??re la liste des points ?? suivre.
@@ -147,9 +145,9 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 	private void drawRoute(){
 		//Departure
 		ArrayList<LatLng> listPointsOverview = mRoute.getPointsWhoDrawsPolylineLatLng();
-		setMarker(listPointsOverview.get(0), "D??part");
+		setMarker(listPointsOverview.get(0), "Départ");
 		
-		//Zone de d??tection (5 m??tres) du point de d??part
+		//Zone de d??tection (5 mètres) du point de d??part
 		/*CircleOptions circleOptions;
 		
 		for(int i=0;i<this.listPointsToFollow.size();i++){
@@ -176,7 +174,7 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 		
 		
 		//On met le marker ?? l'arriv??e
-		setMarker(listPointsOverview.get(listPointsOverview.size() - 1), "Arriv??e");
+		setMarker(listPointsOverview.get(listPointsOverview.size() - 1), "Arrivée");
 	}
 	
 	public void setMarker(LatLng point, String str) {
@@ -196,13 +194,17 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 		mLocList = new MyLocationListener();
 		mLocManag = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
-		/*if (!mLocManag.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-			buildAlertMessageNoGps();
-		}else{
-			mLocManag.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constantes.MIN_TIME_GPS_REQUEST_MS, Constantes.MIN_DIST_GPS_REQUEST_M,
-				mLocList);
-		}*/
+		if(Constantes.NETWORK_GPS){
 			mLocManag.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5, 0,mLocList);
+		}else{
+			if (!mLocManag.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+				buildAlertMessageNoGps();
+			}else{
+				mLocManag.requestLocationUpdates(LocationManager.GPS_PROVIDER, Constantes.MIN_TIME_GPS_REQUEST_MS, Constantes.MIN_DIST_GPS_REQUEST_M,
+					mLocList);
+			}
+		}
+			
 	}
 
 	private void buildAlertMessageNoGps() {
@@ -236,6 +238,8 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 	private class MyLocationListener implements LocationListener {
 		
 		public int distStep;
+		public int restDist;
+		public int distUserNextPoint;
 
 		@Override
 		//Lorsque la position de mon utilisateur change...
@@ -243,10 +247,10 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 			
 			int indexCurrentPoint = mUserPos.getIndexPointToFollow();
 			mUserPos.setCurrentPos(location.getLatitude() , location.getLongitude(), location.getBearing(),mMap);
-			int distUserNextPoint=formatDist(distanceBetween(mUserPos.getCurrentPos(),listPointsToFollow.get(indexCurrentPoint)));
+			distUserNextPoint=formatDist(distanceBetween(mUserPos.getCurrentPos(),listPointsToFollow.get(indexCurrentPoint)));
 			Step currentStep=mListSteps.get(indexCurrentPoint);
 			Step nextStep=null;
-			if(indexCurrentPoint<listPointsToFollow.size()){
+			if(indexCurrentPoint<listPointsToFollow.size()-1){
 				nextStep=mListSteps.get(indexCurrentPoint+1);
 			}
 
@@ -260,7 +264,6 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 					textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
 					showLayout();
 					displayInstructions(nextStep);
-					displayInfoFinish();
 					mUserPos.setIsOnRoute(true);
 					mUserPos.setToNextPointToFollow();
 				}
@@ -273,38 +276,39 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 				 * calcul de la distance restante jusqu'?? l'arriv??e
 				 */
 				distStep=mListSteps.get(indexCurrentPoint).getDistance().getValue();
-				restDistance=restDistance-(distStep-distUserNextPoint);
-				displayInfoFinish();
+				restDist=totalDistance-(distStep-distUserNextPoint);
+				displayInfoFinish(restDist);
 				
 				//Log.d("DEBUUUUUUG", "totalD="+totalD+" resteD="+restDistance);
 				
 				if(500<distUserNextPoint && distUserNextPoint<=1000 && mustSpeak1000){
 					mustSpeak1000=false;
-					textToSpeech.speak("Dans "+distUserNextPoint+" m??tres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
+					textToSpeech.speak("Dans "+distUserNextPoint+" mètres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
 				}
 				if(200<distUserNextPoint && distUserNextPoint<=500 && mustSpeak500){
 					mustSpeak500=false;
-					textToSpeech.speak("Dans "+distUserNextPoint+" m??tres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
+					textToSpeech.speak("Dans "+distUserNextPoint+" mètres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
 				}
 				if(50<distUserNextPoint && distUserNextPoint<=200 && mustSpeak200){
 					mustSpeak200=false;
-					textToSpeech.speak("Dans "+distUserNextPoint+" m??tres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
+					textToSpeech.speak("Dans "+distUserNextPoint+" mètres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
 				}
 				if(distUserNextPoint<=50 && mustSpeak50){
 					
 					mustSpeak50=false;
-					textToSpeech.speak("Dans "+distUserNextPoint+" m??tres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
+					textToSpeech.speak("Dans "+distUserNextPoint+" mètres ,"+Html.fromHtml(mListSteps.get(indexCurrentPoint).getHtml_instructions()).toString(), TextToSpeech.QUEUE_ADD, null);
 				}
 				if(distUserNextPoint<Constantes.RADIUS_DETECTION){
 					mustSpeak1000=true;
 					mustSpeak200=true;
 					mustSpeak50=true;
 					mustSpeak500=true;
-					if(indexCurrentPoint<listPointsToFollow.size()){
+					if(indexCurrentPoint<listPointsToFollow.size()-1){
 						mUserPos.setToNextPointToFollow();
 						displayInstructions(nextStep);
+						totalDistance=totalDistance-distStep;
 						distUserNextPoint=formatDist(distanceBetween(mUserPos.getCurrentPos(), listPointsToFollow.get(indexCurrentPoint+1)));
-						textToSpeech.speak(Html.fromHtml(currentStep.getHtml_instructions()).toString()+" puis, dans "+distUserNextPoint+" m??tres "+Html.fromHtml(mListSteps.get(indexCurrentPoint+1).getHtml_instructions()).toString(), TextToSpeech.QUEUE_FLUSH, null);
+						textToSpeech.speak("Dans "+distUserNextPoint+" mètres "+Html.fromHtml(mListSteps.get(indexCurrentPoint+1).getHtml_instructions()).toString(), TextToSpeech.QUEUE_FLUSH, null);
 						if(distUserNextPoint>500 && distUserNextPoint <=1000){
 							mustSpeak1000=false;
 						}else if(distUserNextPoint>200 && distUserNextPoint <=500){
@@ -316,7 +320,7 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 						}
 					}else{
 						mUserPos.setIsOnRoute(false);
-						textToSpeech.speak("Vous ??tes arriv??s", TextToSpeech.QUEUE_FLUSH, null);
+						textToSpeech.speak("Vous êtes arrivés", TextToSpeech.QUEUE_FLUSH, null);
 					}
 				}
 			}
@@ -343,9 +347,8 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 			return (int) (dist * meterConversion);
 		}
 		
-		public void displayInfoFinish(){
+		public void displayInfoFinish(int restDist){
 			TextView tv_gpsfinish = (TextView)findViewById(R.id.tv_gps_finish);
-			String distToFinish=convertMeterToKm(restDistance);
 			int[] hoursMinutesToFinish=formatDuration(totalDuration);
 			int[] hoursMinutesDay=getHoursMinutesDay();
 			int hourFinish=hoursMinutesDay[0]+hoursMinutesToFinish[0];
@@ -355,7 +358,7 @@ public class GPSRunner extends Activity implements SensorEventListener,TextToSpe
 			 * Faire en sorte d'avoir l'heure qui passe ?? 00h si
 			 * par exemple il est 23h30 et trajet > 30 min
 			 */
-			tv_gpsfinish.setText(convertMeterToKm(restDistance));
+			tv_gpsfinish.setText(convertMeterToKm(restDist));
 		}
 		
 		public void displayDist(int dist){

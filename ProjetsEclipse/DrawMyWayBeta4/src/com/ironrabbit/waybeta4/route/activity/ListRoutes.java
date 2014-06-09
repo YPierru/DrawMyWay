@@ -140,7 +140,7 @@ public class ListRoutes extends Activity {
 	}
 
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuItem item_NouveauTrajet = menu.add("Cr??er un trajet").setIcon(
+		MenuItem item_NouveauTrajet = menu.add("Créer un trajet").setIcon(
 				R.drawable.plus);
 		item_NouveauTrajet.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		item_NouveauTrajet
@@ -179,10 +179,10 @@ public class ListRoutes extends Activity {
 									getCurrentDayTime(), mTypeRouteCurrent);
 							//Log.d("DEBUUUUUG", mTypeRouteCurrent);
 							Intent toCreateTrajetActivity = new Intent(
-									ListRoutes.this, CreateModifyRoute.class);
+									ListRoutes.this, CreateRoute.class);
 							toCreateTrajetActivity.putExtra("trajet",
 									(Parcelable) newTrajet);
-							toCreateTrajetActivity.putExtra("MODE", "Cr??ation");
+							toCreateTrajetActivity.putExtra("MODE", "Création");
 							startActivity(toCreateTrajetActivity);
 						}
 					});
@@ -383,12 +383,12 @@ public class ListRoutes extends Activity {
 			} else {
 				AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
 						ListRoutes.this);
-				alertDialogBuilder.setTitle("Trajet non termin??");
+				alertDialogBuilder.setTitle("Trajet non terminé");
 				alertDialogBuilder
 						.setMessage(
 								Html.fromHtml("Le trajet <b>"
 										+ tj.getName()
-										+ "</b> n'est pas termin??.<br>"
+										+ "</b> n'est pas terminé.<br>"
 										+ "Vous pouvez le <b>poursuivre</b> ou le <b>supprimer</b>."))
 						.setCancelable(false)
 						.setPositiveButton("Poursuivre",
@@ -397,7 +397,7 @@ public class ListRoutes extends Activity {
 											int id) {
 										Intent toFinishTrajet = new Intent(
 												ListRoutes.this,
-												CreateModifyRoute.class);
+												CreateRoute.class);
 										toFinishTrajet.putExtra("trajet",
 												(Parcelable) tj);
 										toFinishTrajet.putExtra("MODE",

@@ -5,13 +5,15 @@ import android.os.Environment;
 
 public final class Constantes {
 	
+	public static final boolean NETWORK_GPS=false;
+	
 	public static final int ZOOM_NEW_ROUTE=16;
 	public static final int ZOOM_GENERAL=15;
 	public static final int ZOOM_GPS=18;	
 	public static final int ZOOM_SPEED_MS=600;
 	
 	public static final int USER_GPS_TILT=90;
-	public static final int RADIUS_DETECTION=17000;
+	public static final int RADIUS_DETECTION=18;
 	public static final int MIN_TIME_GPS_REQUEST_MS=5;
 	public static final int MIN_DIST_GPS_REQUEST_M=0;
 	
