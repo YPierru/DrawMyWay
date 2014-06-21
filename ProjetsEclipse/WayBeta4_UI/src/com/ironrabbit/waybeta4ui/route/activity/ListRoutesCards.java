@@ -40,34 +40,34 @@ import com.nhaarman.listviewanimations.swinginadapters.prepared.SwingLeftInAnima
 
 public class ListRoutesCards extends Activity {
 
-	private String[] arrayTypeRoute;
-	private String mTypeRouteCurrent;
+	//private String[] arrayTypeRoute;
+	//private String mTypeRouteCurrent;
 	private CardListView mCardListView;
-	private DrawerLayout mDrawerLayout;
-	private ListView mDrawerList;
-	private ActionBarDrawerToggle mDrawerToggle;
-	private CharSequence mTitle;
+	//private DrawerLayout mDrawerLayout;
+	//private ListView mDrawerList;
+	//private ActionBarDrawerToggle mDrawerToggle;
+	//private CharSequence mTitle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_trajet_display_cards);
-		getActionBar().setHomeButtonEnabled(true);
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		//getActionBar().setHomeButtonEnabled(true);
+		//getActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		
-		mTypeRouteCurrent = getLastRouteTypeCreated();
+		//mTypeRouteCurrent = getLastRouteTypeCreated();
 		
 		/*
 		 * Tableau utilise pour navigationdrawer
 		 */
-		arrayTypeRoute = new String[] { "Voiture", "Coureur" };
+		//arrayTypeRoute = new String[] { "Voiture", "Coureur" };
 
 		
 		/*
 		 * Initialisation du drawerlayout (navigationdrawer)
 		 */
-		mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		/*mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 		mDrawerList = (ListView) findViewById(R.id.listViewLeftDrawer);
 		mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow,GravityCompat.START);
 		mDrawerList.setAdapter(new ArrayAdapter<String>(this,R.layout.drawer_list_item, arrayTypeRoute));
@@ -89,27 +89,28 @@ public class ListRoutesCards extends Activity {
 				invalidateOptionsMenu();
 			}
 		};
-		mDrawerLayout.setDrawerListener(mDrawerToggle);
+		mDrawerLayout.setDrawerListener(mDrawerToggle);*/
 		
 		
 		mCardListView = (CardListView) findViewById(R.id.cardsList);
 		
 
 		/*
-		 * Selon le dernier type de trajet sauvegard??, on place l'user sur la bonne liste
+		 * Selon le dernier type de trajet sauvegardé, on place l'user sur la bonne liste
 		 */
-		if (mTypeRouteCurrent.equals(Constantes.TYPE_ROUTE_VOITURE)) {
+		/*if (mTypeRouteCurrent.equals(Constantes.TYPE_ROUTE_VOITURE)) {
 			selectItem(0);
 		} else {
 			selectItem(1);
-		}
+		}*/
+		populateCards();
 	}
 
 	
 	/*
-	 * Recup??re le type du dernier trajet sauvegard??
+	 * Recupère le type du dernier trajet sauvegardé
 	 */
-	private String getLastRouteTypeCreated() {
+	/*private String getLastRouteTypeCreated() {
 		RoutesCollection mRoutesCollection = RoutesCollection.getInstance();
 		if (mRoutesCollection.size() > 0) {
 			Route lastRoute = mRoutesCollection
@@ -122,11 +123,11 @@ public class ListRoutesCards extends Activity {
 		} else {
 			return Constantes.TYPE_ROUTE_VOITURE;
 		}
-	}
+	}*/
 
 	
 	/*
-	 * Cr??er la liste des cards, selon le type de trajet courant
+	 * Créer la liste des cards, selon le type de trajet courant
 	 */
 	private void populateCards() {
 		final RoutesCollection mRoutesCollection = RoutesCollection.getInstance();
@@ -138,23 +139,27 @@ public class ListRoutesCards extends Activity {
 		
 		
 		
-		if (mTypeRouteCurrent.equals(Constantes.TYPE_ROUTE_VOITURE)) {
+		/*if (mTypeRouteCurrent.equals(Constantes.TYPE_ROUTE_VOITURE)) {
 			listRoutes = mRoutesCollection.getListRoutesVoiture();
 			mTitle="Vos trajets voiture";
 			getActionBar().setTitle(mTitle);
 		} else {
 			listRoutes = mRoutesCollection.getListRoutesCoureur();
-			mTitle="Vos trajets pi??tons";
+			mTitle="Vos trajets piétons";
 			getActionBar().setTitle(mTitle);
-		}
+		}*/
+		listRoutes=mRoutesCollection.getListRoutes();
+		getActionBar().setTitle("Vos trajets");
 
 		for (int i = 0; i < listRoutes.size(); i++) {
 			card = new CardRoute(getApplicationContext(),
 					listRoutes.get(i));
+			card.setId(""+i);
 			listCardRoute.add(card);
 		}
 		
 		cardArrayAdapter = new CardArrayAdapter(this,listCardRoute);
+		cardArrayAdapter.setEnableUndo(true);
 		mCardListView = (CardListView) findViewById(R.id.cardsList);
 		animCardArrayAdapter = new SwingLeftInAnimationAdapter(cardArrayAdapter);
 		animCardArrayAdapter.setAbsListView(mCardListView);
@@ -168,14 +173,14 @@ public class ListRoutesCards extends Activity {
 	
 	
 	/*
-	 * Affiche un message indiquant qu'il n'y a pas de trajets de ce type sauvegard??s
+	 * Affiche un message indiquant qu'il n'y a pas de trajets de ce type sauvegardés
 	 */
 	public void alertNoRoutesSave(){
 		final AlertDialog.Builder alert = new AlertDialog.Builder(
 				ListRoutesCards.this).setTitle("Aucun trajet !");
-		alert.setMessage(Html.fromHtml("Vous n'avez <b>aucun trajets</b>, commencez par en cr??er un !"));
+		alert.setMessage(Html.fromHtml("Vous n'avez <b>aucun trajets</b>, commencez par en créer un !"));
 		alert.setCancelable(true);
-		alert.setPositiveButton("Cr??er mon trajet",
+		alert.setPositiveButton("Créer mon trajet",
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog,
 							int whichButton) {
@@ -194,7 +199,7 @@ public class ListRoutesCards extends Activity {
 
 	
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuItem item_NouveauTrajet = menu.add("Cr??er un trajet").setIcon(
+		MenuItem item_NouveauTrajet = menu.add("Créer un trajet").setIcon(
 				R.drawable.ic_action_new);
 		item_NouveauTrajet.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 		item_NouveauTrajet
@@ -238,7 +243,7 @@ public class ListRoutesCards extends Activity {
 
 
 	/*
-	 * Automatiquement appel?? lors du retour
+	 * Automatiquement appelé lors du retour
 	 */
 	public void onRestart() {
 		super.onRestart();
@@ -248,7 +253,7 @@ public class ListRoutesCards extends Activity {
 	
 
 	/*
-	 * Fen??tre permettant la saisie d'un nom de trajet et la bascule vers la carte
+	 * Fenêtre permettant la saisie d'un nom de trajet et la bascule vers la carte
 	 */
 	public void dialogCreateNewRoute() {
 		final AlertDialog.Builder alert = new AlertDialog.Builder(
@@ -266,12 +271,14 @@ public class ListRoutesCards extends Activity {
 					dialog.cancel();
 					dialogCreateNewRoute();
 				}else if(mRC.nameExists(value)){
-					Toast.makeText(getApplicationContext(), "Le trajet "+value+" existe d??j??", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getApplicationContext(), "Le trajet "+value+" existe déjà", Toast.LENGTH_SHORT).show();
 					dialog.cancel();
 					dialogCreateNewRoute();
 				}else{
+					/*Route newTrajet = new Route(value, false, false,
+							getCurrentDayTime(), mTypeRouteCurrent);*/
 					Route newTrajet = new Route(value, false, false,
-							getCurrentDayTime(), mTypeRouteCurrent);
+									getCurrentDayTime());
 					Intent toCreateTrajetActivity = new Intent(
 							ListRoutesCards.this, CreateRoute.class);
 					toCreateTrajetActivity.putExtra("trajet",
@@ -286,7 +293,7 @@ public class ListRoutesCards extends Activity {
 
 	
 	
-	private class DrawerItemClickListener implements
+	/*private class DrawerItemClickListener implements
 			ListView.OnItemClickListener {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -295,10 +302,6 @@ public class ListRoutesCards extends Activity {
 		}
 	}
 
-	
-	/*
-	 * Change le type de trajet courant en fonction de ce qui est selectionne dans navigationdrawer
-	 */
 	private void selectItem(int position) {
 		if(mDrawerList.getItemAtPosition(position).equals("Voiture")){
 			mTypeRouteCurrent=Constantes.TYPE_ROUTE_VOITURE;
@@ -322,6 +325,6 @@ public class ListRoutesCards extends Activity {
 		super.onConfigurationChanged(newConfig);
 		// Pass any configuration change to the drawer toggls
 		mDrawerToggle.onConfigurationChanged(newConfig);
-	}
+	}*/
 
 }

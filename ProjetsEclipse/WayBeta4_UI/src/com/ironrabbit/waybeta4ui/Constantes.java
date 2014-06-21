@@ -17,7 +17,7 @@ public final class Constantes {
 	public static final int MIN_TIME_GPS_REQUEST_MS=5;
 	public static final int MIN_DIST_GPS_REQUEST_M=0;
 	
-	public static final String NAME_FILE_ROUTES=".routescollection.dmwui";
+	public static final String NAME_FILE_ROUTES=".routescollection.way";
 	public static final String PATH_FILE_ROUTES=Environment.getExternalStorageDirectory().getAbsolutePath() + "/";
 	
 	public static final int TEXT_SIZE_WHEEL=13;
@@ -32,7 +32,7 @@ public final class Constantes {
 	public static final double EARTH_RADIUS=3958.75;
 	public static final int METER_CONVERSION=1609;
 	
-	public final static String TYPE_ROUTE_VOITURE = "VOITURE";
-	public final static String TYPE_ROUTE_COUREUR = "COUREUR";
+	//public final static String TYPE_ROUTE_VOITURE = "VOITURE";
+	//public final static String TYPE_ROUTE_COUREUR = "COUREUR";
 
 }

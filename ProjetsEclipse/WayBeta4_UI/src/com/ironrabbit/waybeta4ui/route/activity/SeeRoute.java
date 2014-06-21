@@ -31,6 +31,7 @@ public class SeeRoute extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		mMap = ((MapFragment) getFragmentManager()
 				.findFragmentById(R.id.mapSee)).getMap();
+		mMap.setMyLocationEnabled(true);
 		mRoute = getIntent().getExtras().getParcelable("trajet");
 		getActionBar().setTitle(mRoute.getName());
 		setSubtitle();
@@ -41,14 +42,14 @@ public class SeeRoute extends Activity {
 	private void drawRoute() {
 		ArrayList<LatLng> listPoints = mRoute
 				.getPointsWhoDrawsPolylineLatLng();
-		setMarker(listPoints.get(0), "D??part");
+		setMarker(listPoints.get(0), "Départ");
 		PolylineOptions options = new PolylineOptions().geodesic(false)
 				.width(10).color(Color.argb(120, 0, 180, 0));
 		for (int i = 0; i < listPoints.size(); i++) {
 			options.add(listPoints.get(i));
 		}
 		mMap.addPolyline(options);
-		setMarker(listPoints.get(listPoints.size() - 1), "Arriv??e");
+		setMarker(listPoints.get(listPoints.size() - 1), "Arrivée");
 		CameraUpdate cu = CameraUpdateFactory.newLatLngZoom(listPoints.get(0),
 				15);
 		mMap.animateCamera(cu, 600, null);

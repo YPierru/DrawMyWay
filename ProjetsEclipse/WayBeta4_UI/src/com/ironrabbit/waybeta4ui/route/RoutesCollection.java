@@ -32,7 +32,7 @@ public class RoutesCollection extends ArrayList<Route> implements Serializable {
 		INSTANCE = loadAllTrajet();
 		if (INSTANCE == null) {
 			INSTANCE = new RoutesCollection();
-			INSTANCE.saveAllTrajet();
+			INSTANCE.saveRoutesCollection();
 		}
 		return INSTANCE;
 	}
@@ -68,17 +68,17 @@ public class RoutesCollection extends ArrayList<Route> implements Serializable {
 		return rtr;
 	}
 	
-	public ArrayList<Route> getListRoutesVoiture(){
-		ArrayList<Route> listRouteVoiture = new ArrayList<Route>();
+	public ArrayList<Route> getListRoutes(){
+		ArrayList<Route> listRoute = new ArrayList<Route>();
 		for(int i=0;i<this.size();i++){
-			if(this.get(i).getTypeRoute().equals("VOITURE")){
-				listRouteVoiture.add(this.get(i));
-			}
+			//if(this.get(i).getTypeRoute().equals("VOITURE")){
+				listRoute.add(this.get(i));
+			//}
 		}
-		return listRouteVoiture;
+		return listRoute;
 	}
 	
-	public ArrayList<Route> getListRoutesCoureur(){
+	/*public ArrayList<Route> getListRoutesCoureur(){
 		ArrayList<Route> listRouteCoureur = new ArrayList<Route>();
 		for(int i=0;i<this.size();i++){
 			if(this.get(i).getTypeRoute().equals("COUREUR")){
@@ -86,7 +86,7 @@ public class RoutesCollection extends ArrayList<Route> implements Serializable {
 			}
 		}
 		return listRouteCoureur;
-	}
+	}*/
 
 	public boolean remove(Route t) {
 		for(int i=0;i<this.size();i++){
@@ -120,7 +120,7 @@ public class RoutesCollection extends ArrayList<Route> implements Serializable {
 		return false;
 	}
 
-	public void saveAllTrajet() {
+	public void saveRoutesCollection() {
 
 		File f = new File(Constantes.PATH_FILE_ROUTES+Constantes.NAME_FILE_ROUTES);
 

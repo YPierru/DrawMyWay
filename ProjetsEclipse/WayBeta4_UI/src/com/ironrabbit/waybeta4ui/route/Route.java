@@ -29,8 +29,9 @@ public class Route implements Parcelable,Serializable {
 	private DoubleArrayList<Double> listLatLngMarkers; //List des points concernant les markers
 	private String dateCreation;
 	private String dateDerModif;
-	private String typeRoute; //VOITURE ou COUREUR
+	//private String typeRoute; //VOITURE ou COUREUR
 	private int idHash;
+	private int indexCollection;
 
 	public Route(  ArrayList<DirectionsResponse> ls,
 					String n,
@@ -40,8 +41,9 @@ public class Route implements Parcelable,Serializable {
 					boolean v,
 					String dc,
 					String ddm,
-					String tr,
-					int ih){
+					/*String tr,*/
+					int ih,
+					int idc){
 		this.listSegment=ls;
 		this.name=n;
 		this.save=s;
@@ -56,11 +58,12 @@ public class Route implements Parcelable,Serializable {
 		this.validate=v;
 		this.dateCreation=dc;
 		this.dateDerModif=ddm;
-		this.typeRoute=tr;
+		//this.typeRoute=tr;
 		this.idHash=ih;
+		this.indexCollection=idc;
 	}
 	
-	public Route(String n, boolean isS, boolean isV,String dc, String tr) {
+	public Route(String n, boolean isS, boolean isV,String dc/*, String tr*/) {
 		this.name = n;
 		this.save = isS;
 		this.validate=isV;
@@ -69,7 +72,7 @@ public class Route implements Parcelable,Serializable {
 		this.listLatLngMarkers=new DoubleArrayList<Double>();
 		this.dateCreation=dc;
 		this.dateDerModif=dc;
-		this.typeRoute=tr;
+		//this.typeRoute=tr;
 		this.idHash=System.identityHashCode(this);
 	}
 	
@@ -85,8 +88,9 @@ public class Route implements Parcelable,Serializable {
 		this.listLatLngMarkers=in.readParcelable(getClass().getClassLoader());
 		this.dateCreation=in.readString();
 		this.dateDerModif=in.readString();
-		this.typeRoute=in.readString();
+		//this.typeRoute=in.readString();
 		this.idHash=in.readInt();
+		this.indexCollection=in.readInt();
 	}
 
 
@@ -106,13 +110,13 @@ public class Route implements Parcelable,Serializable {
 		this.name = name;
 	}
 
-	public String getTypeRoute() {
+	/*public String getTypeRoute() {
 		return typeRoute;
 	}
 
 	public void setTypeRoute(String tr) {
 		this.typeRoute = tr;
-	}
+	}*/
 
 	public String getDateDerModif() {
 		return dateDerModif;
@@ -224,6 +228,14 @@ public class Route implements Parcelable,Serializable {
 		this.idHash = idHash;
 	}
 
+	public int getIndexCollection() {
+		return indexCollection;
+	}
+
+	public void setIndexCollection(int indexCollection) {
+		this.indexCollection = indexCollection;
+	}
+
 	public static final Parcelable.Creator<Route> CREATOR = new Parcelable.Creator<Route>() {
 
 		@Override
@@ -253,8 +265,9 @@ public class Route implements Parcelable,Serializable {
 		dest.writeParcelable(this.listLatLngMarkers,0);
 		dest.writeString(this.dateCreation);
 		dest.writeString(this.dateDerModif);
-		dest.writeString(this.typeRoute);
+		//dest.writeString(this.typeRoute);
 		dest.writeInt(this.idHash);
+		dest.writeInt(this.indexCollection);
 	}
 	
 	public ArrayList<Step> getListSteps(){

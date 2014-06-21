@@ -80,7 +80,7 @@ public class CardRouteHeader extends CardHeader {
 		TextView tvSubDate = (TextView)view.findViewById(R.id.tv_cardroute_headerlayout_subtitle_date);
 		tvSubDate.setText(" - "+mDate);
 		if(this.mRoute.isValidate()){
-			mStatus="Termin??";
+			mStatus="Terminé";
 		}else{
 			mStatus="En cours";
 		}

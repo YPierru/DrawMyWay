@@ -132,7 +132,7 @@ public class CreateRoute extends Activity {
 			}
 			for (int i = 0; i < tmpListMarkers.size(); i++) {
 				if (i == 0) {
-					mListMarkers.add(putMarker(tmpListMarkers.get(i), "D??part",
+					mListMarkers.add(putMarker(tmpListMarkers.get(i), "Départ",
 							true, true));
 				} else {
 					mListMarkers
@@ -169,7 +169,7 @@ public class CreateRoute extends Activity {
 
 				
 				//On ajoute le jalon en LatLng.
-				mListMarkers.add(putMarker(point, "D??part", true, false));
+				mListMarkers.add(putMarker(point, "Départ", true, false));
 				mRoute.getListMarkers().clear();
 				mRoute.getListMarkers().add(point.latitude, point.longitude);
 				
@@ -247,7 +247,9 @@ public class CreateRoute extends Activity {
 	public boolean onOptionsItemSelected(MenuItem menuItem) {
 
 		if (menuItem.getItemId() == android.R.id.home) {
-			if(!onSearch){
+			if (onSearch) {
+				closeSearchBar();
+			} else {
 				actionIfUserWantsBack();
 			}
 		}
@@ -305,7 +307,7 @@ public class CreateRoute extends Activity {
 					alertDialog.setTitle("Il faut une connexion internet");
 					alertDialog
 							.setMessage(
-									Html.fromHtml("Vous devez ??tre connect?? ?? internet pour utiliser cette fonctionnalit??."))
+									Html.fromHtml("Vous devez être connecté à internet pour utiliser cette fonctionnalité."))
 							.setCancelable(true)
 							.setPositiveButton("Ok",
 									new DialogInterface.OnClickListener() {
@@ -332,14 +334,14 @@ public class CreateRoute extends Activity {
 				alertDialog.setTitle("Aide");
 				alertDialog
 						.setMessage(
-								Html.fromHtml("<b>Appui long</b> : efface tout sur la carte et place un <u>point de d??part</u>"
+								Html.fromHtml("<b>Appui long</b> : efface tout sur la carte et place un <u>point de départ</u>"
 										+ "<br/><b>Appui simple</b> : place un point par lequel <u>vous voulez passer</u>"
 										+ "<br />Le <b>point d'interrogation</b> : lance une barre de recherche pour trouvez une adresse, un lieu..."
 										+ "<br />La <b>roue</b> : lance le menu. Vous pourrez : "
 										+ "<br /><u><em>Dessiner</em></u> votre trajet (si vous avez au moins 2 points)"
 										+ "<br /><u><em>Sauvegarder</em></u> : si vous avez un trajet, le sauvegarde, vous pourrez ensuite soit lancer le <u>GPS</u> soit <u>quitter</u>"
 										+ "<br /><u><em>Changer type carte</em></u> : changer le type de la carte (normal, hybride, terrain, satellite)"
-										+ "<br /><u><em>Corriger</em></u> : active un mode particulier. Si vous avez un trajet dessin??, l'efface. "
+										+ "<br /><u><em>Corriger</em></u> : active un mode particulier. Si vous avez un trajet dessiné, l'efface. "
 										+ "Vous pouvez supprimer un point en cliquant dessus. Pour quitter ce mode, cliquer sur dessiner ou terminer"))
 						.setCancelable(false)
 						.setPositiveButton("Ok",
@@ -539,12 +541,13 @@ public class CreateRoute extends Activity {
 		public void actionSave() {
 			//Log.d("DEBUUUUUUG", "listMarker "+mListMarkers.size());
 			if (mListMarkers.size() > 0) {
-				RoutesCollection at = RoutesCollection.getInstance();
+				RoutesCollection mRC = RoutesCollection.getInstance();
 				mRoute.setSave(true);
-				if (!at.replace(mRoute)) {
-					at.add(mRoute);
+				if (!mRC.replace(mRoute)) {
+					mRoute.setIndexCollection(mRC.size()-1);
+					mRC.add(mRoute);
 				}
-				at.saveAllTrajet();
+				mRC.saveRoutesCollection();
 			}
 			//CreateRoute.getInstance().finish();
 		}
@@ -569,7 +572,7 @@ public class CreateRoute extends Activity {
 								if (i == 0) {
 									Toast.makeText(
 											getApplicationContext(),
-											"Pour supprimer le point de d??part, faites un appui long sur une autre zone",
+											"Pour supprimer le point de départ, faites un appui long sur une autre zone",
 											Toast.LENGTH_SHORT).show();
 								} else {
 									mListMarkers.remove(i);
@@ -587,12 +590,12 @@ public class CreateRoute extends Activity {
 					}
 				});
 				Toast.makeText(getApplicationContext(),
-						"Mode correction activ??", Toast.LENGTH_SHORT).show();
+						"Mode correction activé", Toast.LENGTH_SHORT).show();
 			} else {
 				correctionEnable = false;
 				settingMapClickListenerNomal();
 				Toast.makeText(getApplicationContext(),
-						"Mode correction d??sactiv??", Toast.LENGTH_SHORT).show();
+						"Mode correction désactivé", Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -750,7 +753,7 @@ public class CreateRoute extends Activity {
 	
 			public void menuActiviated() {
 				actionSave();
-				Toast.makeText(getApplicationContext(),mRoute.getName()+" sauvegard??", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(),mRoute.getName()+" sauvegardé", Toast.LENGTH_SHORT).show();
 			}
 		}
 

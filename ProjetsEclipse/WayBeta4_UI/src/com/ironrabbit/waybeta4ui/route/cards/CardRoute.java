@@ -3,9 +3,11 @@ package com.ironrabbit.waybeta4ui.route.cards;
 import it.gmariotti.cardslib.library.internal.Card;
 import it.gmariotti.cardslib.library.internal.CardHeader;
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ironrabbit.waybeta4ui.R;
 import com.ironrabbit.waybeta4ui.route.Route;
@@ -29,7 +31,6 @@ public class CardRoute extends Card {
 	private void init() {
 		setSwipeable(true);
 		setType(2);
-		
 		setOnSwipeListener(new OnSwipeListener() {
 			
 			@Override
@@ -37,9 +38,18 @@ public class CardRoute extends Card {
 				// TODO Auto-generated method stub
 				RoutesCollection mRoutesCollection = RoutesCollection.getInstance();				
 				mRoutesCollection.remove(mRoute);
-				mRoutesCollection.saveAllTrajet();
+				mRoutesCollection.saveRoutesCollection();
 			}
 		});
+		
+		setOnUndoSwipeListListener(new OnUndoSwipeListListener() {
+	          @Override
+	          public void onUndoSwipe(Card card) {
+					RoutesCollection mRoutesCollection = RoutesCollection.getInstance();				
+					mRoutesCollection.add(mRoute.getIndexCollection(), mRoute);
+					mRoutesCollection.saveRoutesCollection();
+	          }
+        });
 
 		CardHeader cardRouteHeader = new CardRouteHeader(this.context,
 				R.layout.cardroute_header_layout, this.mRoute);

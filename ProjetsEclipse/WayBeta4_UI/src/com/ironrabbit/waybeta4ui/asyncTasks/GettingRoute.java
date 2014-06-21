@@ -70,12 +70,12 @@ public class GettingRoute extends AsyncTask<Void, Void, DirectionsResponse> {
 		//Log.d("DEBUUUUUG", "execute");
 
 		listWayPoints = this.mRoute.getListMarkersLatLng();
-		if (this.mRoute.getTypeRoute().equals("VOITURE")) {
+		/*if (this.mRoute.getTypeRoute().equals("VOITURE")) {
 			this.mode = "driving";
 		} else {
 			this.mode = "walking";
-		}
-
+		}*/
+		this.mode = "driving";
 		//Log.d("DEBUUUUUG", this.mode);
 		this.origin = listWayPoints.get(0);
 		this.destination = listWayPoints.get(listWayPoints.size() - 1);
