@@ -13,15 +13,16 @@ import java.util.List;
 
 import org.json.JSONObject;
 
+import android.R;
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -66,7 +67,7 @@ public class MainActivity extends Activity {
         
         
 
-        //On récupère la gmap
+        //On ré�cup��re la gmap
         map = ((MapFragment)getFragmentManager().findFragmentById(R.id.map)).getMap();
         
         etPlace=(EditText)findViewById(R.id.et_place);
@@ -151,7 +152,7 @@ public class MainActivity extends Activity {
         // Get a handle to the Map Fragment
 
         /*
-         * On récupère : le titre, 
+         * On r��cup��re : le titre, 
          * 				 le tableau des types de cartes, 
          * 				 Le layout contenant les cartes
          * 				 Le layout de gauche
